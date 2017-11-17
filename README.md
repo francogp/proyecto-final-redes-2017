@@ -110,10 +110,11 @@ repositorio).
 - Se resolverán automáticamente al utilizar alguna actividad de Gradle. 
 
 ##### Instrucciones Recomendadas
+- `gradlew help`: ayuda sobre las posibles acciones (Tasks) que gradle puede realizar. 
 - `gradlew clean`: limpia los directorios del proyecto.   
 - `gradlew build`: compila el proyecto.
 - `gradlew finalFatJar`: crea un jar con el programa listo para usar.  
-- `gradlew test`:  ejecuta los test de JUnit.
+- `gradlew junitPlatformTest`:  ejecuta los test de JUnit.
 - `gradlew javadoc`:  compila javadoc.
 
 ### Instrucciones de uso
