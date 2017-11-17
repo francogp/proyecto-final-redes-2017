@@ -1,5 +1,6 @@
-# proyecto-final-redes-2017
-Universidad Nacional de Río Cuarto - Telecomunicaciones y Sistemas Distribuidos - Proyecto final 2017
+*Universidad Nacional de Río Cuarto*
+
+**Autor:** Pellegrini Franco Gastón
 
 # Telecomunicaciones y Sistemas Distribuidos - Proyecto final 2017
 ## 1. Descripción
@@ -12,11 +13,12 @@ comunicación entre procesos.
 El modelo PGAS presenta al programador un sistema multicomputador, donde 
 cada proceso/procesador cuenta con su propia memoria local o privada y 
 aporta bloques a una memoria compartida. De esta manera permite al 
-programador un estilo de programación de memoria compartida aún en un ambiente de memoria distribuida (particionada) donde el acceso a la memoria remota se realiza
+programador un estilo de programación de memoria compartida aún en un ambiente de 
+memoria distribuida (particionada) donde el acceso a la memoria remota se realiza
 por medio de mecanismos de comunicación (mensajes).
 
-A modo de ejemplo, se muestra el siguiente pseudo-código que ordena los elementos de un arreglo
-en forma distribuida (en paralelo):
+A modo de ejemplo, se muestra el siguiente pseudo-código que ordena los elementos 
+de un arreglo en forma distribuida (en paralelo):
 
 ```
 // Set of process 0, 1, ..., N-1
@@ -29,11 +31,11 @@ while not finish:
     finish = true
     
     // sort local block
-    bubble_sort(a.lowerindex(p), a.upperindex(p))
+    bubble_sort(a.lowerIndex(p), a.upperIndex(p))
     barrier()
     
     if not Iam(N - 1):
-        if a[a.upperindex(p)] > a[a.lowerindex(p+1)]:
+        if a[a.upperIndex(p)] > a[a.lowerIndex(p+1)]:
             swap(a.upperIndex(p), a.lowerIndex(right))
             finish = false  // update local copy
    
@@ -65,7 +67,7 @@ Se pide el diseño e implementación de los siguientes componentes:
 en bloques uniformes entre los procesos. Debería contener operaciones o 
 métodos read(i) y write(i,v).
 2. Implementar barrier()
-3. Implementar and reduce()
+3. Implementar and_reduce()
 
 ## 2. Consideraciones de diseño
 Para una mejor y simple implementación, se debería definir una capa de 
@@ -84,13 +86,44 @@ demanda por el proceso mismo.
 
 Además, esta capa (middleware) debería encapsular el protocolo de transporte 
 utilizado.
-La figura 2 muestra el esquema de diseño propuesto.
+La figura 1 muestra el esquema de diseño propuesto.
 
 ![Figura 1: Arquitectura del sistema](https://i.imgur.com/NLjtvBC.png)
 
-## Referencias
+### Referencias
 [1] Ajay D. Kshemkalyani, Mukesh Shingal. Distributed Computing. Principles, 
 Algorithms and Systems. Cambridge University Press. ISBN-13: 
 978-0-511-39341-9. 2008.
 
 [2] [Partitioned Global Address Space.](https://en.wikipedia.org/wiki/Partitioned_global_address_space)
+
+## 3. Solución
+### Compilación
+El proyecto esta construido utilizando Gradle (incorporado en el 
+repositorio). 
+
+##### Requisitos
+- Java JDK 9 o superior.
+- Tener configurada la variable de entorno ***JAVA_HOME***. 
+
+##### Dependencias
+- Se resolverán automáticamente al utilizar alguna actividad de Gradle. 
+
+##### Instrucciones Recomendadas
+- `gradlew clean`: limpia los directorios del proyecto.   
+- `gradlew build`: compila el proyecto.
+- `gradlew finalFatJar`: crea un jar con el programa listo para usar.  
+- `gradlew test`:  ejecuta los test de JUnit.
+- `gradlew javadoc`:  compila javadoc.
+
+### Instrucciones de uso
+`java -jar ar.edu.unrc......`
+
+##### Ejemplo
+Para ejecutar una simulación utilizar:
+```
+java -cp coeus.game2048-1.0.0.jar ar.edu.unrc.game2048.experiments.TestGenerator experimentDirName=NTuple-Timed90 experimentClassNameList=[ConfigNTupleBasicTanH_32768] createLogs=false canCollectStatistics=false repetitions=10 maxTrainingThreads=1 gamesToPlay=1000000 winRateLimit=90.0 gamesToPlayPerThreadForStats=1000 saveEvery=5000 saveBackupEvery=15000 statisticsOnly=false simulationsForStatistics=8 tileToWinForStatistics=2048 runBackupStatistics=true lambdaList=[0.0] eligibilityTraceLength=-1 replacingTraces=true accumulatingTraces=false annealingAlphaList=[400000] alphaList=[0.005] gammaList=[1] concurrentLayerList=[false,false] computeBestPossibleActionConcurrently=false whenStartToExplore=[1.0] fixedExplorationRateList=[0] 
+``` 
+
+## Licencia
+[![GNU GPL v3.0](http://www.gnu.org/graphics/gplv3-127x51.png)](http://www.gnu.org/licenses/gpl.html)
