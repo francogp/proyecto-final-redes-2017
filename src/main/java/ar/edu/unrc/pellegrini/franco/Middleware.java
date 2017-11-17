@@ -10,6 +10,8 @@ interface Middleware< I > {
 
     int getPid();
 
+    boolean imLast();
+
     void receiveFrom( final long pid );
 
     void sendTo(

@@ -48,6 +48,12 @@ class MyMiddleware< I >
 
     @Override
     public
+    boolean imLast() {
+        return pid == processQuantity;
+    }
+
+    @Override
+    public
     void receiveFrom( final long pid ) {
 
     }

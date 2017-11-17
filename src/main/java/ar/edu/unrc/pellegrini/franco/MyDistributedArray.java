@@ -34,7 +34,7 @@ class MyDistributedArray< I >
             lastLowerIndex = upperIndex + 1;
         }
         long lowerIndex = lastLowerIndex;
-        actualSize = realSize - ( actualSize * ( processQuantity - 1 ) );
+        actualSize = realSize - ( actualSize * ( processQuantity - 1 ) ) - 1;
         long upperIndex = lowerIndex + actualSize;
         indexes.add(new Indexes(lowerIndex, upperIndex, (int) actualSize));
     }
@@ -48,7 +48,7 @@ class MyDistributedArray< I >
     @Override
     public
     boolean imLast() {
-        return false;
+        return middleware.imLast();
     }
 
     @Override
