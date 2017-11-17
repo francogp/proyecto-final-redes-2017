@@ -5,12 +5,22 @@ class BubbleSortPGAS {
 
     private static int pid;
 
-    private static
+    public static
     void bubbleSort(
+            final DistributedArray< Integer > dArray,
             final long lowerIndex,
             final long upperIndex
     ) {
-
+        boolean swapped = true;
+        for ( long i = upperIndex; swapped && i >= lowerIndex; i-- ) {
+            swapped = false;
+            for ( int j = 0; j < i; j++ ) {
+                if ( dArray.get(j) > dArray.get(j + 1) ) {
+                    swapped = true;
+                    dArray.swap(j, j + 1);
+                }
+            }
+        }
     }
 
     private static
@@ -30,7 +40,7 @@ class BubbleSortPGAS {
             final long lowerIndex = dArray.lowerIndex(pid);
 
             // sort local block
-            bubbleSort(lowerIndex, upperIndex);
+            bubbleSort(dArray, lowerIndex, upperIndex);
             middleware.barrier();
 
             if ( !dArray.imLast() ) {
