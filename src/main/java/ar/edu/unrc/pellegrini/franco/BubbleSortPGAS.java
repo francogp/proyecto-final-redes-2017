@@ -4,6 +4,7 @@ public
 class BubbleSortPGAS {
 
     private static int pid;
+    private static int processQuantity;
 
     public static
     void bubbleSort(
@@ -25,13 +26,15 @@ class BubbleSortPGAS {
 
     private static
     void init() {
+        processQuantity = 5;
+        pid = 3;
     }
 
     public static
     void main( String[] args ) {
         init();
-        Middleware< Integer >       middleware = new MyMiddleware<>(pid);
-        DistributedArray< Integer > dArray     = new MyDistributedArray<>(middleware);
+        Middleware< Integer >       middleware = new MyMiddleware<>(pid, processQuantity);
+        DistributedArray< Integer > dArray     = new MyDistributedArray<>(middleware, 100);
         boolean                     finish     = false;
 
         while ( !finish ) {

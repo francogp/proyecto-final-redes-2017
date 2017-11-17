@@ -4,10 +4,16 @@ public
 class MyMiddleware< I >
         implements Middleware< I > {
     private final int pid;
+    private final int processQuantity;
 
     public
-    MyMiddleware( final int pid ) {
+    MyMiddleware(
+            final int pid,
+            final int processQuantity
+    ) {
+        if ( pid <= 0 ) { throw new IllegalArgumentException("pid must be > 0"); }
         this.pid = pid;
+        this.processQuantity = processQuantity;
     }
 
     @Override
@@ -32,6 +38,12 @@ class MyMiddleware< I >
     public
     int getPid() {
         return pid;
+    }
+
+    @Override
+    public
+    int getProcessQuantity() {
+        return processQuantity;
     }
 
     @Override

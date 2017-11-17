@@ -21,5 +21,7 @@ interface Middleware< I > {
             final long index,
             final I value
     );
+
+    int getProcessQuantity();
 }
 
