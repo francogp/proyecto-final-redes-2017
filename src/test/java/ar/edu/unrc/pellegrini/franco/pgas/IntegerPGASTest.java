@@ -1,7 +1,5 @@
-package ar.edu.unrc.pellegrini.franco;
+package ar.edu.unrc.pellegrini.franco.pgas;
 
-import ar.edu.unrc.pellegrini.franco.distributedapi.IntegerPGAS;
-import ar.edu.unrc.pellegrini.franco.distributedapi.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 import org.junit.jupiter.api.Test;
 

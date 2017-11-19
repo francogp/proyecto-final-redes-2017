@@ -1,4 +1,4 @@
-package ar.edu.unrc.pellegrini.franco.distributedapi;
+package ar.edu.unrc.pellegrini.franco.pgas;
 
 public
 interface Middleware< I > {

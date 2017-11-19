@@ -1,7 +1,7 @@
 package ar.edu.unrc.pellegrini.franco;
 
-import ar.edu.unrc.pellegrini.franco.distributedapi.IntegerPGAS;
-import ar.edu.unrc.pellegrini.franco.distributedapi.PGAS;
+import ar.edu.unrc.pellegrini.franco.pgas.IntegerPGAS;
+import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 
