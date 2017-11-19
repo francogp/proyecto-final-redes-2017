@@ -27,17 +27,36 @@ class Configs {
         hosts = new HashMap<>();
     }
 
+    /**
+     * JSON file Format:
+     * <pre>{@code
+     * {
+     *   "distributedArraySize": <size (Long)>,
+     *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc]
+     * }
+     * }</pre>
+     *
+     * @param configFilePath file path to load.
+     */
     public
     Configs( final String configFilePath ) {
         this(new File(configFilePath));
     }
 
+    /**
+     * JSON file Format:
+     * <pre>{@code
+     * {
+     *   "distributedArraySize": <size (Long)>,
+     *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc]
+     * }
+     * }</pre>
+     *
+     * @param configFilePath file to load.
+     */
     public
     Configs( final File configFilePath ) {
-        try {
-            // read the json file
-            FileReader reader = new FileReader(configFilePath);
-
+        try ( FileReader reader = new FileReader(configFilePath) ) {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
@@ -48,10 +67,10 @@ class Configs {
             }
             processQuantity = hostsInJSON.size();
             hosts = new HashMap<>(processQuantity);
-            // take each value from the json array separately
+            long pid = 1;
             for ( Object host : hostsInJSON ) {
-                JSONObject innerObj = (JSONObject) host;
-                hosts.put((Long) innerObj.get("pid"), (String) innerObj.get("address"));
+                hosts.put(pid, host.toString());
+                pid++;
             }
         } catch ( IOException e ) {
             throw new IllegalArgumentException("problems loading \"" + configFilePath + "\".", e);
