@@ -16,7 +16,7 @@ class ConfigsTest {
 
         Configs configs = new Configs(file);
         assertThat(configs.getProcessQuantity(), is(3));
-        assertThat(configs.getDistributedArraySize(), is(10L));
+        assertThat(configs.getPgasSize(), is(10L));
         Map< Long, String > hosts = configs.getHosts();
         assertThat(hosts.size(), is(configs.getProcessQuantity()));
         for ( long i = 1; i <= configs.getProcessQuantity(); i++ ) {

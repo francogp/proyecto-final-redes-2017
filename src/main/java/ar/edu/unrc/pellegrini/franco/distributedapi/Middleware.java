@@ -3,7 +3,7 @@ package ar.edu.unrc.pellegrini.franco.distributedapi;
 public
 interface Middleware< I > {
 
-    void get( final long index );
+    String getHostByPid( long pid );
 
     void receiveFrom( final long pid );
 
@@ -12,9 +12,5 @@ interface Middleware< I > {
             final I value
     );
 
-    void set(
-            final long index,
-            final I value
-    );
 }
 

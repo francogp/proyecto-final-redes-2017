@@ -1,7 +1,7 @@
 package ar.edu.unrc.pellegrini.franco;
 
-import ar.edu.unrc.pellegrini.franco.distributedapi.DistributedArray;
-import ar.edu.unrc.pellegrini.franco.distributedapi.IntegerDistributedArray;
+import ar.edu.unrc.pellegrini.franco.distributedapi.IntegerPGAS;
+import ar.edu.unrc.pellegrini.franco.distributedapi.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 
@@ -11,9 +11,7 @@ class DistributedBubbleSort {
     public static final String ARG_CONFIG_FILE = "configFile";
     public static final String ARG_PID         = "pid";
     private static Configs configFile;
-    private static long    distributedArraySize;
     private static int     pid;
-    private static int     processQuantity;
 
     private
     DistributedBubbleSort() {}
@@ -21,13 +19,13 @@ class DistributedBubbleSort {
     /**
      * BubbleSort clásico
      *
-     * @param distArray  sobre el cual aplicar el algoritmo
-     * @param lowerIndex el índice mas bajo del rango de valores a ordenar
-     * @param upperIndex el índice mas alto del rango de valores a ordenar
+     * @param integerPGAS sobre el cual aplicar el algoritmo
+     * @param lowerIndex  el índice mas bajo del rango de valores a ordenar
+     * @param upperIndex  el índice mas alto del rango de valores a ordenar
      */
     public static
     void bubbleSort(
-            final DistributedArray< Integer > distArray,
+            final PGAS< Integer > integerPGAS,
             final long lowerIndex,
             final long upperIndex
     ) {
@@ -35,9 +33,11 @@ class DistributedBubbleSort {
         for ( long i = upperIndex; swapped && ( i >= lowerIndex ); i-- ) {
             swapped = false;
             for ( int j = 0; j < i; j++ ) {
-                if ( distArray.get(j) > distArray.get(j + 1) ) {
+                if ( integerPGAS.read(j) > integerPGAS.read(j + 1) ) {
                     swapped = true;
-                    distArray.swap(j, j + 1);
+                    final Integer temp = integerPGAS.read(j);
+                    integerPGAS.write(j, integerPGAS.read(j + 1));
+                    integerPGAS.write(j + 1, temp);
                 }
             }
         }
@@ -57,27 +57,29 @@ class DistributedBubbleSort {
     public static
     void main( final String... args ) {
         init(args);
-        final DistributedArray< Integer > distArray = new IntegerDistributedArray(pid, configFile);
-        boolean                           finish    = false;
+        final PGAS< Integer > integerPGAS = new IntegerPGAS(pid, configFile);
+        boolean               finish      = false;
 
         while ( !finish ) {
             finish = true;
-            final long upperIndex = distArray.upperIndex();
-            final long lowerIndex = distArray.lowerIndex();
+            final long upperIndex = integerPGAS.upperIndex();
+            final long lowerIndex = integerPGAS.lowerIndex();
 
             // sort local block
-            bubbleSort(distArray, lowerIndex, upperIndex);
-            distArray.barrier();
+            bubbleSort(integerPGAS, lowerIndex, upperIndex);
+            integerPGAS.barrier();
 
-            if ( !distArray.imLast() ) {
-                final long lowerIndexRight = distArray.lowerIndex(pid + 1);
-                if ( distArray.get(upperIndex) > distArray.get(lowerIndexRight) ) {
-                    distArray.swap(upperIndex, lowerIndexRight);
+            if ( !integerPGAS.imLast() ) {
+                final long lowerIndexRight = integerPGAS.lowerIndex(pid + 1);
+                if ( integerPGAS.read(upperIndex) > integerPGAS.read(lowerIndexRight) ) {
+                    final Integer temp = integerPGAS.read(upperIndex);
+                    integerPGAS.write(upperIndex, integerPGAS.read(lowerIndexRight));
+                    integerPGAS.write(lowerIndexRight, temp);
                     finish = false;  // update local copy
                 }
             }
             // reduce finish by and, then replicate result
-            finish = distArray.andReduce(finish);
+            finish = integerPGAS.andReduce(finish);
         }
     }
 }

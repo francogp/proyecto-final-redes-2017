@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public
-class IntegerDistributedArray
-        implements DistributedArray< Integer > {
+class IntegerPGAS
+        implements PGAS< Integer > {
 
-    private final Integer[]             array;
+    private final Integer[]             memory;
     private final long                  currentLowerIndex;
     private final long                  currentUpperIndex;
-    private final long                  distributedSize;
+    private final long                  pgasSize;
     private final List< Indexes >       indexes;
     private final Middleware< Integer > middleware;
     private final int                   pid;
@@ -20,15 +20,15 @@ class IntegerDistributedArray
     private final int                   size;
 
     public
-    IntegerDistributedArray(
+    IntegerPGAS(
             final int pid,
             final Configs configs
     ) {
         this.pid = pid;
-        distributedSize = configs.getDistributedArraySize();
+        pgasSize = configs.getPgasSize();
         processQuantity = configs.getProcessQuantity();
         //iniciamos el tamaño que debería tener la porción del arreglo correspondiente al proceso distribuido actual
-        long actualSize = distributedSize / processQuantity;
+        long actualSize = pgasSize / processQuantity;
         if ( actualSize > Integer.MAX_VALUE ) {
             throw new IllegalArgumentException("distributed process quantity is too small");
         }
@@ -43,7 +43,7 @@ class IntegerDistributedArray
         }
         // inicializamos lowerIndex y upperIndex para el ultimo caso, donde colocamos el resto, en caso que la division al calcular actualSize no
         // sea equitativa entre todos los procesos distribuidos.
-        actualSize = distributedSize - ( actualSize * ( processQuantity - 1 ) );
+        actualSize = pgasSize - ( actualSize * ( processQuantity - 1 ) );
         upperIndex = ( lowerIndex + actualSize ) - 1;
         indexes.add(new Indexes(lowerIndex, upperIndex, (int) actualSize));
         // inicializamos lowerIndex y upperIndex del proceso actual (a modo de cache)
@@ -51,9 +51,9 @@ class IntegerDistributedArray
         currentUpperIndex = upperIndex(pid);
         // inicializamos el arreglo del proceso actual
         size = indexes.get(pid - 1).getSize();
-        array = new Integer[size];//new Object[size];
+        memory = new Integer[size];
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        this.middleware = new IntegerMiddleware(this);
+        this.middleware = new IntegerMiddleware(this, configs);
     }
 
     @Override
@@ -68,20 +68,20 @@ class IntegerDistributedArray
 
     }
 
+    public
+    long getPgasSize() {
+        return pgasSize;
+    }
+
     @Override
     public synchronized
-    Integer get( final long index ) {
+    Integer read( final long index ) {
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= size ) ) {
             throw new UnsupportedOperationException("not implemented");
         } else {
-            return array[i];
+            return memory[i];
         }
-    }
-
-    public
-    long getDistributedSize() {
-        return distributedSize;
     }
 
     public
@@ -119,7 +119,7 @@ class IntegerDistributedArray
 
     @Override
     public synchronized
-    void set(
+    void write(
             final long index,
             final Integer value
     ) {
@@ -127,19 +127,8 @@ class IntegerDistributedArray
         if ( ( i < 0 ) || ( i >= size ) ) {
             throw new UnsupportedOperationException("not implemented");
         } else {
-            array[i] = value;
+            memory[i] = value;
         }
-    }
-
-    @Override
-    public synchronized
-    void swap(
-            final long index1,
-            final long index2
-    ) {
-        final Integer temp = get(index1);
-        set(index1, get(index2));
-        set(index2, temp);
     }
 
     @Override

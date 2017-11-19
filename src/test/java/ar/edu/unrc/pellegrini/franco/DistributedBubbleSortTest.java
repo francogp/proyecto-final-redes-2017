@@ -1,6 +1,6 @@
 package ar.edu.unrc.pellegrini.franco;
 
-import ar.edu.unrc.pellegrini.franco.distributedapi.DistributedArray;
+import ar.edu.unrc.pellegrini.franco.distributedapi.PGAS;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ class DistributedBubbleSortTest {
         final List< Integer > array = new ArrayList<>();
         array.addAll(List.of(9, 8, 7, 6, 5, 4, 3, 2, 1));
 
-        final DistributedArray< Integer > DistributedArray = new DistributedArray<>() {
+        final PGAS< Integer > PGAS = new PGAS<>() {
             @Override
             public
             boolean andReduce( boolean value ) {
@@ -30,13 +30,7 @@ class DistributedBubbleSortTest {
 
             @Override
             public
-            Integer get( final long index ) {
-                return array.get((int) index);
-            }
-
-            @Override
-            public
-            long getDistributedSize() {
+            long getPgasSize() {
                 return array.size();
             }
 
@@ -66,22 +60,8 @@ class DistributedBubbleSortTest {
 
             @Override
             public
-            void set(
-                    final long index,
-                    final Integer value
-            ) {
-                array.set((int) index, value);
-            }
-
-            @Override
-            public
-            void swap(
-                    final long index1,
-                    final long index2
-            ) {
-                final Integer temp = array.get((int) index1);
-                array.set((int) index1, array.get((int) index2));
-                array.set((int) index2, temp);
+            Integer read( final long index ) {
+                return array.get((int) index);
             }
 
             @Override
@@ -95,9 +75,18 @@ class DistributedBubbleSortTest {
             long upperIndex() {
                 return array.size();
             }
+
+            @Override
+            public
+            void write(
+                    final long index,
+                    final Integer value
+            ) {
+                array.set((int) index, value);
+            }
         };
 
-        DistributedBubbleSort.bubbleSort(DistributedArray, 0, array.size() - 1);
+        DistributedBubbleSort.bubbleSort(PGAS, 0, array.size() - 1);
 
         assertThat(array, is(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9)));
     }

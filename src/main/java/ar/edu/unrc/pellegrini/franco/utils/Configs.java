@@ -13,16 +13,16 @@ import java.util.Map;
 
 public
 class Configs {
-    private final long                distributedArraySize;
     private final Map< Long, String > hosts;
+    private final long                pgasSize;
     private final int                 processQuantity;
 
     public
     Configs(
-            int distributedArraySize,
+            int pgasSize,
             int processQuantity
     ) {
-        this.distributedArraySize = distributedArraySize;
+        this.pgasSize = pgasSize;
         this.processQuantity = processQuantity;
         hosts = new HashMap<>();
     }
@@ -31,7 +31,7 @@ class Configs {
      * JSON file Format:
      * <pre>{@code
      * {
-     *   "distributedArraySize": <size (Long)>,
+     *   "pgasSize": <size (Long)>,
      *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc]
      * }
      * }</pre>
@@ -47,7 +47,7 @@ class Configs {
      * JSON file Format:
      * <pre>{@code
      * {
-     *   "distributedArraySize": <size (Long)>,
+     *   "pgasSize": <size (Long)>,
      *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc]
      * }
      * }</pre>
@@ -60,7 +60,7 @@ class Configs {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
-            distributedArraySize = (long) jsonObject.get("distributedArraySize");
+            pgasSize = (long) jsonObject.get("pgasSize");
             JSONArray hostsInJSON = (JSONArray) jsonObject.get("hosts");
             if ( hostsInJSON.isEmpty() ) {
                 throw new IllegalArgumentException("wrong host quantity in config file \"" + configFilePath + "\".");
@@ -80,13 +80,13 @@ class Configs {
     }
 
     public
-    long getDistributedArraySize() {
-        return distributedArraySize;
+    Map< Long, String > getHosts() {
+        return hosts;
     }
 
     public
-    Map< Long, String > getHosts() {
-        return hosts;
+    long getPgasSize() {
+        return pgasSize;
     }
 
     public

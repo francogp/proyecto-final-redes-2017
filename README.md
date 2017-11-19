@@ -103,10 +103,13 @@ Algorithms and Systems. Cambridge University Press. ISBN-13:
 Para forzar un arreglo distribuido mas grande de lo que
 normalmente soportaría un arreglo de java (el cual soporta Integer.MAX_VALUE 
 en su capacidad), se decidió utilizar un arreglo distribuido
-con capacidad Long.MAX_VALUE. Cada nodo del PGAS solo soportara 
+con capacidad Long.MAX_VALUE. Cada nodo/host del PGAS solo soportara 
 en su representación interna Integer.MAX_VALUE como capacidad máxima, 
 y la sumatoria de todos los tamaños de dichos nodos es igual al tamaño 
 real representado por el arreglo distribuido. 
+
+Para simplificar la implementación, el PGAS solo soporta enteros en 
+sus elementos.
 
 ### Compilación
 El proyecto esta construido utilizando Gradle (incorporado en el 

@@ -1,21 +1,27 @@
 package ar.edu.unrc.pellegrini.franco.distributedapi;
 
+import ar.edu.unrc.pellegrini.franco.utils.Configs;
+
+import java.util.Map;
+
 public
 class IntegerMiddleware
         implements Middleware< Integer > {
-    private final DistributedArray< Integer > distArray;
+    private final Map< Long, String > hosts;
+    private final PGAS< Integer >     integerPGAS;
 
     public
     IntegerMiddleware(
-            final DistributedArray< Integer > distArray
+            final PGAS< Integer > integerPGAS,
+            final Configs configs
     ) {
-        this.distArray = distArray;
+        this.integerPGAS = integerPGAS;
+        this.hosts = configs.getHosts();
     }
 
-    @Override
     public
-    void get( final long index ) {
-
+    String getHostByPid( long pid ) {
+        return hosts.get(pid);
     }
 
     @Override
@@ -32,15 +38,5 @@ class IntegerMiddleware
     ) {
 
     }
-
-    @Override
-    public
-    void set(
-            final long index,
-            final Integer value
-    ) {
-
-    }
-
 
 }
