@@ -8,7 +8,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class BubbleSortPGASTest {
+class DistributedBubbleSortTest {
     @Test
     void bubbleSort() {
         List< Integer > array = new ArrayList<>();
@@ -60,7 +60,7 @@ class BubbleSortPGASTest {
             }
         };
 
-        BubbleSortPGAS.bubbleSort(distributedArray, 0, array.size() - 1);
+        DistributedBubbleSort.bubbleSort(distributedArray, 0, array.size() - 1);
 
         assertThat(array, is(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9)));
     }

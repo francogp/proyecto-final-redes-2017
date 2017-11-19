@@ -1,8 +1,14 @@
 package ar.edu.unrc.pellegrini.franco;
 
-public
-class BubbleSortPGAS {
+import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 
+public
+class DistributedBubbleSort {
+
+    public static final String ARG_ARRAY_SIZE       = "arraySize";
+    public static final String ARG_PID              = "pid";
+    public static final String ARG_PROCESS_QUANTITY = "processQuantity";
+    private static int distributedArraySize;
     private static int pid;
     private static int processQuantity;
 
@@ -25,16 +31,23 @@ class BubbleSortPGAS {
     }
 
     private static
-    void init() {
-        processQuantity = 5;
-        pid = 3;
+    void init( final String[] args ) {
+        ArgumentLoader arguments = new ArgumentLoader(true);
+        arguments.addValidArg(ARG_PROCESS_QUANTITY);
+        arguments.addValidArg(ARG_ARRAY_SIZE);
+        arguments.addValidArg(ARG_PID);
+
+        arguments.loadArguments(args);
+        processQuantity = arguments.parseInteger(ARG_PROCESS_QUANTITY);
+        distributedArraySize = arguments.parseInteger(ARG_ARRAY_SIZE);
+        pid = arguments.parseInteger(ARG_PID);
     }
 
     public static
     void main( String[] args ) {
-        init();
+        init(args);
         Middleware< Integer >       middleware = new MyMiddleware<>(pid, processQuantity);
-        DistributedArray< Integer > dArray     = new MyDistributedArray<>(middleware, 100);
+        DistributedArray< Integer > dArray     = new MyDistributedArray<>(middleware, distributedArraySize);
         boolean                     finish     = false;
 
         while ( !finish ) {
