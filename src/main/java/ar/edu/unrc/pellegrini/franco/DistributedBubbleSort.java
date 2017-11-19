@@ -1,16 +1,22 @@
 package ar.edu.unrc.pellegrini.franco;
 
+import ar.edu.unrc.pellegrini.franco.distributedapi.DistributedArray;
+import ar.edu.unrc.pellegrini.franco.distributedapi.IntegerDistributedArray;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
+import ar.edu.unrc.pellegrini.franco.utils.Configs;
 
-public
+public final
 class DistributedBubbleSort {
 
-    public static final String ARG_ARRAY_SIZE       = "arraySize";
-    public static final String ARG_PID              = "pid";
-    public static final String ARG_PROCESS_QUANTITY = "processQuantity";
-    private static int distributedArraySize;
-    private static int pid;
-    private static int processQuantity;
+    public static final String ARG_CONFIG_FILE = "configFile";
+    public static final String ARG_PID         = "pid";
+    private static Configs configFile;
+    private static long    distributedArraySize;
+    private static int     pid;
+    private static int     processQuantity;
+
+    private
+    DistributedBubbleSort() {}
 
     /**
      * BubbleSort clásico
@@ -26,7 +32,7 @@ class DistributedBubbleSort {
             final long upperIndex
     ) {
         boolean swapped = true;
-        for ( long i = upperIndex; swapped && i >= lowerIndex; i-- ) {
+        for ( long i = upperIndex; swapped && ( i >= lowerIndex ); i-- ) {
             swapped = false;
             for ( int j = 0; j < i; j++ ) {
                 if ( distArray.get(j) > distArray.get(j + 1) ) {
@@ -38,33 +44,30 @@ class DistributedBubbleSort {
     }
 
     private static
-    void init( final String[] args ) {
-        ArgumentLoader arguments = new ArgumentLoader(true);
-        arguments.addValidArg(ARG_PROCESS_QUANTITY);
-        arguments.addValidArg(ARG_ARRAY_SIZE);
+    void init( final String... args ) {
+        final ArgumentLoader arguments = new ArgumentLoader(true);
         arguments.addValidArg(ARG_PID);
+        arguments.addValidArg(ARG_CONFIG_FILE);
 
         arguments.loadArguments(args);
-        processQuantity = arguments.parseInteger(ARG_PROCESS_QUANTITY);
-        distributedArraySize = arguments.parseInteger(ARG_ARRAY_SIZE);
         pid = arguments.parseInteger(ARG_PID);
+        configFile = new Configs(arguments.parseString(ARG_CONFIG_FILE));
     }
 
     public static
-    void main( String[] args ) {
+    void main( final String... args ) {
         init(args);
-        Middleware< Integer >       middleware = new MyMiddleware<>(pid, processQuantity);
-        DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, distributedArraySize);
-        boolean                     finish     = false;
+        final DistributedArray< Integer > distArray = new IntegerDistributedArray(pid, configFile);
+        boolean                           finish    = false;
 
         while ( !finish ) {
             finish = true;
-            final long upperIndex = distArray.upperIndex(pid);
-            final long lowerIndex = distArray.lowerIndex(pid);
+            final long upperIndex = distArray.upperIndex();
+            final long lowerIndex = distArray.lowerIndex();
 
             // sort local block
             bubbleSort(distArray, lowerIndex, upperIndex);
-            middleware.barrier();
+            distArray.barrier();
 
             if ( !distArray.imLast() ) {
                 final long lowerIndexRight = distArray.lowerIndex(pid + 1);
@@ -74,7 +77,7 @@ class DistributedBubbleSort {
                 }
             }
             // reduce finish by and, then replicate result
-            finish = middleware.andReduce(finish);
+            finish = distArray.andReduce(finish);
         }
     }
 }

@@ -57,7 +57,7 @@ class ArgumentLoader {
     }
 
     public
-    void loadArguments( final String[] args ) {
+    void loadArguments( final String... args ) {
         for ( final String arg : args ) {
             if ( arg.charAt(0) == '-' ) {
                 final String flag = arg.substring(1);

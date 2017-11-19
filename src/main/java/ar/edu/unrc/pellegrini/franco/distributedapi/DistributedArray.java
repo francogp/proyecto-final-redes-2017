@@ -1,7 +1,11 @@
-package ar.edu.unrc.pellegrini.franco;
+package ar.edu.unrc.pellegrini.franco.distributedapi;
 
 public
 interface DistributedArray< I > {
+
+    boolean andReduce( final boolean value );
+
+    void barrier();
 
     /**
      * Obtiene el valor en {@code index} del arreglo distribuido
@@ -15,7 +19,7 @@ interface DistributedArray< I > {
     /**
      * @return tamaño virtual del arreglo distribuido
      */
-    long getRealSize();
+    long getDistributedSize();
 
     /**
      * @return tamaño real del arreglo en el proceso actual

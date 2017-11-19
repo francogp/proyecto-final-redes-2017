@@ -1,45 +1,51 @@
 package ar.edu.unrc.pellegrini.franco;
 
+import ar.edu.unrc.pellegrini.franco.distributedapi.DistributedArray;
+import ar.edu.unrc.pellegrini.franco.distributedapi.IntegerDistributedArray;
+import ar.edu.unrc.pellegrini.franco.utils.Configs;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MyDistributedArrayTest {
+class IntegerDistributedArrayTest {
 
     @Test
     void getRealSize() {
-        Middleware< Integer >       middleware = new MyMiddleware<>(1, 5);
-        DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, 100);
-        assertThat(distArray.getRealSize(), is(100L));
+        final Configs                     configs   = new Configs(100, 5);
+        final DistributedArray< Integer > distArray = new IntegerDistributedArray(1, configs);
+        assertThat(distArray.getDistributedSize(), is(100L));
     }
 
     @Test
     void getSize() {
-        Middleware< Integer >       middleware = new MyMiddleware<>(1, 3);
-        DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, 10);
+        Configs configs = new Configs(10, 3);
+
+        DistributedArray< Integer > distArray = new IntegerDistributedArray(1, configs);
         assertThat(distArray.getSize(), is(3));
 
-        middleware = new MyMiddleware<>(3, 3);
-        distArray = new MyDistributedArray<>(Integer.class, middleware, 10);
+        configs = new Configs(10, 3);
+        distArray = new IntegerDistributedArray(3, configs);
         assertThat(distArray.getSize(), is(4));
     }
 
     @Test
     void imLast() {
-        Middleware< Integer >       middleware = new MyMiddleware<>(1, 5);
-        DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, 100);
+        Configs configs = new Configs(100, 5);
+
+        DistributedArray< Integer > distArray = new IntegerDistributedArray(1, configs);
         assertThat(distArray.imLast(), is(false));
 
-        middleware = new MyMiddleware<>(5, 5);
-        distArray = new MyDistributedArray<>(Integer.class, middleware, 100);
+        configs = new Configs(100, 5);
+        distArray = new IntegerDistributedArray(5, configs);
         assertThat(distArray.imLast(), is(true));
     }
 
     @Test
     void lowerIndex() {
-        Middleware< Integer >       middleware = new MyMiddleware<>(1, 5);
-        DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, 100);
+        Configs configs = new Configs(100, 5);
+
+        DistributedArray< Integer > distArray = new IntegerDistributedArray(1, configs);
 
         assertThat(distArray.lowerIndex(1), is(0L));
         assertThat(distArray.lowerIndex(2), is(20L));
@@ -47,8 +53,8 @@ class MyDistributedArrayTest {
         assertThat(distArray.lowerIndex(4), is(60L));
         assertThat(distArray.lowerIndex(5), is(80L));
 
-        middleware = new MyMiddleware<>(1, 3);
-        distArray = new MyDistributedArray<>(Integer.class, middleware, 10);
+        configs = new Configs(10, 3);
+        distArray = new IntegerDistributedArray(1, configs);
 
         assertThat(distArray.lowerIndex(1), is(0L));
         assertThat(distArray.lowerIndex(2), is(3L));
@@ -57,9 +63,9 @@ class MyDistributedArrayTest {
 
     @Test
     void setAndGet() {
-        for ( int pid = 1; pid <= 3; pid++ ) {
-            Middleware< Integer >       middleware = new MyMiddleware<>(pid, 3);
-            DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, 10);
+        final Configs configs = new Configs(10, 3);
+        for ( int pid = 1; pid <= configs.getProcessQuantity(); pid++ ) {
+            final DistributedArray< Integer > distArray = new IntegerDistributedArray(pid, configs);
             for ( long i = distArray.lowerIndex(); i <= distArray.upperIndex(); i++ ) {
                 distArray.set(i, (int) i);
                 assertThat(distArray.get(i), is((int) i));
@@ -69,9 +75,9 @@ class MyDistributedArrayTest {
 
     @Test
     void swap() {
+        final Configs configs = new Configs(10, 3);
         for ( int pid = 1; pid <= 3; pid++ ) {
-            Middleware< Integer >       middleware = new MyMiddleware<>(pid, 3);
-            DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, 10);
+            final DistributedArray< Integer > distArray = new IntegerDistributedArray(pid, configs);
             for ( long i = distArray.lowerIndex(); i <= distArray.upperIndex(); i++ ) {
                 distArray.set(i, (int) i);
             }
@@ -83,8 +89,9 @@ class MyDistributedArrayTest {
 
     @Test
     void upperIndex() {
-        Middleware< Integer >       middleware = new MyMiddleware<>(1, 5);
-        DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, 100);
+        Configs configs = new Configs(100, 5);
+
+        DistributedArray< Integer > distArray = new IntegerDistributedArray(1, configs);
 
         assertThat(distArray.upperIndex(1), is(19L));
         assertThat(distArray.upperIndex(2), is(39L));
@@ -92,8 +99,8 @@ class MyDistributedArrayTest {
         assertThat(distArray.upperIndex(4), is(79L));
         assertThat(distArray.upperIndex(5), is(99L));
 
-        middleware = new MyMiddleware<>(1, 3);
-        distArray = new MyDistributedArray<>(Integer.class, middleware, 10);
+        configs = new Configs(10, 3);
+        distArray = new IntegerDistributedArray(1, configs);
 
         assertThat(distArray.upperIndex(1), is(2L));
         assertThat(distArray.upperIndex(2), is(5L));

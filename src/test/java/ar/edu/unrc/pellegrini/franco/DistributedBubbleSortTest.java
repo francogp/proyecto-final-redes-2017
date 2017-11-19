@@ -1,5 +1,6 @@
 package ar.edu.unrc.pellegrini.franco;
 
+import ar.edu.unrc.pellegrini.franco.distributedapi.DistributedArray;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -11,19 +12,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class DistributedBubbleSortTest {
     @Test
     void bubbleSort() {
-        List< Integer > array = new ArrayList<>();
+        final List< Integer > array = new ArrayList<>();
         array.addAll(List.of(9, 8, 7, 6, 5, 4, 3, 2, 1));
 
-        DistributedArray< Integer > DistributedArray = new DistributedArray<>() {
+        final DistributedArray< Integer > DistributedArray = new DistributedArray<>() {
             @Override
             public
-            Integer get( long index ) {
+            boolean andReduce( boolean value ) {
+                return false;
+            }
+
+            @Override
+            public
+            void barrier() {
+
+            }
+
+            @Override
+            public
+            Integer get( final long index ) {
                 return array.get((int) index);
             }
 
             @Override
             public
-            long getRealSize() {
+            long getDistributedSize() {
                 return array.size();
             }
 
@@ -41,7 +54,7 @@ class DistributedBubbleSortTest {
 
             @Override
             public
-            long lowerIndex( int pid ) {
+            long lowerIndex( final int pid ) {
                 return 0;
             }
 
@@ -54,8 +67,8 @@ class DistributedBubbleSortTest {
             @Override
             public
             void set(
-                    long index,
-                    Integer value
+                    final long index,
+                    final Integer value
             ) {
                 array.set((int) index, value);
             }
@@ -63,17 +76,17 @@ class DistributedBubbleSortTest {
             @Override
             public
             void swap(
-                    long index1,
-                    long index2
+                    final long index1,
+                    final long index2
             ) {
-                Integer temp = array.get((int) index1);
+                final Integer temp = array.get((int) index1);
                 array.set((int) index1, array.get((int) index2));
                 array.set((int) index2, temp);
             }
 
             @Override
             public
-            long upperIndex( int pid ) {
+            long upperIndex( final int pid ) {
                 return array.size();
             }
 

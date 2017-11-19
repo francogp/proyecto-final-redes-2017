@@ -1,66 +1,78 @@
-package ar.edu.unrc.pellegrini.franco;
+package ar.edu.unrc.pellegrini.franco.distributedapi;
 
-import java.lang.reflect.Array;
+import ar.edu.unrc.pellegrini.franco.utils.Configs;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public
-class MyDistributedArray< I >
-        implements DistributedArray< I > {
+class IntegerDistributedArray
+        implements DistributedArray< Integer > {
 
-    private final I[]             array;
-    private final long            currentLowerIndex;
-    private final long            currentUpperIndex;
-    private final List< Indexes > indexes;
-    private final Middleware< I > middleware;
-    private final int             pid;
-    private final long            realSize;
-    private final int             size;
+    private final Integer[]             array;
+    private final long                  currentLowerIndex;
+    private final long                  currentUpperIndex;
+    private final long                  distributedSize;
+    private final List< Indexes >       indexes;
+    private final Middleware< Integer > middleware;
+    private final int                   pid;
+    private final int                   processQuantity;
+    private final int                   size;
 
     public
-    MyDistributedArray(
-            final Class< I > c,
-            final Middleware< I > middleware,
-            final long realSize
+    IntegerDistributedArray(
+            final int pid,
+            final Configs configs
     ) {
-        this.middleware = middleware;
-        this.pid = middleware.getPid();
-        this.realSize = realSize;
-        final int processQuantity = middleware.getProcessQuantity();
+        this.pid = pid;
+        distributedSize = configs.getDistributedArraySize();
+        processQuantity = configs.getProcessQuantity();
         //iniciamos el tamaño que debería tener la porción del arreglo correspondiente al proceso distribuido actual
-        long actualSize = realSize / processQuantity;
+        long actualSize = distributedSize / processQuantity;
         if ( actualSize > Integer.MAX_VALUE ) {
-            throw new IllegalArgumentException("middleware.getProcessQuantity() is too small");
+            throw new IllegalArgumentException("distributed process quantity is too small");
         }
         // inicializamos los indices lowerIndex y upperIndex
         indexes = new ArrayList<>(processQuantity);
         long lowerIndex = 0;
         long upperIndex;
-        for ( int i = 0; i < processQuantity - 1; i++ ) {
-            upperIndex = lowerIndex + actualSize - 1;
+        for ( int i = 0; i < ( processQuantity - 1 ); i++ ) {
+            upperIndex = ( lowerIndex + actualSize ) - 1;
             indexes.add(new Indexes(lowerIndex, upperIndex, (int) actualSize));
             lowerIndex = upperIndex + 1;
         }
         // inicializamos lowerIndex y upperIndex para el ultimo caso, donde colocamos el resto, en caso que la division al calcular actualSize no
         // sea equitativa entre todos los procesos distribuidos.
-        actualSize = realSize - ( actualSize * ( processQuantity - 1 ) );
-        upperIndex = lowerIndex + actualSize - 1;
+        actualSize = distributedSize - ( actualSize * ( processQuantity - 1 ) );
+        upperIndex = ( lowerIndex + actualSize ) - 1;
         indexes.add(new Indexes(lowerIndex, upperIndex, (int) actualSize));
         // inicializamos lowerIndex y upperIndex del proceso actual (a modo de cache)
         currentLowerIndex = lowerIndex(pid);
         currentUpperIndex = upperIndex(pid);
         // inicializamos el arreglo del proceso actual
         size = indexes.get(pid - 1).getSize();
-        array = (I[]) Array.newInstance(c, size);//new Object[size];
+        array = new Integer[size];//new Object[size];
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        middleware.setDistArray(this);
+        this.middleware = new IntegerMiddleware(this);
+    }
+
+    @Override
+    public
+    boolean andReduce( boolean value ) {
+        return false;
+    }
+
+    @Override
+    public
+    void barrier() {
+
     }
 
     @Override
     public synchronized
-    I get( final long index ) {
-        int i = (int) ( index - currentLowerIndex );
-        if ( i < 0 || i >= size ) {
+    Integer get( final long index ) {
+        final int i = (int) ( index - currentLowerIndex );
+        if ( ( i < 0 ) || ( i >= size ) ) {
             throw new UnsupportedOperationException("not implemented");
         } else {
             return array[i];
@@ -68,8 +80,18 @@ class MyDistributedArray< I >
     }
 
     public
-    long getRealSize() {
-        return realSize;
+    long getDistributedSize() {
+        return distributedSize;
+    }
+
+    public
+    int getPid() {
+        return pid;
+    }
+
+    public
+    int getProcessQuantity() {
+        return processQuantity;
     }
 
     public
@@ -80,7 +102,7 @@ class MyDistributedArray< I >
     @Override
     public
     boolean imLast() {
-        return middleware.imLast();
+        return pid == processQuantity;
     }
 
     @Override
@@ -99,10 +121,10 @@ class MyDistributedArray< I >
     public synchronized
     void set(
             final long index,
-            final I value
+            final Integer value
     ) {
-        int i = (int) ( index - currentLowerIndex );
-        if ( i < 0 || i >= size ) {
+        final int i = (int) ( index - currentLowerIndex );
+        if ( ( i < 0 ) || ( i >= size ) ) {
             throw new UnsupportedOperationException("not implemented");
         } else {
             array[i] = value;
@@ -112,10 +134,10 @@ class MyDistributedArray< I >
     @Override
     public synchronized
     void swap(
-            long index1,
-            long index2
+            final long index1,
+            final long index2
     ) {
-        I temp = get(index1);
+        final Integer temp = get(index1);
         set(index1, get(index2));
         set(index2, temp);
     }
@@ -132,7 +154,7 @@ class MyDistributedArray< I >
         return currentUpperIndex;
     }
 
-    private
+    private static
     class Indexes {
         private final long loweIndex;
         private final int  size;
