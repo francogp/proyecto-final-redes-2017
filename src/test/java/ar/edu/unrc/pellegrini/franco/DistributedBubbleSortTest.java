@@ -14,11 +14,23 @@ class DistributedBubbleSortTest {
         List< Integer > array = new ArrayList<>();
         array.addAll(List.of(9, 8, 7, 6, 5, 4, 3, 2, 1));
 
-        DistributedArray< Integer > distributedArray = new DistributedArray<>() {
+        DistributedArray< Integer > DistributedArray = new DistributedArray<>() {
             @Override
             public
             Integer get( long index ) {
                 return array.get((int) index);
+            }
+
+            @Override
+            public
+            long getRealSize() {
+                return array.size();
+            }
+
+            @Override
+            public
+            int getSize() {
+                return array.size();
             }
 
             @Override
@@ -30,6 +42,12 @@ class DistributedBubbleSortTest {
             @Override
             public
             long lowerIndex( int pid ) {
+                return 0;
+            }
+
+            @Override
+            public
+            long lowerIndex() {
                 return 0;
             }
 
@@ -58,9 +76,15 @@ class DistributedBubbleSortTest {
             long upperIndex( int pid ) {
                 return array.size();
             }
+
+            @Override
+            public
+            long upperIndex() {
+                return array.size();
+            }
         };
 
-        DistributedBubbleSort.bubbleSort(distributedArray, 0, array.size() - 1);
+        DistributedBubbleSort.bubbleSort(DistributedArray, 0, array.size() - 1);
 
         assertThat(array, is(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9)));
     }

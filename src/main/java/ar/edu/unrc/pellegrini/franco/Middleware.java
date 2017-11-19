@@ -8,7 +8,13 @@ interface Middleware< I > {
 
     void get( final long index );
 
+    DistributedArray< I > getDistArray();
+
+    void setDistArray( DistributedArray< I > distArray );
+
     int getPid();
+
+    int getProcessQuantity();
 
     boolean imLast();
 
@@ -23,7 +29,5 @@ interface Middleware< I > {
             final long index,
             final I value
     );
-
-    int getProcessQuantity();
 }
 

@@ -1,5 +1,6 @@
 package ar.edu.unrc.pellegrini.franco;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,13 +8,18 @@ public
 class MyDistributedArray< I >
         implements DistributedArray< I > {
 
+    private final I[]             array;
+    private final long            currentLowerIndex;
+    private final long            currentUpperIndex;
     private final List< Indexes > indexes;
     private final Middleware< I > middleware;
     private final int             pid;
     private final long            realSize;
+    private final int             size;
 
     public
     MyDistributedArray(
+            final Class< I > c,
             final Middleware< I > middleware,
             final long realSize
     ) {
@@ -21,28 +27,54 @@ class MyDistributedArray< I >
         this.pid = middleware.getPid();
         this.realSize = realSize;
         final int processQuantity = middleware.getProcessQuantity();
-        long      actualSize      = realSize / processQuantity;
+        //iniciamos el tamaño que debería tener la porción del arreglo correspondiente al proceso distribuido actual
+        long actualSize = realSize / processQuantity;
         if ( actualSize > Integer.MAX_VALUE ) {
             throw new IllegalArgumentException("middleware.getProcessQuantity() is too small");
         }
+        // inicializamos los indices lowerIndex y upperIndex
         indexes = new ArrayList<>(processQuantity);
-        long lastLowerIndex = 0;
+        long lowerIndex = 0;
+        long upperIndex;
         for ( int i = 0; i < processQuantity - 1; i++ ) {
-            long lowerIndex = lastLowerIndex;
-            long upperIndex = lowerIndex + actualSize - 1;
+            upperIndex = lowerIndex + actualSize - 1;
             indexes.add(new Indexes(lowerIndex, upperIndex, (int) actualSize));
-            lastLowerIndex = upperIndex + 1;
+            lowerIndex = upperIndex + 1;
         }
-        long lowerIndex = lastLowerIndex;
-        actualSize = realSize - ( actualSize * ( processQuantity - 1 ) ) - 1;
-        long upperIndex = lowerIndex + actualSize;
+        // inicializamos lowerIndex y upperIndex para el ultimo caso, donde colocamos el resto, en caso que la division al calcular actualSize no
+        // sea equitativa entre todos los procesos distribuidos.
+        actualSize = realSize - ( actualSize * ( processQuantity - 1 ) );
+        upperIndex = lowerIndex + actualSize - 1;
         indexes.add(new Indexes(lowerIndex, upperIndex, (int) actualSize));
+        // inicializamos lowerIndex y upperIndex del proceso actual (a modo de cache)
+        currentLowerIndex = lowerIndex(pid);
+        currentUpperIndex = upperIndex(pid);
+        // inicializamos el arreglo del proceso actual
+        size = indexes.get(pid - 1).getSize();
+        array = (I[]) Array.newInstance(c, size);//new Object[size];
+        // indicamos al middleware quien es el arreglo distribuido a utilizar
+        middleware.setDistArray(this);
     }
 
     @Override
-    public
+    public synchronized
     I get( final long index ) {
-        return null;
+        int i = (int) ( index - currentLowerIndex );
+        if ( i < 0 || i >= size ) {
+            throw new UnsupportedOperationException("not implemented");
+        } else {
+            return array[i];
+        }
+    }
+
+    public
+    long getRealSize() {
+        return realSize;
+    }
+
+    public
+    int getSize() {
+        return size;
     }
 
     @Override
@@ -59,20 +91,33 @@ class MyDistributedArray< I >
 
     @Override
     public
+    long lowerIndex() {
+        return currentLowerIndex;
+    }
+
+    @Override
+    public synchronized
     void set(
             final long index,
             final I value
     ) {
-
+        int i = (int) ( index - currentLowerIndex );
+        if ( i < 0 || i >= size ) {
+            throw new UnsupportedOperationException("not implemented");
+        } else {
+            array[i] = value;
+        }
     }
 
     @Override
-    public
+    public synchronized
     void swap(
             long index1,
             long index2
     ) {
-
+        I temp = get(index1);
+        set(index1, get(index2));
+        set(index2, temp);
     }
 
     @Override
@@ -81,11 +126,17 @@ class MyDistributedArray< I >
         return indexes.get(pid - 1).getUpperIndex();
     }
 
+    @Override
+    public
+    long upperIndex() {
+        return currentUpperIndex;
+    }
+
     private
     class Indexes {
-        private long loweIndex;
-        private int  size;
-        private long upperIndex;
+        private final long loweIndex;
+        private final int  size;
+        private final long upperIndex;
 
         public
         Indexes(

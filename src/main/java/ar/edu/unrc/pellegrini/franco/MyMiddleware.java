@@ -3,8 +3,9 @@ package ar.edu.unrc.pellegrini.franco;
 public
 class MyMiddleware< I >
         implements Middleware< I > {
-    private final int pid;
-    private final int processQuantity;
+    private final int                   pid;
+    private final int                   processQuantity;
+    private       DistributedArray< I > distArray;
 
     public
     MyMiddleware(
@@ -32,6 +33,18 @@ class MyMiddleware< I >
     public
     void get( final long index ) {
 
+    }
+
+    @Override
+    public
+    DistributedArray< I > getDistArray() {
+        return distArray;
+    }
+
+    @Override
+    public
+    void setDistArray( DistributedArray< I > distArray ) {
+        this.distArray = distArray;
     }
 
     @Override
