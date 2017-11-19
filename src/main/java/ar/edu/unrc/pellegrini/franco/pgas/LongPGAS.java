@@ -6,54 +6,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 public
-class IntegerPGAS
-        implements PGAS< Integer > {
+class LongPGAS
+        implements PGAS< Long > {
 
-    private final long                  currentLowerIndex;
-    private final long                  currentUpperIndex;
-    private final List< Indexes >       indexes;
-    private final Integer[]             memory;
-    private final Middleware< Integer > middleware;
-    private final long                  pgasSize;
-    private final int                   pid;
-    private final int                   processQuantity;
-    private final int                   size;
+    private final long               currentLowerIndex;
+    private final long               currentUpperIndex;
+    private final List< Indexes >    indexes;
+    private final Middleware< Long > middleware;
+    private final int                pid;
+    private final int                processQuantity;
+    private       Long[]             memory;
 
     public
-    IntegerPGAS(
+    LongPGAS(
             final int pid,
-            final Configs configs
+            final Configs< Long > configs
     ) {
-        this.pid = pid;
-        pgasSize = configs.getPgasSize();
         processQuantity = configs.getProcessQuantity();
-        //iniciamos el tamaño que debería tener la porción del arreglo correspondiente al proceso distribuido actual
-        long actualSize = pgasSize / processQuantity;
-        if ( actualSize > Integer.MAX_VALUE ) {
-            throw new IllegalArgumentException("distributed process quantity is too small");
+        if ( pid > processQuantity ) {
+            throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file.");
         }
+        this.pid = pid;
         // inicializamos los indices lowerIndex y upperIndex
         indexes = new ArrayList<>(processQuantity);
         long lowerIndex = 0;
         long upperIndex;
-        for ( int i = 0; i < ( processQuantity - 1 ); i++ ) {
-            upperIndex = ( lowerIndex + actualSize ) - 1;
-            indexes.add(new Indexes(lowerIndex, upperIndex, (int) actualSize));
+        for ( long currentPid = 1L; currentPid <= processQuantity; currentPid++ ) {
+            Configs.HostConfig< Long > integerHostConfig = configs.getHostsConfig(currentPid);
+            List< Long >               toSort            = integerHostConfig.getToSort();
+            if ( pid == currentPid ) {
+                memory = toSort.toArray(new Long[0]);
+            }
+            upperIndex = ( lowerIndex + ( toSort.size() ) ) - 1;
+            indexes.add(new Indexes(lowerIndex, upperIndex, toSort.size()));
             lowerIndex = upperIndex + 1;
         }
-        // inicializamos lowerIndex y upperIndex para el ultimo caso, donde colocamos el resto, en caso que la division al calcular actualSize no
-        // sea equitativa entre todos los procesos distribuidos.
-        actualSize = pgasSize - ( actualSize * ( processQuantity - 1 ) );
-        upperIndex = ( lowerIndex + actualSize ) - 1;
-        indexes.add(new Indexes(lowerIndex, upperIndex, (int) actualSize));
         // inicializamos lowerIndex y upperIndex del proceso actual (a modo de cache)
         currentLowerIndex = lowerIndex(pid);
         currentUpperIndex = upperIndex(pid);
-        // inicializamos el arreglo del proceso actual
-        size = indexes.get(pid - 1).getSize();
-        memory = new Integer[size];
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        this.middleware = new IntegerMiddleware(this, configs);
+        this.middleware = new LongMiddleware(this, configs);
     }
 
     @Override
@@ -69,23 +61,8 @@ class IntegerPGAS
     }
 
     public
-    long getPgasSize() {
-        return pgasSize;
-    }
-
-    public
-    int getPid() {
-        return pid;
-    }
-
-    public
-    int getProcessQuantity() {
-        return processQuantity;
-    }
-
-    public
     int getSize() {
-        return size;
+        return memory.length;
     }
 
     @Override
@@ -108,9 +85,9 @@ class IntegerPGAS
 
     @Override
     public synchronized
-    Integer read( final long index ) {
+    Long read( final long index ) {
         final int i = (int) ( index - currentLowerIndex );
-        if ( ( i < 0 ) || ( i >= size ) ) {
+        if ( ( i < 0 ) || ( i >= memory.length ) ) {
             throw new UnsupportedOperationException("not implemented");
         } else {
             return memory[i];
@@ -124,7 +101,7 @@ class IntegerPGAS
             final long index2
     ) {
         //TODO REVISAR LOS SYNCHRONIZED!
-        final Integer temp = read(index1);
+        final Long temp = read(index1);
         write(index1, read(index2));
         write(index2, temp);
     }
@@ -145,10 +122,10 @@ class IntegerPGAS
     public synchronized
     void write(
             final long index,
-            final Integer value
+            final Long value
     ) {
         final int i = (int) ( index - currentLowerIndex );
-        if ( ( i < 0 ) || ( i >= size ) ) {
+        if ( ( i < 0 ) || ( i >= memory.length ) ) {
             throw new UnsupportedOperationException("not implemented");
         } else {
             memory[i] = value;

@@ -1,9 +1,11 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
+import ar.edu.unrc.pellegrini.franco.utils.Configs;
+
 public
 interface Middleware< I > {
 
-    String getHostByPid( long pid );
+    Configs.HostConfig getHostByPid( long pid );
 
     void receiveFrom( final long pid );
 

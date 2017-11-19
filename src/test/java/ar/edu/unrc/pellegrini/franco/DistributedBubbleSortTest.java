@@ -12,10 +12,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class DistributedBubbleSortTest {
     @Test
     void bubbleSort() {
-        final List< Integer > array = new ArrayList<>();
-        array.addAll(List.of(9, 8, 7, 6, 5, 4, 3, 2, 1));
+        final List< Long > array = new ArrayList<>();
+        array.addAll(List.of(9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L));
 
-        final PGAS< Integer > PGAS = new PGAS<>() {
+        final PGAS< Long > PGAS = new PGAS<>() {
             @Override
             public
             boolean andReduce( boolean value ) {
@@ -26,12 +26,6 @@ class DistributedBubbleSortTest {
             public
             void barrier() {
 
-            }
-
-            @Override
-            public
-            long getPgasSize() {
-                return array.size();
             }
 
             @Override
@@ -60,7 +54,7 @@ class DistributedBubbleSortTest {
 
             @Override
             public
-            Integer read( final long index ) {
+            Long read( final long index ) {
                 return array.get((int) index);
             }
 
@@ -70,7 +64,7 @@ class DistributedBubbleSortTest {
                     long index1,
                     long index2
             ) {
-                Integer temp = array.get((int) index1);
+                Long temp = array.get((int) index1);
                 array.set((int) index1, array.get((int) index2));
                 array.set((int) index2, temp);
             }
@@ -91,7 +85,7 @@ class DistributedBubbleSortTest {
             public
             void write(
                     final long index,
-                    final Integer value
+                    final Long value
             ) {
                 array.set((int) index, value);
             }
@@ -99,7 +93,7 @@ class DistributedBubbleSortTest {
 
         DistributedBubbleSort.bubbleSort(PGAS, 0, array.size() - 1);
 
-        assertThat(array, is(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+        assertThat(array, is(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)));
     }
 
 }

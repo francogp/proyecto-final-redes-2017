@@ -1,31 +1,38 @@
 package ar.edu.unrc.pellegrini.franco;
 
-import ar.edu.unrc.pellegrini.franco.pgas.IntegerPGAS;
+import ar.edu.unrc.pellegrini.franco.pgas.LongPGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 
 public final
-class DistributedBubbleSort {
+class DistributedBubbleSort
+        implements Runnable {
 
     public static final String ARG_CONFIG_FILE = "configFile";
     public static final String ARG_PID         = "pid";
-    private static Configs configFile;
-    private static int     pid;
+    private Configs< Long > configFile;
+    private int             pid;
 
-    private
-    DistributedBubbleSort() {}
+    public
+    DistributedBubbleSort(
+            final int pid,
+            final Configs< Long > configFile
+    ) {
+        this.pid = pid;
+        this.configFile = configFile;
+    }
 
     /**
      * BubbleSort clásico
      *
-     * @param integerPGAS sobre el cual aplicar el algoritmo
+     * @param longPGAS sobre el cual aplicar el algoritmo
      * @param lowerIndex  el índice mas bajo del rango de valores a ordenar
      * @param upperIndex  el índice mas alto del rango de valores a ordenar
      */
     public static
     void bubbleSort(
-            final PGAS< Integer > integerPGAS,
+            final PGAS< Long > longPGAS,
             final long lowerIndex,
             final long upperIndex
     ) {
@@ -33,49 +40,52 @@ class DistributedBubbleSort {
         for ( long i = upperIndex; swapped && ( i >= lowerIndex ); i-- ) {
             swapped = false;
             for ( int j = 0; j < i; j++ ) {
-                if ( integerPGAS.read(j) > integerPGAS.read(j + 1) ) {
+                if ( longPGAS.read(j) > longPGAS.read(j + 1) ) {
                     swapped = true;
-                    integerPGAS.swap(j, j + 1);
+                    longPGAS.swap(j, j + 1);
                 }
             }
         }
     }
 
-    private static
-    void init( final String... args ) {
+    public static
+    void main( final String... args ) {
         final ArgumentLoader arguments = new ArgumentLoader(true);
         arguments.addValidArg(ARG_PID);
         arguments.addValidArg(ARG_CONFIG_FILE);
 
         arguments.loadArguments(args);
-        pid = arguments.parseInteger(ARG_PID);
-        configFile = new Configs(arguments.parseString(ARG_CONFIG_FILE));
+        int             pid        = arguments.parseInteger(ARG_PID);
+        Configs< Long > configFile = new Configs<>(arguments.parseString(ARG_CONFIG_FILE));
+
+        DistributedBubbleSort bubbleSort = new DistributedBubbleSort(pid, configFile);
+        bubbleSort.run();
     }
 
-    public static
-    void main( final String... args ) {
-        init(args);
-        final PGAS< Integer > integerPGAS = new IntegerPGAS(pid, configFile);
-        boolean               finish      = false;
+    @Override
+    public
+    void run() {
+        final PGAS< Long > longPGAS = new LongPGAS(pid, configFile);
+        boolean            finish   = false;
 
         while ( !finish ) {
             finish = true;
-            final long upperIndex = integerPGAS.upperIndex();
-            final long lowerIndex = integerPGAS.lowerIndex();
+            final long upperIndex = longPGAS.upperIndex();
+            final long lowerIndex = longPGAS.lowerIndex();
 
             // sort local block
-            bubbleSort(integerPGAS, lowerIndex, upperIndex);
-            integerPGAS.barrier();
+            bubbleSort(longPGAS, lowerIndex, upperIndex);
+            longPGAS.barrier();
 
-            if ( !integerPGAS.imLast() ) {
-                final long lowerIndexRight = integerPGAS.lowerIndex(pid + 1);
-                if ( integerPGAS.read(upperIndex) > integerPGAS.read(lowerIndexRight) ) {
-                    integerPGAS.swap(upperIndex, lowerIndexRight);
+            if ( !longPGAS.imLast() ) {
+                final long lowerIndexRight = longPGAS.lowerIndex(pid + 1);
+                if ( longPGAS.read(upperIndex) > longPGAS.read(lowerIndexRight) ) {
+                    longPGAS.swap(upperIndex, lowerIndexRight);
                     finish = false;  // update local copy
                 }
             }
             // reduce finish by and, then replicate result
-            finish = integerPGAS.andReduce(finish);
+            finish = longPGAS.andReduce(finish);
         }
     }
 }

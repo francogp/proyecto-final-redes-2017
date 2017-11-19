@@ -1,8 +1,28 @@
 {
-  "pgasSize": 10,
   "hosts": [
-    "localhost:9001",
-    "localhost:9002",
-    "localhost:9003"
+    {
+      "location": "localhost:9001",
+      "toSort": [
+        9,
+        1,
+        2
+      ]
+    },
+    {
+      "location": "localhost:9002",
+      "toSort": [
+        7,
+        8
+      ]
+    },
+    {
+      "location": "localhost:9003",
+      "toSort": [
+        11,
+        2,
+        22,
+        75
+      ]
+    }
   ]
 }

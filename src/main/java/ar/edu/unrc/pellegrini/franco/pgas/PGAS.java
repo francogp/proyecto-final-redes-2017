@@ -7,8 +7,6 @@ interface PGAS< I > {
 
     void barrier();
 
-    long getPgasSize();
-
     int getSize();
 
     boolean imLast();
@@ -19,6 +17,11 @@ interface PGAS< I > {
 
     I read( final long index );
 
+    void swap(
+            final long index1,
+            final long index2
+    );
+
     long upperIndex();
 
     long upperIndex( final int pid );
@@ -26,10 +29,5 @@ interface PGAS< I > {
     void write(
             final long index,
             final I value
-    );
-
-    void swap(
-            final long index1,
-            final long index2
     );
 }

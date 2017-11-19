@@ -8,21 +8,17 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public
-class Configs {
-    private final Map< Long, String > hosts;
-    private final long                pgasSize;
-    private final int                 processQuantity;
+class Configs< I extends Comparable< I > > {
+    private final Map< Long, HostConfig< I > > hosts;
+    private final int                          processQuantity;
 
     public
     Configs(
-            int pgasSize,
             int processQuantity
     ) {
-        this.pgasSize = pgasSize;
         this.processQuantity = processQuantity;
         hosts = new HashMap<>();
     }
@@ -32,7 +28,8 @@ class Configs {
      * <pre>{@code
      * {
      *   "pgasSize": <size (Long)>,
-     *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc]
+     *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc],
+     *   "toSort": [<Integer 1>, <Integer 2>, <Integer 3>, etc]
      * }
      * }</pre>
      *
@@ -48,7 +45,8 @@ class Configs {
      * <pre>{@code
      * {
      *   "pgasSize": <size (Long)>,
-     *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc]
+     *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc],
+     *   "toSort": [<Integer 1>, <Integer 2>, <Integer 3>, etc]
      * }
      * }</pre>
      *
@@ -60,16 +58,30 @@ class Configs {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
-            pgasSize = (long) jsonObject.get("pgasSize");
             JSONArray hostsInJSON = (JSONArray) jsonObject.get("hosts");
             if ( hostsInJSON.isEmpty() ) {
-                throw new IllegalArgumentException("wrong host quantity in config file \"" + configFilePath + "\".");
+                throw new IllegalArgumentException("wrong hosts quantity in config file \"" + configFilePath + "\".");
             }
             processQuantity = hostsInJSON.size();
             hosts = new HashMap<>(processQuantity);
-            long pid = 1;
-            for ( Object host : hostsInJSON ) {
-                hosts.put(pid, host.toString());
+
+            long     pid          = 1;
+            Iterator hostIterator = hostsInJSON.iterator();
+            while ( hostIterator.hasNext() ) {
+                JSONObject host     = (JSONObject) hostIterator.next();
+                String     location = (String) host.get("location");
+
+                JSONArray toSortInJSON = (JSONArray) host.get("toSort");
+                if ( toSortInJSON.isEmpty() ) {
+                    throw new IllegalArgumentException("wrong toSort quantity in config file \"" + configFilePath + "\".");
+                }
+                List< I > toSort         = new ArrayList<>();
+                Iterator  toSortIterator = toSortInJSON.iterator();
+                while ( toSortIterator.hasNext() ) {
+                    I value = (I) toSortIterator.next();
+                    toSort.add(value);
+                }
+                hosts.put(pid, new HostConfig<>(location, toSort));
                 pid++;
             }
         } catch ( IOException e ) {
@@ -80,17 +92,42 @@ class Configs {
     }
 
     public
-    Map< Long, String > getHosts() {
-        return hosts;
-    }
-
-    public
-    long getPgasSize() {
-        return pgasSize;
+    HostConfig< I > getHostsConfig( long pid ) {
+        return hosts.get(pid);
     }
 
     public
     int getProcessQuantity() {
         return processQuantity;
+    }
+
+    public
+    int size() {
+        return hosts.size();
+    }
+
+    public static
+    class HostConfig< I extends Comparable< I > > {
+        private final String    location;
+        private final List< I > toSort;
+
+        public
+        HostConfig(
+                final String location,
+                final List< I > toSort
+        ) {
+            this.location = location;
+            this.toSort = toSort;
+        }
+
+        public
+        String getLocation() {
+            return location;
+        }
+
+        public
+        List< I > getToSort() {
+            return toSort;
+        }
     }
 }

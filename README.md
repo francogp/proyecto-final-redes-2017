@@ -108,7 +108,7 @@ en su representación interna Integer.MAX_VALUE como capacidad máxima,
 y la sumatoria de todos los tamaños de dichos nodos es igual al tamaño 
 real representado por el arreglo distribuido. 
 
-Para simplificar la implementación, el PGAS solo soporta enteros en 
+Para simplificar la implementación, el PGAS solo soporta Long para 
 sus elementos.
 
 ### Compilación
