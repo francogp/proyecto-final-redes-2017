@@ -8,10 +8,17 @@ class DistributedBubbleSort {
     public static final String ARG_ARRAY_SIZE       = "arraySize";
     public static final String ARG_PID              = "pid";
     public static final String ARG_PROCESS_QUANTITY = "processQuantity";
-    private static int DistributedArraySize;
+    private static int distributedArraySize;
     private static int pid;
     private static int processQuantity;
 
+    /**
+     * BubbleSort clásico
+     *
+     * @param distArray  sobre el cual aplicar el algoritmo
+     * @param lowerIndex el índice mas bajo del rango de valores a ordenar
+     * @param upperIndex el índice mas alto del rango de valores a ordenar
+     */
     public static
     void bubbleSort(
             final DistributedArray< Integer > distArray,
@@ -39,7 +46,7 @@ class DistributedBubbleSort {
 
         arguments.loadArguments(args);
         processQuantity = arguments.parseInteger(ARG_PROCESS_QUANTITY);
-        DistributedArraySize = arguments.parseInteger(ARG_ARRAY_SIZE);
+        distributedArraySize = arguments.parseInteger(ARG_ARRAY_SIZE);
         pid = arguments.parseInteger(ARG_PID);
     }
 
@@ -47,7 +54,7 @@ class DistributedBubbleSort {
     void main( String[] args ) {
         init(args);
         Middleware< Integer >       middleware = new MyMiddleware<>(pid, processQuantity);
-        DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, DistributedArraySize);
+        DistributedArray< Integer > distArray  = new MyDistributedArray<>(Integer.class, middleware, distributedArraySize);
         boolean                     finish     = false;
 
         while ( !finish ) {
