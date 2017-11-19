@@ -11,24 +11,22 @@ class DistributedBubbleSort
 
     public static final String ARG_CONFIG_FILE = "configFile";
     public static final String ARG_PID         = "pid";
-    private Configs< Long > configFile;
-    private int             pid;
+    private final PGAS< Long > longPGAS;
 
     public
     DistributedBubbleSort(
             final int pid,
             final Configs< Long > configFile
     ) {
-        this.pid = pid;
-        this.configFile = configFile;
+        longPGAS = new LongPGAS(pid, configFile);
     }
 
     /**
      * BubbleSort clásico
      *
-     * @param longPGAS sobre el cual aplicar el algoritmo
-     * @param lowerIndex  el índice mas bajo del rango de valores a ordenar
-     * @param upperIndex  el índice mas alto del rango de valores a ordenar
+     * @param longPGAS   sobre el cual aplicar el algoritmo
+     * @param lowerIndex el índice mas bajo del rango de valores a ordenar
+     * @param upperIndex el índice mas alto del rango de valores a ordenar
      */
     public static
     void bubbleSort(
@@ -65,8 +63,8 @@ class DistributedBubbleSort
     @Override
     public
     void run() {
-        final PGAS< Long > longPGAS = new LongPGAS(pid, configFile);
-        boolean            finish   = false;
+
+        boolean finish = false;
 
         while ( !finish ) {
             finish = true;
@@ -78,7 +76,7 @@ class DistributedBubbleSort
             longPGAS.barrier();
 
             if ( !longPGAS.imLast() ) {
-                final long lowerIndexRight = longPGAS.lowerIndex(pid + 1);
+                final long lowerIndexRight = longPGAS.lowerIndex(longPGAS.getPid() + 1);
                 if ( longPGAS.read(upperIndex) > longPGAS.read(lowerIndexRight) ) {
                     longPGAS.swap(upperIndex, lowerIndexRight);
                     finish = false;  // update local copy

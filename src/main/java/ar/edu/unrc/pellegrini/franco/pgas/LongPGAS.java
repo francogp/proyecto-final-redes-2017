@@ -16,7 +16,6 @@ class LongPGAS
     private final int                pid;
     private final int                processQuantity;
     private       Long[]             memory;
-
     public
     LongPGAS(
             final int pid,
@@ -58,6 +57,11 @@ class LongPGAS
     public
     void barrier() {
 
+    }
+
+    public
+    int getPid() {
+        return pid;
     }
 
     public

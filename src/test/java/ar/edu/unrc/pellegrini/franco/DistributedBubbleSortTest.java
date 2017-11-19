@@ -30,6 +30,12 @@ class DistributedBubbleSortTest {
 
             @Override
             public
+            int getPid() {
+                return 1;
+            }
+
+            @Override
+            public
             int getSize() {
                 return array.size();
             }

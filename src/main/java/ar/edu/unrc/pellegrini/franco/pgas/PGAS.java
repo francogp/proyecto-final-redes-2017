@@ -7,6 +7,8 @@ interface PGAS< I > {
 
     void barrier();
 
+    int getPid();
+
     int getSize();
 
     boolean imLast();
