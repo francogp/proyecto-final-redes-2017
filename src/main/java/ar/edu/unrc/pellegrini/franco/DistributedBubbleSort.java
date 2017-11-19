@@ -35,9 +35,7 @@ class DistributedBubbleSort {
             for ( int j = 0; j < i; j++ ) {
                 if ( integerPGAS.read(j) > integerPGAS.read(j + 1) ) {
                     swapped = true;
-                    final Integer temp = integerPGAS.read(j);
-                    integerPGAS.write(j, integerPGAS.read(j + 1));
-                    integerPGAS.write(j + 1, temp);
+                    integerPGAS.swap(j, j + 1);
                 }
             }
         }
@@ -72,9 +70,7 @@ class DistributedBubbleSort {
             if ( !integerPGAS.imLast() ) {
                 final long lowerIndexRight = integerPGAS.lowerIndex(pid + 1);
                 if ( integerPGAS.read(upperIndex) > integerPGAS.read(lowerIndexRight) ) {
-                    final Integer temp = integerPGAS.read(upperIndex);
-                    integerPGAS.write(upperIndex, integerPGAS.read(lowerIndexRight));
-                    integerPGAS.write(lowerIndexRight, temp);
+                    integerPGAS.swap(upperIndex, lowerIndexRight);
                     finish = false;  // update local copy
                 }
             }

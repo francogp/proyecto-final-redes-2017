@@ -66,7 +66,18 @@ class DistributedBubbleSortTest {
 
             @Override
             public
-            long upperIndex( final int pid ) {
+            void swap(
+                    long index1,
+                    long index2
+            ) {
+                Integer temp = array.get((int) index1);
+                array.set((int) index1, array.get((int) index2));
+                array.set((int) index2, temp);
+            }
+
+            @Override
+            public
+            long upperIndex( int pid ) {
                 return array.size();
             }
 

@@ -27,4 +27,9 @@ interface PGAS< I > {
             final long index,
             final I value
     );
+
+    void swap(
+            final long index1,
+            final long index2
+    );
 }

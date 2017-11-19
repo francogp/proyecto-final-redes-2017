@@ -72,6 +72,20 @@ class IntegerPGASTest {
     }
 
     @Test
+    void swap() {
+        final Configs configs = new Configs(10, 3);
+        for ( int pid = 1; pid <= 3; pid++ ) {
+            final PGAS< Integer > distArray = new IntegerPGAS(pid, configs);
+            for ( long i = distArray.lowerIndex(); i <= distArray.upperIndex(); i++ ) {
+                distArray.write(i, (int) i);
+            }
+            distArray.swap(distArray.lowerIndex(), distArray.upperIndex());
+            assertThat(distArray.read(distArray.lowerIndex()), is((int) distArray.upperIndex()));
+            assertThat(distArray.read(distArray.upperIndex()), is((int) distArray.lowerIndex()));
+        }
+    }
+
+    @Test
     void upperIndex() {
         Configs configs = new Configs(100, 5);
 

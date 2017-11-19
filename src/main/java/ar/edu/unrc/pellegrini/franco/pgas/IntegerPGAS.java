@@ -9,12 +9,12 @@ public
 class IntegerPGAS
         implements PGAS< Integer > {
 
-    private final Integer[]             memory;
     private final long                  currentLowerIndex;
     private final long                  currentUpperIndex;
-    private final long                  pgasSize;
     private final List< Indexes >       indexes;
+    private final Integer[]             memory;
     private final Middleware< Integer > middleware;
+    private final long                  pgasSize;
     private final int                   pid;
     private final int                   processQuantity;
     private final int                   size;
@@ -73,17 +73,6 @@ class IntegerPGAS
         return pgasSize;
     }
 
-    @Override
-    public synchronized
-    Integer read( final long index ) {
-        final int i = (int) ( index - currentLowerIndex );
-        if ( ( i < 0 ) || ( i >= size ) ) {
-            throw new UnsupportedOperationException("not implemented");
-        } else {
-            return memory[i];
-        }
-    }
-
     public
     int getPid() {
         return pid;
@@ -119,16 +108,25 @@ class IntegerPGAS
 
     @Override
     public synchronized
-    void write(
-            final long index,
-            final Integer value
-    ) {
+    Integer read( final long index ) {
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= size ) ) {
             throw new UnsupportedOperationException("not implemented");
         } else {
-            memory[i] = value;
+            return memory[i];
         }
+    }
+
+    @Override
+    public synchronized
+    void swap(
+            final long index1,
+            final long index2
+    ) {
+        //TODO REVISAR LOS SYNCHRONIZED!
+        final Integer temp = read(index1);
+        write(index1, read(index2));
+        write(index2, temp);
     }
 
     @Override
@@ -141,6 +139,20 @@ class IntegerPGAS
     public
     long upperIndex() {
         return currentUpperIndex;
+    }
+
+    @Override
+    public synchronized
+    void write(
+            final long index,
+            final Integer value
+    ) {
+        final int i = (int) ( index - currentLowerIndex );
+        if ( ( i < 0 ) || ( i >= size ) ) {
+            throw new UnsupportedOperationException("not implemented");
+        } else {
+            memory[i] = value;
+        }
     }
 
     private static
