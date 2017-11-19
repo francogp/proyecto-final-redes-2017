@@ -1,0 +1,17 @@
+{
+  "distributedArraySize": 10,
+  "hosts": [
+    {
+      "pid": 1,
+      "address": "localhost:9001"
+    },
+    {
+      "pid": 2,
+      "address": "localhost:9002"
+    },
+    {
+      "pid": 3,
+      "address": "localhost:9003"
+    }
+  ]
+}
