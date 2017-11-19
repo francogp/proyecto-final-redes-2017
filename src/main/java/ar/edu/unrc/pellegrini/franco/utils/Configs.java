@@ -8,28 +8,25 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public
 class Configs< I extends Comparable< I > > {
     private final Map< Long, HostConfig< I > > hosts;
     private final int                          processQuantity;
 
-    public
-    Configs(
-            int processQuantity
-    ) {
-        this.processQuantity = processQuantity;
-        hosts = new HashMap<>();
-    }
-
     /**
      * JSON file Format:
      * <pre>{@code
      * {
-     *   "pgasSize": <size (Long)>,
-     *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc],
-     *   "toSort": [<Integer 1>, <Integer 2>, <Integer 3>, etc]
+     *   "hosts": [
+     *     {"location":"<host 1 uri>:<port>", "toSort": [<Long 1>, <Long 2>, <Long 3>, etc]} ,
+     *     {"location":"<host 2 uri>:<port>", "toSort": [<Long 4>, <Long 5>, <Long 6>, etc]} ,
+     *     etc
+     *   ]
      * }
      * }</pre>
      *
@@ -44,9 +41,11 @@ class Configs< I extends Comparable< I > > {
      * JSON file Format:
      * <pre>{@code
      * {
-     *   "pgasSize": <size (Long)>,
-     *   "hosts": ["<host 1 uri>:<port>", "<host 2 uri>:<port>", "<host 3 uri>:<port>", etc],
-     *   "toSort": [<Integer 1>, <Integer 2>, <Integer 3>, etc]
+     *   "hosts": [
+     *     {"location":"<host 1 uri>:<port>", "toSort": [<Long 1>, <Long 2>, <Long 3>, etc]} ,
+     *     {"location":"<host 2 uri>:<port>", "toSort": [<Long 4>, <Long 5>, <Long 6>, etc]} ,
+     *     etc
+     *   ]
      * }
      * }</pre>
      *
@@ -65,20 +64,18 @@ class Configs< I extends Comparable< I > > {
             processQuantity = hostsInJSON.size();
             hosts = new HashMap<>(processQuantity);
 
-            long     pid          = 1;
-            Iterator hostIterator = hostsInJSON.iterator();
-            while ( hostIterator.hasNext() ) {
-                JSONObject host     = (JSONObject) hostIterator.next();
+            long pid = 1;
+            for ( Object hostInJSON : hostsInJSON ) {
+                JSONObject host     = (JSONObject) hostInJSON;
                 String     location = (String) host.get("location");
 
                 JSONArray toSortInJSON = (JSONArray) host.get("toSort");
                 if ( toSortInJSON.isEmpty() ) {
                     throw new IllegalArgumentException("wrong toSort quantity in config file \"" + configFilePath + "\".");
                 }
-                List< I > toSort         = new ArrayList<>();
-                Iterator  toSortIterator = toSortInJSON.iterator();
-                while ( toSortIterator.hasNext() ) {
-                    I value = (I) toSortIterator.next();
+                List< I > toSort = new ArrayList<>();
+                for ( Object valueInJSON : toSortInJSON ) {
+                    I value = (I) valueInJSON;
                     toSort.add(value);
                 }
                 hosts.put(pid, new HostConfig<>(location, toSort));
