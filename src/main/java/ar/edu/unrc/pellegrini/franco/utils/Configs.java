@@ -15,6 +15,9 @@ import java.util.Map;
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
 class Configs< I extends Comparable< I > > {
+    public static final String INET_ADDRESS = "inetAddress";
+    public static final String PORT         = "port";
+    public static final String TO_SORT      = "toSort";
     private final Map< Long, HostConfig< I > > hosts;
     private final int                          processQuantity;
 
@@ -23,8 +26,8 @@ class Configs< I extends Comparable< I > > {
      * <pre>{@code
      * {
      *   "hosts": [
-     *     {"location":"<host 1 uri>:<port>", "toSort": [<Long 1>, <Long 2>, <Long 3>, etc]} ,
-     *     {"location":"<host 2 uri>:<port>", "toSort": [<Long 4>, <Long 5>, <Long 6>, etc]} ,
+     *     {"inetAddress":"<host 1 uri>", : "port": <port>, "toSort": [<Long 1>, <Long 2>, <Long 3>, etc]} ,
+     *     {"inetAddress":"<host 2 uri>", : "port": <port>, "toSort": [<Long 4>, <Long 5>, <Long 6>, etc]} ,
      *     etc
      *   ]
      * }
@@ -42,8 +45,8 @@ class Configs< I extends Comparable< I > > {
      * <pre>{@code
      * {
      *   "hosts": [
-     *     {"location":"<host 1 uri>:<port>", "toSort": [<Long 1>, <Long 2>, <Long 3>, etc]} ,
-     *     {"location":"<host 2 uri>:<port>", "toSort": [<Long 4>, <Long 5>, <Long 6>, etc]} ,
+     *     {"inetAddress":"<host 1 uri>", : "port": <port>, "toSort": [<Long 1>, <Long 2>, <Long 3>, etc]} ,
+     *     {"inetAddress":"<host 2 uri>", : "port": <port>, "toSort": [<Long 4>, <Long 5>, <Long 6>, etc]} ,
      *     etc
      *   ]
      * }
@@ -66,10 +69,11 @@ class Configs< I extends Comparable< I > > {
 
             long pid = 1L;
             for ( final Object hostInJSON : hostsInJSON ) {
-                final JSONObject host     = (JSONObject) hostInJSON;
-                final String     location = (String) host.get("location");
+                final JSONObject host        = (JSONObject) hostInJSON;
+                final String     inetAddress = (String) host.get(INET_ADDRESS);
+                final Long       port        = (Long) host.get(PORT);
 
-                final JSONArray toSortInJSON = (JSONArray) host.get("toSort");
+                final JSONArray toSortInJSON = (JSONArray) host.get(TO_SORT);
                 if ( toSortInJSON.isEmpty() ) {
                     throw new IllegalArgumentException("wrong toSort quantity in config file \"" + configFilePath + "\".");
                 }
@@ -79,7 +83,7 @@ class Configs< I extends Comparable< I > > {
                     final I value = (I) valueInJSON;
                     toSort.add(value);
                 }
-                hosts.put(pid, new HostConfig<>(location, toSort));
+                hosts.put(pid, new HostConfig<>(inetAddress, port.intValue(), toSort));
                 pid++;
             }
         } catch ( final FileNotFoundException e ) {
@@ -109,21 +113,29 @@ class Configs< I extends Comparable< I > > {
     @SuppressWarnings( { "ClassWithoutNoArgConstructor", "PublicInnerClass" } )
     public static
     class HostConfig< I extends Comparable< I > > {
-        private final String    location;
+        private final String    inetAddress;
+        private final Integer   port;
         private final List< I > toSort;
 
         public
         HostConfig(
-                final String location,
+                final String inetAddress,
+                final Integer port,
                 final List< I > toSort
         ) {
-            this.location = location;
+            this.inetAddress = inetAddress;
+            this.port = port;
             this.toSort = toSort;
         }
 
         public
-        String getLocation() {
-            return location;
+        String getInetAddress() {
+            return inetAddress;
+        }
+
+        public
+        Integer getPort() {
+            return port;
         }
 
         public

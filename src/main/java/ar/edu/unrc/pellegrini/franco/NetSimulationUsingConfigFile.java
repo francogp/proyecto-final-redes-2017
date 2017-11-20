@@ -8,9 +8,9 @@ import java.util.stream.IntStream;
 import static ar.edu.unrc.pellegrini.franco.DistributedBubbleSort.ARG_CONFIG_FILE;
 
 public final
-class ExperimentRunner {
+class NetSimulationUsingConfigFile {
     private
-    ExperimentRunner() {}
+    NetSimulationUsingConfigFile() {}
 
     public static
     void main( final String... args ) {

@@ -1,7 +1,8 @@
 {
   "hosts": [
     {
-      "location": "localhost:9001",
+      "inetAddress": "localhost",
+      "port": 9001,
       "toSort": [
         9,
         1,
@@ -19,7 +20,8 @@
       ]
     },
     {
-      "location": "localhost:9002",
+      "inetAddress": "localhost",
+      "port": 9002,
       "toSort": [
         7,
         8,
@@ -34,7 +36,8 @@
       ]
     },
     {
-      "location": "localhost:9003",
+      "inetAddress": "localhost",
+      "port": 9002,
       "toSort": [
         11,
         2,

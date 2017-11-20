@@ -20,19 +20,23 @@ class ConfigsTest {
         assertThat(configs.getProcessQuantity(), is(3));
         assertThat(configs.size(), is(configs.getProcessQuantity()));
 
-        HostConfig< Long > host    = configs.getHostsConfig(1L);
-        String             address = "localhost:9001";
-        assertThat(host.getLocation(), is(address));
+        HostConfig< Long > host        = configs.getHostsConfig(1L);
+        String             inetAddress = "localhost";
+        Integer            port        = 9001;
+        assertThat(host.getInetAddress(), is(inetAddress));
+        assertThat(host.getPort(), is(port));
         assertThat(host.getToSort(), is(List.of(9L, 1L, 2L)));
 
         host = configs.getHostsConfig(2L);
-        address = "localhost:9002";
-        assertThat(host.getLocation(), is(address));
+        port = 9002;
+        assertThat(host.getInetAddress(), is(inetAddress));
+        assertThat(host.getPort(), is(port));
         assertThat(host.getToSort(), is(List.of(7L, 8L)));
 
         host = configs.getHostsConfig(3L);
-        address = "localhost:9003";
-        assertThat(host.getLocation(), is(address));
+        port = 9003;
+        assertThat(host.getInetAddress(), is(inetAddress));
+        assertThat(host.getPort(), is(port));
         assertThat(host.getToSort(), is(List.of(11L, 2L, 22L, 75L)));
     }
 }

@@ -25,9 +25,8 @@ class LongPGAS
             final Configs< Long > configs
     ) {
         processQuantity = configs.getProcessQuantity();
-        if ( pid > processQuantity ) {
-            throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file.");
-        }
+        if ( pid <= 0 ) { throw new IllegalArgumentException("pid " + pid + " must be >= 0."); }
+        if ( pid > processQuantity ) { throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file."); }
         this.pid = pid;
         // inicializamos los indices lowerIndex y upperIndex
         indexes = new ArrayList<>(processQuantity);
