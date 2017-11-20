@@ -6,23 +6,48 @@ import java.io.IOException;
 
 public
 interface Middleware< I extends Comparable< I > > {
-    String BARRIER_MSG  = "B";
-    String CONTINUE_MSG = "C";
-    String READ_MSG     = "R";
-    String RESULT_MSG   = "S";
-    String WRITE_MSG    = "W";
 
     void receiveFrom( final int pid );
 
     void sendTo(
             final int pid,
-            final String msg
+            char msgType,
+            final long parameter1,
+            final long parameter2
+    )
+            throws IOException;
+
+    void sendTo(
+            final int pid,
+            char msgType,
+            final long parameter1
+    )
+            throws IOException;
+
+    void sendTo(
+            final int pid,
+            char msgType
     )
             throws IOException;
 
     Message waitFor(
             final int pid,
-            final String msg
+            char msgType,
+            final long parameter1,
+            final long parameter2
+    )
+            throws IOException;
+
+    Message waitFor(
+            final int pid,
+            char msgType,
+            final long parameter1
+    )
+            throws IOException;
+
+    Message waitFor(
+            final int pid,
+            char msgType
     )
             throws IOException;
 

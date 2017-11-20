@@ -13,12 +13,9 @@ class MsgQueueTest {
     void runTest() {
         final StringBuilder output = new StringBuilder();
         final MsgQueue< String > msgQueue = new MsgQueue<>(msg -> {
-            if ( "end".equals(msg) ) {
-                return false;
-            } else {
-                output.append(msg).append('\n');
-                return true;
-            }
+            output.append(msg).append('\n');
+        }, msg -> {
+            return "end".equals(msg);
         });
         final Thread msgQueueThread = new Thread(msgQueue);
         msgQueueThread.start();

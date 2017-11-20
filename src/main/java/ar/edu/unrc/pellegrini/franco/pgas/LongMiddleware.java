@@ -58,22 +58,75 @@ class LongMiddleware
     public
     void sendTo(
             final int pid,
-            final String msg
+            char msgType,
+            final long parameter1,
+            final long parameter2
     )
             throws IOException {
         final Configs.HostConfig< Long > destHost = configs.getHostsConfig(pid);
-        server.sendTo(destHost.getInetAddress(), destHost.getPort(), msg);
+        Message                          msg      = new Message(destHost.getInetAddress(), destHost.getPort(), msgType, parameter1, parameter2);
+        server.send(msg);
+    }
+
+    @Override
+    public
+    void sendTo(
+            int pid,
+            char msgType,
+            long parameter1
+    )
+            throws IOException {
+        sendTo(pid, msgType, parameter1, 0);
+    }
+
+    @Override
+    public
+    void sendTo(
+            int pid,
+            char msgType
+    )
+            throws IOException {
+        sendTo(pid, msgType, 0, 0);
     }
 
     @Override
     public
     Message waitFor(
             final int pid,
-            final String msg
+            char msgType,
+            final long parameter1,
+            final long parameter2
     )
             throws IOException {
         final Configs.HostConfig< Long > destHost = configs.getHostsConfig(pid);
-        server.sendTo(destHost.getInetAddress(), destHost.getPort(), msg);
+        Message                          msg      = new Message(destHost.getInetAddress(), destHost.getPort(), msgType, parameter1, parameter2);
+        server.send(msg);
+        //TODO completar!
+        return null;
+    }
+
+    @Override
+    public
+    Message waitFor(
+            int pid,
+            char msgType,
+            long parameter1
+    )
+            throws IOException {
+        waitFor(pid, msgType, parameter1, 0);
+        //TODO completar!
+        return null;
+    }
+
+    @Override
+    public
+    Message waitFor(
+            int pid,
+            char msgType
+    )
+            throws IOException {
+        waitFor(pid, msgType, 0, 0);
+        //TODO completar!
         return null;
     }
 

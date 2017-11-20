@@ -6,6 +6,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,13 +115,23 @@ class Configs< I extends Comparable< I > > {
     @SuppressWarnings( { "ClassWithoutNoArgConstructor", "PublicInnerClass" } )
     public static
     class HostConfig< I extends Comparable< I > > {
-        private final String    inetAddress;
-        private final Integer   port;
-        private final List< I > toSort;
+        private final InetAddress inetAddress;
+        private final Integer     port;
+        private final List< I >   toSort;
 
         public
         HostConfig(
                 final String inetAddress,
+                final Integer port,
+                final List< I > toSort
+        )
+                throws UnknownHostException {
+            this(InetAddress.getByName(inetAddress), port, toSort);
+        }
+
+        public
+        HostConfig(
+                final InetAddress inetAddress,
                 final Integer port,
                 final List< I > toSort
         ) {
@@ -129,7 +141,7 @@ class Configs< I extends Comparable< I > > {
         }
 
         public
-        String getInetAddress() {
+        InetAddress getInetAddress() {
             return inetAddress;
         }
 

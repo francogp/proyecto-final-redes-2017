@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.Middleware.*;
+import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.*;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
@@ -89,6 +89,7 @@ class LongPGAS
 
     private
     int findPidForIndex( final long index ) {
+        //TODO optimizar
         for ( int pid = 1; pid <= processQuantity; pid++ ) {
             Index indexItem = indexList.get(pid);
             if ( indexItem.loweIndex <= index && indexItem.upperIndex >= index ) {
@@ -133,8 +134,8 @@ class LongPGAS
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.length ) ) {
             final int targetPid = findPidForIndex(index);
-            Message   response  = middleware.waitFor(targetPid, READ_MSG + ":" + index);
-            return response.returnArgumentAsLong(1);
+            Message   response  = middleware.waitFor(targetPid, READ_MSG, index);
+            return response.getParameter2(); //TODO verificar diseño
         } else {
             return memory[i];
         }
@@ -175,7 +176,7 @@ class LongPGAS
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.length ) ) {
             final int targetPid = findPidForIndex(index);
-            middleware.sendTo(targetPid, WRITE_MSG + ":" + index + ":" + value);
+            middleware.sendTo(targetPid, WRITE_MSG, index, value);
         } else {
             memory[i] = value;
         }

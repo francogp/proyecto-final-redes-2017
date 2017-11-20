@@ -1,6 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.utils;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 
@@ -11,19 +12,27 @@ public
 class MsgQueue< M >
         implements Runnable {
 
-    private final Function< M, Boolean >   processMessageFunction;
+    private final Consumer< M >            messageConsumer;
     private final LinkedBlockingQueue< M > queue;
+    private       Function< M, Boolean >   isQueueFinalizationMsg;
     private boolean running = false;
 
     /**
-     * @param processMessageFunction M = message to process, and return true if must continue to process further messages.
+     * @param consumeMessage M = message to process, and return true if must continue to process further messages.
      */
     public
     MsgQueue(
-            final Function< M, Boolean > processMessageFunction
+            final Consumer< M > messageConsumer,
+            final Function< M, Boolean > isQueueFinalizationMsg
     ) {
-        this.processMessageFunction = processMessageFunction;
+        this.messageConsumer = messageConsumer;
+        this.isQueueFinalizationMsg = isQueueFinalizationMsg;
         queue = new LinkedBlockingQueue<>();
+    }
+
+    public static
+    Object endServerMsg() {
+        return null;
     }
 
     public
@@ -44,7 +53,11 @@ class MsgQueue< M >
             running = true;
             while ( running ) {
                 final M message = queue.take();
-                running = processMessageFunction.apply(message);
+                if ( isQueueFinalizationMsg.apply(message) ) {
+                    running = false;
+                } else {
+                    messageConsumer.accept(message);
+                }
             }
         } catch ( final InterruptedException ignored ) {
             //no hacer nada si se interrumpe esperando

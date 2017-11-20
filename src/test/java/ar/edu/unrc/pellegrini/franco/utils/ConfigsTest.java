@@ -4,10 +4,13 @@ import ar.edu.unrc.pellegrini.franco.utils.Configs.HostConfig;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( { "ReuseOfLocalVariable", "ClassWithoutConstructor", "ClassIndependentOfModule" } )
 class ConfigsTest {
@@ -21,8 +24,13 @@ class ConfigsTest {
         assertThat(configs.size(), is(configs.getProcessQuantity()));
 
         HostConfig< Long > host        = configs.getHostsConfig(1);
-        String             inetAddress = "localhost";
-        Integer            port        = 9001;
+        InetAddress        inetAddress = null;
+        try {
+            inetAddress = InetAddress.getByName("localhost");
+        } catch ( UnknownHostException e ) {
+            fail(e);
+        }
+        Integer port = 9001;
         assertThat(host.getInetAddress(), is(inetAddress));
         assertThat(host.getPort(), is(port));
         assertThat(host.getToSort(), is(List.of(9L, 1L, 2L)));

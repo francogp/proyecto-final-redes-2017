@@ -83,7 +83,6 @@ class DistributedBubbleSort
 
                 longPGAS.barrier();
 
-
                 if ( !longPGAS.imLast() ) {
                     final long lowerIndexRight = longPGAS.lowerIndex(longPGAS.getPid() + 1);
                     if ( longPGAS.read(upperIndex) > longPGAS.read(lowerIndexRight) ) {

@@ -5,14 +5,13 @@ import ar.edu.unrc.pellegrini.franco.utils.MsgQueue;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.MSG_TYPE_END;
+import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.MSG_BYTES_LENGHT;
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
@@ -21,7 +20,6 @@ class Server
         implements Runnable {
 
     public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-    final         DatagramPacket      packet;
     private final MsgQueue< Message > msgQueue;
     private final Thread              msgQueueThread;
     private final DatagramSocket      socket;
@@ -30,35 +28,30 @@ class Server
     public
     Server( final int port )
             throws SocketException {
-        this(port, Server::processPGAS);
+        this(port, Server::messageConsumer, Server::isQueueFinalizationMsg);
     }
 
     public
     Server(
             final int port,
-            final Function< Message, Boolean > processMessageFunction
+            final Consumer< Message > messageConsumer,
+            final Function< Message, Boolean > isQueueFinalizationMsg
     )
             throws SocketException {
         socket = new DatagramSocket(port);
-        byte[] buf = new byte[computeWorstMsgBufferSize()];
-        packet = new DatagramPacket(buf, buf.length);
-
-        msgQueue = new MsgQueue<>(processMessageFunction);
+        msgQueue = new MsgQueue<>(messageConsumer, isQueueFinalizationMsg);
         msgQueueThread = new Thread(msgQueue);
         msgQueueThread.start();
     }
 
-    public static
-    int computeWorstMsgBufferSize() {
-        final List< String > messages =
-                List.of("S:" + Long.MAX_VALUE + ':' + Long.MAX_VALUE, "S:" + Long.MIN_VALUE + ':' + Long.MIN_VALUE, "S:" + 0 + ':' + 0, MSG_TYPE_END);
-        return messages.stream().map(msg -> msg.getBytes(DEFAULT_CHARSET).length).max(Integer::compareTo).get();
+    private static
+    Boolean isQueueFinalizationMsg( Message message ) {
+        return message.isEndMessage();
     }
 
     private static
-    Boolean processPGAS( final Message msg ) {
+    void messageConsumer( final Message msg ) {
         System.out.println("Server: " + msg);
-        return !msg.isEndMessage();
     }
 
     public
@@ -76,21 +69,19 @@ class Server
         running = true;
         while ( running ) {
             try {
+                byte[]               buf    = new byte[MSG_BYTES_LENGHT];
+                final DatagramPacket packet = new DatagramPacket(buf, MSG_BYTES_LENGHT);
                 socket.receive(packet);
-                final Message received =
-                        new Message(packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), DEFAULT_CHARSET));
-
+                final Message received = new Message(packet.getAddress(), packet.getPort(), packet.getData());
+                msgQueue.enqueue(received);
                 if ( received.isEndMessage() ) {
                     running = false;
-                } else {
-                    msgQueue.enqueue(received);
                 }
             } catch ( final IOException e ) {
                 getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
             }
         }
         socket.close();
-        msgQueue.enqueue(Message.newEndMessage());
         try {
             msgQueueThread.join();
         } catch ( final InterruptedException e ) {
@@ -99,25 +90,11 @@ class Server
     }
 
     public synchronized
-    void sendTo(
+    void send(
             final Message msg
     )
             throws IOException {
-        final byte[]         buf    = msg.getValue().getBytes(DEFAULT_CHARSET);
-        final DatagramPacket packet = new DatagramPacket(buf, buf.length, msg.getAddress(), msg.getPort());
-        socket.send(packet);
-    }
-
-    public synchronized
-    void sendTo(
-            final String destAddress,
-            final int destPort,
-            final String msg
-    )
-            throws IOException {
-        final InetAddress    address = InetAddress.getByName(destAddress);
-        final byte[]         buf     = msg.getBytes(DEFAULT_CHARSET);
-        final DatagramPacket packet  = new DatagramPacket(buf, buf.length, address, destPort);
+        final DatagramPacket packet = new DatagramPacket(msg.getBytes(), MSG_BYTES_LENGHT, msg.getAddress(), msg.getPort());
         socket.send(packet);
     }
 }
