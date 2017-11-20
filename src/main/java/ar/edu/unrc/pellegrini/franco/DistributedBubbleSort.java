@@ -93,7 +93,7 @@ class DistributedBubbleSort
                 // reduce finish by and, then replicate result
                 finish = longPGAS.andReduce(finish);
             }
-        } catch ( Exception e ) {
+        } catch ( final Exception e ) {
             getLogger(DistributedBubbleSort.class.getName()).log(Level.SEVERE, "Unknown problem", e);
         }
     }

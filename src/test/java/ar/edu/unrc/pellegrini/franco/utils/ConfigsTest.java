@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 @SuppressWarnings( { "ReuseOfLocalVariable", "ClassWithoutConstructor", "ClassIndependentOfModule" } )
 class ConfigsTest {
     @Test
+    final
     void generalConfig() {
         final ClassLoader classLoader = getClass().getClassLoader();
         final File        file        = new File(classLoader.getResource("ar/edu/unrc/pellegrini/franco/utils/configTest.json").getFile());
@@ -27,11 +28,11 @@ class ConfigsTest {
         InetAddress        inetAddress = null;
         try {
             inetAddress = InetAddress.getByName("localhost");
-        } catch ( UnknownHostException e ) {
+        } catch ( final UnknownHostException e ) {
             fail(e);
         }
-        Integer port = 9001;
         assertThat(host.getInetAddress(), is(inetAddress));
+        Integer port = 9001;
         assertThat(host.getPort(), is(port));
         assertThat(host.getToSort(), is(List.of(9L, 1L, 2L)));
 

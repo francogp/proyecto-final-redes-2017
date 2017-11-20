@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@SuppressWarnings( { "ReuseOfLocalVariable", "ClassWithoutConstructor" } )
 class BytesConversionTest {
     @Test
+    final
     void generalTest() {
         Long   expected = 95486100L;
         byte[] bytes    = BytesConversion.longToBytes(expected);

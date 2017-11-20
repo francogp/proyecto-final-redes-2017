@@ -15,7 +15,7 @@ import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.MSG_BYTES_LENGHT;
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public
+public final
 class Server
         implements Runnable {
 
@@ -45,7 +45,7 @@ class Server
     }
 
     private static
-    Boolean isQueueFinalizationMsg( Message message ) {
+    Boolean isQueueFinalizationMsg( final Message message ) {
         return message.isEndMessage();
     }
 
@@ -69,7 +69,7 @@ class Server
         running = true;
         while ( running ) {
             try {
-                byte[]               buf    = new byte[MSG_BYTES_LENGHT];
+                final byte[]         buf    = new byte[MSG_BYTES_LENGHT];
                 final DatagramPacket packet = new DatagramPacket(buf, MSG_BYTES_LENGHT);
                 socket.receive(packet);
                 final Message received = new Message(packet.getAddress(), packet.getPort(), packet.getData());

@@ -12,7 +12,8 @@ import static java.util.logging.Logger.getLogger;
  *
  * @author lucia bressan, franco pellegrini, renzo bianchini
  */
-public
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
+public final
 class ArgumentLoader {
 
     public static final String ARRAY_STRING_FORMAT_UNKNOWN = "ArrayString format unknown: ";

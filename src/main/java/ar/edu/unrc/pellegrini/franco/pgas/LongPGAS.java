@@ -91,8 +91,8 @@ class LongPGAS
     int findPidForIndex( final long index ) {
         //TODO optimizar
         for ( int pid = 1; pid <= processQuantity; pid++ ) {
-            Index indexItem = indexList.get(pid);
-            if ( indexItem.loweIndex <= index && indexItem.upperIndex >= index ) {
+            final Index indexItem = indexList.get(pid);
+            if ( ( indexItem.loweIndex <= index ) && ( indexItem.upperIndex >= index ) ) {
                 return pid;
             }
         }
@@ -133,8 +133,8 @@ class LongPGAS
             throws IOException {
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.length ) ) {
-            final int targetPid = findPidForIndex(index);
-            Message   response  = middleware.waitFor(targetPid, READ_MSG, index);
+            final int     targetPid = findPidForIndex(index);
+            final Message response  = middleware.waitFor(targetPid, READ_MSG, index);
             return response.getParameter2(); //TODO verificar diseño
         } else {
             return memory[i];
@@ -183,11 +183,11 @@ class LongPGAS
     }
 
     @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-    private static
+    private static final
     class Index {
-        private final long loweIndex;
-        private final int  size;
-        private final long upperIndex;
+        protected final long loweIndex;
+        protected final int  size;
+        protected final long upperIndex;
 
         public
         Index(

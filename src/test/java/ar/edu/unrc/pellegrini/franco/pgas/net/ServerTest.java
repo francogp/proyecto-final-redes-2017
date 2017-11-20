@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( { "ClassWithoutConstructor", "ClassIndependentOfModule" } )
 class ServerTest {
+    @SuppressWarnings( "OverlyLongLambda" )
     @Test
+    final
     void runTest() {
         try {
             final Queue< Message > receivedMessages = new ConcurrentLinkedQueue<>();
-            final Server server = new Server(9001, msg -> {
-                receivedMessages.add(msg);
-            }, msg -> {
+            final Server server = new Server(9001, receivedMessages::add, msg -> {
                 if ( msg.isEndMessage() ) {
                     receivedMessages.add(msg);
                     return true;
@@ -42,7 +42,7 @@ class ServerTest {
             server.send(msg3);
             serverThread.join();
             if ( receivedMessages.isEmpty() ) { throw new AssertionError("server output is empty"); }
-            List< Message > expected = List.of(msg1, msg2, msg3);
+            final List< Message > expected = List.of(msg1, msg2, msg3);
             assertThat(receivedMessages.containsAll(expected), is(true));
             assertThat(receivedMessages.size(), is(expected.size()));
         } catch ( final Exception e ) {

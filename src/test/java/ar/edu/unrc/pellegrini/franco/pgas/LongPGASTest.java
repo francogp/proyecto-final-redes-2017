@@ -16,6 +16,7 @@ class LongPGASTest {
             new File(LongPGASTest.class.getClassLoader().getResource("ar/edu/unrc/pellegrini/franco/utils/configTest.json").getFile());
 
     @Test
+    final
     void getSize() {
         final Configs< Long > configs = new Configs<>(FILE);
 
@@ -28,6 +29,7 @@ class LongPGASTest {
     }
 
     @Test
+    final
     void imLast() {
         final Configs< Long > configs = new Configs<>(FILE);
 
@@ -40,6 +42,7 @@ class LongPGASTest {
     }
 
     @Test
+    final
     void lowerIndex() {
         final Configs< Long > configs = new Configs<>(FILE);
 
@@ -51,6 +54,7 @@ class LongPGASTest {
     }
 
     @Test
+    final
     void setAndGet() {
         try {
             final Configs< Long > configs = new Configs<>(FILE);
@@ -63,12 +67,13 @@ class LongPGASTest {
                     assertThat(longPGAS.read(i), is(i));
                 }
             }
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             fail(e);
         }
     }
 
     @Test
+    final
     void swap() {
         try {
             final Configs< Long > configs = new Configs<>(FILE);
@@ -81,12 +86,13 @@ class LongPGASTest {
                 assertThat(longPGAS.read(longPGAS.lowerIndex()), is(longPGAS.upperIndex()));
                 assertThat(longPGAS.read(longPGAS.upperIndex()), is(longPGAS.lowerIndex()));
             }
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             fail(e);
         }
     }
 
     @Test
+    final
     void upperIndex() {
         final Configs< Long > configs = new Configs<>(FILE);
 

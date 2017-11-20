@@ -10,14 +10,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 class MsgQueueTest {
     @SuppressWarnings( "StringBufferWithoutInitialCapacity" )
     @Test
+    final
     void runTest() {
-        final StringBuilder output = new StringBuilder();
-        final MsgQueue< String > msgQueue = new MsgQueue<>(msg -> {
-            output.append(msg).append('\n');
-        }, msg -> {
-            return "end".equals(msg);
-        });
-        final Thread msgQueueThread = new Thread(msgQueue);
+        final StringBuilder      output         = new StringBuilder();
+        final MsgQueue< String > msgQueue       = new MsgQueue<>(msg -> output.append(msg).append('\n'), "end"::equals);
+        final Thread             msgQueueThread = new Thread(msgQueue);
         msgQueueThread.start();
         msgQueue.enqueue("hola");
         msgQueue.enqueue("como");

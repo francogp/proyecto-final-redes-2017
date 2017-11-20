@@ -7,7 +7,7 @@ import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.bytesToLong;
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public
+public final
 class Message {
     public static final char BARRIER_MSG            = 'B';
     public static final char CONTINUE_MSG           = 'C';
@@ -50,7 +50,7 @@ class Message {
             final char type,
             final long parameter1
     ) {
-        this(address, port, type, parameter1, 0);
+        this(address, port, type, parameter1, 0L);
     }
 
     public
@@ -59,7 +59,7 @@ class Message {
             final int port,
             final char type
     ) {
-        this(address, port, type, 0, 0);
+        this(address, port, type, 0L, 0L);
     }
 
     public
@@ -78,39 +78,35 @@ class Message {
 
         this.bytes = new byte[MSG_BYTES_LENGHT];
         bytes[TYPE_BYTE_INDEX] = (byte) type;
-        byte[] param1 = longToBytes(parameter1);
-        for ( int b = PARAMETER_1_BYTE_INDEX; b < PARAMETER_1_BYTE_INDEX + 8; b++ ) {
-            bytes[b] = param1[b - PARAMETER_1_BYTE_INDEX];
-        }
-        byte[] param2 = longToBytes(parameter2);
-        for ( int b = PARAMETER_2_BYTE_INDEX; b < PARAMETER_2_BYTE_INDEX + 8; b++ ) {
-            bytes[b] = param2[b - PARAMETER_2_BYTE_INDEX];
-        }
+        final byte[] param1 = longToBytes(parameter1);
+        System.arraycopy(param1, 0, bytes, PARAMETER_1_BYTE_INDEX, PARAMETER_1_BYTE_INDEX + 8 - 1);
+        final byte[] param2 = longToBytes(parameter2);
+        System.arraycopy(param2, 0, bytes, PARAMETER_2_BYTE_INDEX, PARAMETER_2_BYTE_INDEX + 8 - 9);
     }
 
     public static
     Message defaultEndQueueMsg(
-            InetAddress address,
-            int port
+            final InetAddress address,
+            final int port
     ) {
-        return new Message(address, port, END_MSG, 0, 0);
+        return new Message(address, port, END_MSG, 0L, 0L);
     }
 
     public static
     Message defaultEndQueueMsg() {
-        return new Message(null, 0, END_MSG, 0, 0);
+        return new Message(null, 0, END_MSG, 0L, 0L);
     }
 
     @Override
     public
-    boolean equals( Object o ) {
+    boolean equals( final Object o ) {
         if ( this == o ) { return true; }
         if ( !( o instanceof Message ) ) { return false; }
 
-        Message message = (Message) o;
+        final Message message = (Message) o;
 
         if ( port != message.port ) { return false; }
-        if ( address != null ? !address.equals(message.address) : message.address != null ) { return false; }
+        if ( ( address != null ) ? !address.equals(message.address) : ( message.address != null ) ) { return false; }
         if ( !Arrays.equals(bytes, message.bytes) ) { return false; }
 
         return true;
@@ -149,9 +145,9 @@ class Message {
     @Override
     public
     int hashCode() {
-        int result = address != null ? address.hashCode() : 0;
-        result = 31 * result + Arrays.hashCode(bytes);
-        result = 31 * result + port;
+        int result = ( address != null ) ? address.hashCode() : 0;
+        result = ( 31 * result ) + Arrays.hashCode(bytes);
+        result = ( 31 * result ) + port;
         return result;
     }
 

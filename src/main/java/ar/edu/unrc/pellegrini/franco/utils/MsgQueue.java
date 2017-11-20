@@ -14,12 +14,9 @@ class MsgQueue< M >
 
     private final Consumer< M >            messageConsumer;
     private final LinkedBlockingQueue< M > queue;
-    private       Function< M, Boolean >   isQueueFinalizationMsg;
+    private final Function< M, Boolean >   isQueueFinalizationMsg;
     private boolean running = false;
 
-    /**
-     * @param consumeMessage M = message to process, and return true if must continue to process further messages.
-     */
     public
     MsgQueue(
             final Consumer< M > messageConsumer,

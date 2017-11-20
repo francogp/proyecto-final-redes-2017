@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public
+public final
 class Configs< I extends Comparable< I > > {
     public static final String INET_ADDRESS = "inetAddress";
     public static final String PORT         = "port";
@@ -90,6 +90,8 @@ class Configs< I extends Comparable< I > > {
             }
         } catch ( final FileNotFoundException e ) {
             throw new IllegalArgumentException("file not found: \"" + configFilePath + "\".", e);
+        } catch ( UnknownHostException e ) {
+            throw new IllegalStateException("unknown host from file: \"" + configFilePath + "\".", e);
         } catch ( final IOException e ) {
             throw new IllegalArgumentException("problems loading \"" + configFilePath + "\".", e);
         } catch ( final ParseException e ) {
