@@ -1,4 +1,4 @@
-package ar.edu.unrc.pellegrini.franco.net;
+package ar.edu.unrc.pellegrini.franco.pgas.net;
 
 import java.net.InetAddress;
 
@@ -7,6 +7,7 @@ public
 class Message {
     public static final String MSG_TYPE_END = "end";
     private final InetAddress address;
+    private final String[]    arguments;
     private final int         port;
     private final String      value;
 
@@ -19,6 +20,7 @@ class Message {
         this.address = address;
         this.port = port;
         this.value = value;
+        arguments = value.split(":");
     }
 
     public static
@@ -66,6 +68,16 @@ class Message {
     public
     boolean isEndMessage() {
         return value.equals(MSG_TYPE_END);
+    }
+
+    public
+    Long returnArgumentAsLong( final int argument ) {
+        return Long.parseLong(arguments[argument]);
+    }
+
+    public
+    String returnArgumentAsString( final int argument ) {
+        return arguments[argument];
     }
 
     @Override

@@ -3,20 +3,26 @@ package ar.edu.unrc.pellegrini.franco;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( "ClassWithoutConstructor" )
 class DistributedBubbleSortTest {
     @Test
     void bubbleSort() {
-        final List< Long > array = new ArrayList<>(List.of(9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L));
-        final PGAS< Long > PGAS  = new TestLongPGAS(array);
-        DistributedBubbleSort.bubbleSort(PGAS, 0L, array.size() - 1L);
-        assertThat(array, is(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)));
+        try {
+            final List< Long > array = new ArrayList<>(List.of(9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L));
+            final PGAS< Long > PGAS  = new TestLongPGAS(array);
+            DistributedBubbleSort.bubbleSort(PGAS, 0L, array.size() - 1L);
+            assertThat(array, is(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)));
+        } catch ( IOException e ) {
+            fail(e);
+        }
     }
 
     @SuppressWarnings( "ClassWithoutNoArgConstructor" )

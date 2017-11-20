@@ -131,7 +131,11 @@ repositorio).
 - `gradlew javadoc`:  compila javadoc.
 
 ### Instrucciones de uso
-`java -jar ar.edu.unrc......`
+
+1. Crear un archivo de configuración en formato JSON (usando UTF-8) 
+con la siguiente estructura:
+
+2. Hay dos formas de ejecutar el programa`java -jar ar.edu.unrc......`
 
 ##### Ejemplo
 Para ejecutar una simulación utilizar:

@@ -5,6 +5,11 @@ import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 
+import java.io.IOException;
+import java.util.logging.Level;
+
+import static java.util.logging.Logger.getLogger;
+
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class DistributedBubbleSort
@@ -34,7 +39,8 @@ class DistributedBubbleSort
             final PGAS< Long > longPGAS,
             final long lowerIndex,
             final long upperIndex
-    ) {
+    )
+            throws IOException {
         boolean swapped = true;
         for ( long i = upperIndex; swapped && ( i >= lowerIndex ); i-- ) {
             swapped = false;
@@ -64,27 +70,32 @@ class DistributedBubbleSort
     @Override
     public
     void run() {
+        try {
+            boolean finish = false;
 
-        boolean finish = false;
+            while ( !finish ) {
+                finish = true;
+                final long upperIndex = longPGAS.upperIndex();
+                final long lowerIndex = longPGAS.lowerIndex();
 
-        while ( !finish ) {
-            finish = true;
-            final long upperIndex = longPGAS.upperIndex();
-            final long lowerIndex = longPGAS.lowerIndex();
+                // sort local block
+                bubbleSort(longPGAS, lowerIndex, upperIndex);
 
-            // sort local block
-            bubbleSort(longPGAS, lowerIndex, upperIndex);
-            longPGAS.barrier();
+                longPGAS.barrier();
 
-            if ( !longPGAS.imLast() ) {
-                final long lowerIndexRight = longPGAS.lowerIndex(longPGAS.getPid() + 1);
-                if ( longPGAS.read(upperIndex) > longPGAS.read(lowerIndexRight) ) {
-                    longPGAS.swap(upperIndex, lowerIndexRight);
-                    finish = false;  // update local copy
+
+                if ( !longPGAS.imLast() ) {
+                    final long lowerIndexRight = longPGAS.lowerIndex(longPGAS.getPid() + 1);
+                    if ( longPGAS.read(upperIndex) > longPGAS.read(lowerIndexRight) ) {
+                        longPGAS.swap(upperIndex, lowerIndexRight);
+                        finish = false;  // update local copy
+                    }
                 }
+                // reduce finish by and, then replicate result
+                finish = longPGAS.andReduce(finish);
             }
-            // reduce finish by and, then replicate result
-            finish = longPGAS.andReduce(finish);
+        } catch ( Exception e ) {
+            getLogger(DistributedBubbleSort.class.getName()).log(Level.SEVERE, "Unknown problem", e);
         }
     }
 }

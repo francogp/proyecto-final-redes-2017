@@ -1,17 +1,18 @@
-package ar.edu.unrc.pellegrini.franco.net;
+package ar.edu.unrc.pellegrini.franco.pgas.net;
 
 import ar.edu.unrc.pellegrini.franco.utils.MsgQueue;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import static ar.edu.unrc.pellegrini.franco.net.Message.MSG_TYPE_END;
+import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.MSG_TYPE_END;
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
@@ -95,5 +96,28 @@ class Server
         } catch ( final InterruptedException e ) {
             getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
         }
+    }
+
+    public synchronized
+    void sendTo(
+            final Message msg
+    )
+            throws IOException {
+        final byte[]         buf    = msg.getValue().getBytes(DEFAULT_CHARSET);
+        final DatagramPacket packet = new DatagramPacket(buf, buf.length, msg.getAddress(), msg.getPort());
+        socket.send(packet);
+    }
+
+    public synchronized
+    void sendTo(
+            final String destAddress,
+            final int destPort,
+            final String msg
+    )
+            throws IOException {
+        final InetAddress    address = InetAddress.getByName(destAddress);
+        final byte[]         buf     = msg.getBytes(DEFAULT_CHARSET);
+        final DatagramPacket packet  = new DatagramPacket(buf, buf.length, address, destPort);
+        socket.send(packet);
     }
 }

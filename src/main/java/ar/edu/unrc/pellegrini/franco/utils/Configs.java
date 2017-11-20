@@ -18,8 +18,8 @@ class Configs< I extends Comparable< I > > {
     public static final String INET_ADDRESS = "inetAddress";
     public static final String PORT         = "port";
     public static final String TO_SORT      = "toSort";
-    private final Map< Long, HostConfig< I > > hosts;
-    private final int                          processQuantity;
+    private final Map< Integer, HostConfig< I > > hosts;
+    private final int                             processQuantity;
 
     /**
      * JSON file Format:
@@ -67,7 +67,7 @@ class Configs< I extends Comparable< I > > {
             processQuantity = hostsInJSON.size();
             hosts = new HashMap<>(processQuantity);
 
-            long pid = 1L;
+            int pid = 1;
             for ( final Object hostInJSON : hostsInJSON ) {
                 final JSONObject host        = (JSONObject) hostInJSON;
                 final String     inetAddress = (String) host.get(INET_ADDRESS);
@@ -96,7 +96,7 @@ class Configs< I extends Comparable< I > > {
     }
 
     public
-    HostConfig< I > getHostsConfig( final long pid ) {
+    HostConfig< I > getHostsConfig( final int pid ) {
         return hosts.get(pid);
     }
 
