@@ -33,6 +33,7 @@ class MsgQueueTest {
         String finalMsg       = output.toString();
         String expectedOutput = "hola\ncomo\nestas 123\n";
         assertThat(finalMsg, is(expectedOutput));
+        assertThat(msgQueueThread.isAlive(), is(false));
     }
 
 }

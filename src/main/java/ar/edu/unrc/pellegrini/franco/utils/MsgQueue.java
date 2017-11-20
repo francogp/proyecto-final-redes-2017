@@ -25,6 +25,7 @@ class MsgQueue< M >
         queue = new LinkedBlockingQueue<>();
     }
 
+
     public
     void enqueue( final M msg ) {
         queue.add(msg);
