@@ -6,19 +6,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@SuppressWarnings( { "ClassWithoutConstructor", "ClassIndependentOfModule" } )
 class MsgQueueTest {
+    @SuppressWarnings( "StringBufferWithoutInitialCapacity" )
     @Test
-    void run() {
-        StringBuilder output = new StringBuilder();
-        MsgQueue< String > msgQueue = new MsgQueue<>(msg -> {
-            if ( msg.equals("end") ) {
+    void runTest() {
+        final StringBuilder output = new StringBuilder();
+        final MsgQueue< String > msgQueue = new MsgQueue<>(msg -> {
+            if ( "end".equals(msg) ) {
                 return false;
             } else {
-                output.append(msg).append("\n");
+                output.append(msg).append('\n');
                 return true;
             }
         });
-        Thread msgQueueThread = new Thread(msgQueue);
+        final Thread msgQueueThread = new Thread(msgQueue);
         msgQueueThread.start();
         msgQueue.enqueue("hola");
         msgQueue.enqueue("como");
@@ -26,12 +28,12 @@ class MsgQueueTest {
         msgQueue.enqueue("end");
         msgQueue.enqueue("lalalalal error");
         try {
-            Thread.sleep(10);
-        } catch ( InterruptedException e ) {
+            Thread.sleep(10L);
+        } catch ( final InterruptedException e ) {
             fail(e);
         }
-        String finalMsg       = output.toString();
-        String expectedOutput = "hola\ncomo\nestas 123\n";
+        final String finalMsg       = output.toString();
+        final String expectedOutput = "hola\ncomo\nestas 123\n";
         assertThat(finalMsg, is(expectedOutput));
         assertThat(msgQueueThread.isAlive(), is(false));
     }

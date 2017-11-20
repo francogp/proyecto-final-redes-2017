@@ -1,6 +1,9 @@
 package ar.edu.unrc.pellegrini.franco.utils;
 
 import java.util.*;
+import java.util.logging.Level;
+
+import static java.util.logging.Logger.getLogger;
 
 /**
  * Parsea argumentos de un programa (main) en una estructura amigable para su uso. Los argumentos deben tener el estilo:
@@ -12,12 +15,14 @@ import java.util.*;
 public
 class ArgumentLoader {
 
+    public static final String ARRAY_STRING_FORMAT_UNKNOWN = "ArrayString format unknown: ";
     private final Set< String >         activeFlags;
     private final Map< String, String > argMap;
     private final boolean               exitIfNotValid;
     private final Set< String >         validArgs;
     private final Set< String >         validFlags;
 
+    @SuppressWarnings( "CollectionWithoutInitialCapacity" )
     public
     ArgumentLoader( final boolean exitIfNotValid ) {
         this.exitIfNotValid = exitIfNotValid;
@@ -108,7 +113,7 @@ class ArgumentLoader {
         final String arrayString = getArg(id);
         if ( ( arrayString == null ) || !( !arrayString.isEmpty() && ( arrayString.charAt(0) == '[' ) ) ||
              !( !arrayString.isEmpty() && ( arrayString.charAt(arrayString.length() - 1) == ']' ) ) ) {
-            throw new IllegalArgumentException("ArrayString format unknown: " + arrayString);
+            throw new IllegalArgumentException(ARRAY_STRING_FORMAT_UNKNOWN + arrayString);
         }
 
         final String[]  list = arrayString.substring(1, arrayString.length() - 1).split(",");
@@ -136,7 +141,7 @@ class ArgumentLoader {
         final String arrayString = getArg(id);
         if ( ( arrayString == null ) || !( !arrayString.isEmpty() && ( arrayString.charAt(0) == '[' ) ) ||
              !( !arrayString.isEmpty() && ( arrayString.charAt(arrayString.length() - 1) == ']' ) ) ) {
-            throw new IllegalArgumentException("ArrayString format unknown: " + arrayString);
+            throw new IllegalArgumentException(ARRAY_STRING_FORMAT_UNKNOWN + arrayString);
         }
 
         final String[]       list = arrayString.substring(1, arrayString.length() - 1).split(",");
@@ -167,7 +172,7 @@ class ArgumentLoader {
         final String arrayString = getArg(id);
         if ( ( arrayString == null ) || !( !arrayString.isEmpty() && ( arrayString.charAt(0) == '[' ) ) ||
              !( !arrayString.isEmpty() && ( arrayString.charAt(arrayString.length() - 1) == ']' ) ) ) {
-            throw new IllegalArgumentException("ArrayString format unknown: " + arrayString);
+            throw new IllegalArgumentException(ARRAY_STRING_FORMAT_UNKNOWN + arrayString);
         }
 
         final String[]        list = arrayString.substring(1, arrayString.length() - 1).split(",");
@@ -198,7 +203,7 @@ class ArgumentLoader {
         final String arrayString = getArg(id);
         if ( ( arrayString == null ) || !( !arrayString.isEmpty() && ( arrayString.charAt(0) == '[' ) ) ||
              !( !arrayString.isEmpty() && ( arrayString.charAt(arrayString.length() - 1) == ']' ) ) ) {
-            throw new IllegalArgumentException("ArrayString format unknown: " + arrayString);
+            throw new IllegalArgumentException(ARRAY_STRING_FORMAT_UNKNOWN + arrayString);
         }
         return Arrays.asList(arrayString.substring(1, arrayString.length() - 1).split(","));
     }
@@ -206,13 +211,13 @@ class ArgumentLoader {
     private
     void printUsage() {
         if ( validFlags.isEmpty() && validArgs.isEmpty() ) {
-            System.err.println("No valid flags or arguments configured");
+            getLogger(ArgumentLoader.class.getName()).log(Level.SEVERE, "No valid flags or arguments configured");
         } else {
             if ( !validFlags.isEmpty() ) {
-                System.err.println("Valid flags " + validFlags);
+                getLogger(ArgumentLoader.class.getName()).log(Level.SEVERE, "Valid flags " + validFlags);
             }
             if ( !validArgs.isEmpty() ) {
-                System.err.println("Valid arguments " + validArgs);
+                getLogger(ArgumentLoader.class.getName()).log(Level.SEVERE, "Valid arguments " + validArgs);
             }
         }
     }

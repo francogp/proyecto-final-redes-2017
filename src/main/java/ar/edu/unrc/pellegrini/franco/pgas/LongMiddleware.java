@@ -1,24 +1,26 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
+import ar.edu.unrc.pellegrini.franco.utils.Configs.HostConfig;
 
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
 class LongMiddleware
         implements Middleware< Long > {
-    private final PGAS< Long > longPGAS;
-    private       Configs      configs;
+    private final Configs< Long > configs;
+    private final PGAS< Long >    longPGAS;
 
     public
     LongMiddleware(
             final PGAS< Long > longPGAS,
-            final Configs configs
+            final Configs< Long > configs
     ) {
         this.longPGAS = longPGAS;
         this.configs = configs;
     }
 
     public
-    Configs.HostConfig getHostByPid( long pid ) {
+    HostConfig< Long > getHostByPid( final long pid ) {
         return configs.getHostsConfig(pid);
     }
 

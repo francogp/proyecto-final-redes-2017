@@ -1,11 +1,13 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
+import ar.edu.unrc.pellegrini.franco.utils.Configs.HostConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
+public final
 class LongPGAS
         implements PGAS< Long > {
 
@@ -15,7 +17,8 @@ class LongPGAS
     private final Middleware< Long > middleware;
     private final int                pid;
     private final int                processQuantity;
-    private       Long[]             memory;
+    private Long[] memory = null;
+
     public
     LongPGAS(
             final int pid,
@@ -28,28 +31,27 @@ class LongPGAS
         this.pid = pid;
         // inicializamos los indices lowerIndex y upperIndex
         indexes = new ArrayList<>(processQuantity);
-        long lowerIndex = 0;
-        long upperIndex;
-        for ( long currentPid = 1L; currentPid <= processQuantity; currentPid++ ) {
-            Configs.HostConfig< Long > integerHostConfig = configs.getHostsConfig(currentPid);
-            List< Long >               toSort            = integerHostConfig.getToSort();
+        long lowerIndex = 0L;
+        for ( int currentPid = 1; currentPid <= processQuantity; currentPid++ ) {
+            final HostConfig< Long > integerHostConfig = configs.getHostsConfig(currentPid);
+            final List< Long >       toSort            = integerHostConfig.getToSort();
             if ( pid == currentPid ) {
-                memory = toSort.toArray(new Long[0]);
+                memory = toSort.toArray(new Long[toSort.size()]);
             }
-            upperIndex = ( lowerIndex + ( toSort.size() ) ) - 1;
+            final long upperIndex = ( lowerIndex + ( toSort.size() ) ) - 1L;
             indexes.add(new Indexes(lowerIndex, upperIndex, toSort.size()));
-            lowerIndex = upperIndex + 1;
+            lowerIndex = upperIndex + 1L;
         }
         // inicializamos lowerIndex y upperIndex del proceso actual (a modo de cache)
         currentLowerIndex = lowerIndex(pid);
         currentUpperIndex = upperIndex(pid);
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        this.middleware = new LongMiddleware(this, configs);
+        middleware = new LongMiddleware(this, configs);
     }
 
     @Override
     public
-    boolean andReduce( boolean value ) {
+    boolean andReduce( final boolean value ) {
         return false;
     }
 
@@ -64,7 +66,7 @@ class LongPGAS
         return pid;
     }
 
-    public
+    public synchronized
     int getSize() {
         return memory.length;
     }
@@ -136,6 +138,7 @@ class LongPGAS
         }
     }
 
+    @SuppressWarnings( "ClassWithoutNoArgConstructor" )
     private static
     class Indexes {
         private final long loweIndex;

@@ -2,19 +2,19 @@ package ar.edu.unrc.pellegrini.franco.net;
 
 import java.net.InetAddress;
 
-import static ar.edu.unrc.pellegrini.franco.net.Server.MSG_TYPE_END;
-
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
 class Message {
+    public static final String MSG_TYPE_END = "end";
     private final InetAddress address;
     private final int         port;
     private final String      value;
 
     public
     Message(
-            InetAddress address,
-            int port,
-            String value
+            final InetAddress address,
+            final int port,
+            final String value
     ) {
         this.address = address;
         this.port = port;
@@ -28,17 +28,15 @@ class Message {
 
     @Override
     public
-    boolean equals( Object o ) {
+    boolean equals( final Object o ) {
         if ( this == o ) { return true; }
         if ( !( o instanceof Message ) ) { return false; }
 
-        Message message = (Message) o;
+        final Message message = (Message) o;
 
-        if ( isEndMessage() && message.isEndMessage() ) {return true;}
+        return ( isEndMessage() && message.isEndMessage() ) ||
+               ( ( port == message.port ) && address.equals(message.address) && value.equals(message.value) );
 
-        if ( port != message.port ) { return false; }
-        if ( !address.equals(message.address) ) { return false; }
-        return value.equals(message.value);
     }
 
     public
@@ -60,8 +58,8 @@ class Message {
     public
     int hashCode() {
         int result = address.hashCode();
-        result = 31 * result + port;
-        result = 31 * result + value.hashCode();
+        result = ( 31 * result ) + port;
+        result = ( 31 * result ) + value.hashCode();
         return result;
     }
 

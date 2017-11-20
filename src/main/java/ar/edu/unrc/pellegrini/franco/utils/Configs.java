@@ -5,14 +5,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
 class Configs< I extends Comparable< I > > {
     private final Map< Long, HostConfig< I > > hosts;
@@ -53,43 +53,46 @@ class Configs< I extends Comparable< I > > {
      */
     public
     Configs( final File configFilePath ) {
-        try ( FileReader reader = new FileReader(configFilePath) ) {
-            JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+        try ( InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), Charset.forName("UTF-8")) ) {
+            final JSONParser jsonParser = new JSONParser();
+            final JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
-            JSONArray hostsInJSON = (JSONArray) jsonObject.get("hosts");
+            final JSONArray hostsInJSON = (JSONArray) jsonObject.get("hosts");
             if ( hostsInJSON.isEmpty() ) {
                 throw new IllegalArgumentException("wrong hosts quantity in config file \"" + configFilePath + "\".");
             }
             processQuantity = hostsInJSON.size();
             hosts = new HashMap<>(processQuantity);
 
-            long pid = 1;
-            for ( Object hostInJSON : hostsInJSON ) {
-                JSONObject host     = (JSONObject) hostInJSON;
-                String     location = (String) host.get("location");
+            long pid = 1L;
+            for ( final Object hostInJSON : hostsInJSON ) {
+                final JSONObject host     = (JSONObject) hostInJSON;
+                final String     location = (String) host.get("location");
 
-                JSONArray toSortInJSON = (JSONArray) host.get("toSort");
+                final JSONArray toSortInJSON = (JSONArray) host.get("toSort");
                 if ( toSortInJSON.isEmpty() ) {
                     throw new IllegalArgumentException("wrong toSort quantity in config file \"" + configFilePath + "\".");
                 }
-                List< I > toSort = new ArrayList<>();
-                for ( Object valueInJSON : toSortInJSON ) {
-                    I value = (I) valueInJSON;
+                final List< I > toSort = new ArrayList<>(toSortInJSON.size());
+                for ( final Object valueInJSON : toSortInJSON ) {
+                    //noinspection unchecked
+                    final I value = (I) valueInJSON;
                     toSort.add(value);
                 }
                 hosts.put(pid, new HostConfig<>(location, toSort));
                 pid++;
             }
-        } catch ( IOException e ) {
+        } catch ( final FileNotFoundException e ) {
+            throw new IllegalArgumentException("file not found: \"" + configFilePath + "\".", e);
+        } catch ( final IOException e ) {
             throw new IllegalArgumentException("problems loading \"" + configFilePath + "\".", e);
-        } catch ( ParseException e ) {
+        } catch ( final ParseException e ) {
             throw new IllegalArgumentException("wrong json format in config file \"" + configFilePath + "\".", e);
         }
     }
 
     public
-    HostConfig< I > getHostsConfig( long pid ) {
+    HostConfig< I > getHostsConfig( final long pid ) {
         return hosts.get(pid);
     }
 
@@ -103,6 +106,7 @@ class Configs< I extends Comparable< I > > {
         return hosts.size();
     }
 
+    @SuppressWarnings( { "ClassWithoutNoArgConstructor", "PublicInnerClass" } )
     public static
     class HostConfig< I extends Comparable< I > > {
         private final String    location;

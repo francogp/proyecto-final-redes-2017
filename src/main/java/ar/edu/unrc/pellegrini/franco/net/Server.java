@@ -6,22 +6,25 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.function.Function;
 import java.util.logging.Level;
 
+import static ar.edu.unrc.pellegrini.franco.net.Message.MSG_TYPE_END;
 import static java.util.logging.Logger.getLogger;
 
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
 class Server
-        extends Thread {
+        implements Runnable {
 
-    public static final String MSG_TYPE_END = "end";
+    public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+    final         DatagramPacket      packet;
+    private final MsgQueue< Message > msgQueue;
+    private final Thread              msgQueueThread;
     private final DatagramSocket      socket;
-    private       byte[]              buf;
-    private       MsgQueue< Message > msgQueue;
-    private       Thread              msgQueueThread;
-    private       boolean             running;
+    private boolean running = false;
 
     public
     Server( final int port )
@@ -36,7 +39,8 @@ class Server
     )
             throws SocketException {
         socket = new DatagramSocket(port);
-        buf = new byte[computeWorstMsgBufferSize()];
+        byte[] buf = new byte[computeWorstMsgBufferSize()];
+        packet = new DatagramPacket(buf, buf.length);
 
         msgQueue = new MsgQueue<>(processMessageFunction);
         msgQueueThread = new Thread(msgQueue);
@@ -45,14 +49,14 @@ class Server
 
     public static
     int computeWorstMsgBufferSize() {
-        List< String > messages =
-                List.of("S:" + Long.MAX_VALUE + ":" + Long.MAX_VALUE, "S:" + Long.MIN_VALUE + ":" + Long.MIN_VALUE, "S:" + 0 + ":" + 0, MSG_TYPE_END);
-        return messages.stream().map(string -> string.getBytes().length).max(Integer::compareTo).get();
+        final List< String > messages =
+                List.of("S:" + Long.MAX_VALUE + ':' + Long.MAX_VALUE, "S:" + Long.MIN_VALUE + ':' + Long.MIN_VALUE, "S:" + 0 + ':' + 0, MSG_TYPE_END);
+        return messages.stream().map(msg -> msg.getBytes(DEFAULT_CHARSET).length).max(Integer::compareTo).get();
     }
 
     private static
-    Boolean processPGAS( Message msg ) {
-        System.out.println("Server: " + msg.toString());
+    Boolean processPGAS( final Message msg ) {
+        System.out.println("Server: " + msg);
         return !msg.isEndMessage();
     }
 
@@ -62,20 +66,25 @@ class Server
     }
 
     public
+    boolean isRunning() {
+        return running;
+    }
+
+    public
     void run() {
         running = true;
         while ( running ) {
             try {
-                DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
-                Message received = new Message(packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength()));
+                final Message received =
+                        new Message(packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), DEFAULT_CHARSET));
 
                 if ( received.isEndMessage() ) {
                     running = false;
                 } else {
                     msgQueue.enqueue(received);
                 }
-            } catch ( IOException e ) {
+            } catch ( final IOException e ) {
                 getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
             }
         }
@@ -83,7 +92,7 @@ class Server
         msgQueue.enqueue(Message.newEndMessage());
         try {
             msgQueueThread.join();
-        } catch ( InterruptedException e ) {
+        } catch ( final InterruptedException e ) {
             getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
         }
     }

@@ -7,14 +7,17 @@ import java.util.stream.IntStream;
 
 import static ar.edu.unrc.pellegrini.franco.DistributedBubbleSort.ARG_CONFIG_FILE;
 
-public
+public final
 class ExperimentRunner {
+    private
+    ExperimentRunner() {}
+
     public static
     void main( final String... args ) {
         final ArgumentLoader arguments = new ArgumentLoader(true);
         arguments.addValidArg(ARG_CONFIG_FILE);
         arguments.loadArguments(args);
-        Configs configFile = new Configs(arguments.parseString(ARG_CONFIG_FILE));
+        final Configs< Long > configFile = new Configs<>(arguments.parseString(ARG_CONFIG_FILE));
         IntStream.rangeClosed(1, configFile.size())
                 .mapToObj(pid -> new DistributedBubbleSort(pid, configFile))
                 .map(Thread::new)

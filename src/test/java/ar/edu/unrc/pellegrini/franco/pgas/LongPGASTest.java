@@ -8,37 +8,39 @@ import java.io.File;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@SuppressWarnings( { "ClassWithoutConstructor", "ClassIndependentOfModule" } )
 class LongPGASTest {
-    private static File file =
-            new File(LongPGASTest.class.getClassLoader().getResource("ar/edu/unrc/pellegrini/franco/utils/configTest.json").getFile());
+    private static final File FILE = new File(LongPGASTest.class.getClassLoader().getResource("ar/edu/unrc/pellegrini/franco/utils/configTest.json").getFile());
 
     @Test
     void getSize() {
-        Configs< Long > configs = new Configs<>(file);
+        final Configs< Long > configs = new Configs<>(FILE);
 
         PGAS< Long > longPGAS = new LongPGAS(1, configs);
         assertThat(longPGAS.getSize(), is(3));
 
+        //noinspection ReuseOfLocalVariable
         longPGAS = new LongPGAS(3, configs);
         assertThat(longPGAS.getSize(), is(4));
     }
 
     @Test
     void imLast() {
-        Configs< Long > configs = new Configs<>(file);
+        final Configs< Long > configs = new Configs<>(FILE);
 
         PGAS< Long > longPGAS = new LongPGAS(1, configs);
         assertThat(longPGAS.imLast(), is(false));
 
+        //noinspection ReuseOfLocalVariable
         longPGAS = new LongPGAS(3, configs);
         assertThat(longPGAS.imLast(), is(true));
     }
 
     @Test
     void lowerIndex() {
-        Configs< Long > configs = new Configs<>(file);
+        final Configs< Long > configs = new Configs<>(FILE);
 
-        PGAS< Long > longPGAS = new LongPGAS(1, configs);
+        final PGAS< Long > longPGAS = new LongPGAS(1, configs);
 
         assertThat(longPGAS.lowerIndex(1), is(0L));
         assertThat(longPGAS.lowerIndex(2), is(3L));
@@ -47,7 +49,7 @@ class LongPGASTest {
 
     @Test
     void setAndGet() {
-        final Configs< Long > configs = new Configs<>(file);
+        final Configs< Long > configs = new Configs<>(FILE);
         for ( int pid = 1; pid <= configs.getProcessQuantity(); pid++ ) {
             final PGAS< Long > longPGAS = new LongPGAS(pid, configs);
             for ( long i = longPGAS.lowerIndex(); i <= longPGAS.upperIndex(); i++ ) {
@@ -59,7 +61,7 @@ class LongPGASTest {
 
     @Test
     void swap() {
-        final Configs< Long > configs = new Configs<>(file);
+        final Configs< Long > configs = new Configs<>(FILE);
         for ( int pid = 1; pid <= 3; pid++ ) {
             final PGAS< Long > longPGAS = new LongPGAS(pid, configs);
             for ( long i = longPGAS.lowerIndex(); i <= longPGAS.upperIndex(); i++ ) {
@@ -73,9 +75,9 @@ class LongPGASTest {
 
     @Test
     void upperIndex() {
-        Configs< Long > configs = new Configs<>(file);
+        final Configs< Long > configs = new Configs<>(FILE);
 
-        PGAS< Long > longPGAS = new LongPGAS(1, configs);
+        final PGAS< Long > longPGAS = new LongPGAS(1, configs);
 
         assertThat(longPGAS.upperIndex(1), is(2L));
         assertThat(longPGAS.upperIndex(2), is(4L));

@@ -5,6 +5,7 @@ import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class DistributedBubbleSort
         implements Runnable {
@@ -37,10 +38,10 @@ class DistributedBubbleSort
         boolean swapped = true;
         for ( long i = upperIndex; swapped && ( i >= lowerIndex ); i-- ) {
             swapped = false;
-            for ( int j = 0; j < i; j++ ) {
-                if ( longPGAS.read(j) > longPGAS.read(j + 1) ) {
+            for ( long j = 0L; j < i; j++ ) {
+                if ( longPGAS.read(j) > longPGAS.read(j + 1L) ) {
                     swapped = true;
-                    longPGAS.swap(j, j + 1);
+                    longPGAS.swap(j, j + 1L);
                 }
             }
         }
@@ -53,10 +54,10 @@ class DistributedBubbleSort
         arguments.addValidArg(ARG_CONFIG_FILE);
 
         arguments.loadArguments(args);
-        int             pid        = arguments.parseInteger(ARG_PID);
-        Configs< Long > configFile = new Configs<>(arguments.parseString(ARG_CONFIG_FILE));
+        final int             pid        = arguments.parseInteger(ARG_PID);
+        final Configs< Long > configFile = new Configs<>(arguments.parseString(ARG_CONFIG_FILE));
 
-        DistributedBubbleSort bubbleSort = new DistributedBubbleSort(pid, configFile);
+        final DistributedBubbleSort bubbleSort = new DistributedBubbleSort(pid, configFile);
         bubbleSort.run();
     }
 

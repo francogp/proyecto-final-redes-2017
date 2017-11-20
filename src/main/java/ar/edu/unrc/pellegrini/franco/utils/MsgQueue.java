@@ -6,13 +6,14 @@ import java.util.logging.Level;
 
 import static java.util.logging.Logger.getLogger;
 
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
 class MsgQueue< M >
         implements Runnable {
 
+    private final Function< M, Boolean >   processMessageFunction;
     private final LinkedBlockingQueue< M > queue;
-    private       Function< M, Boolean >   processMessageFunction;
-    private       boolean                  running;
+    private boolean running = false;
 
     /**
      * @param processMessageFunction M = message to process, and return true if must continue to process further messages.
@@ -25,12 +26,17 @@ class MsgQueue< M >
         queue = new LinkedBlockingQueue<>();
     }
 
-
     public
     void enqueue( final M msg ) {
         queue.add(msg);
     }
 
+    public
+    boolean isRunning() {
+        return running;
+    }
+
+    @SuppressWarnings( "ErrorNotRethrown" )
     @Override
     public
     void run() {

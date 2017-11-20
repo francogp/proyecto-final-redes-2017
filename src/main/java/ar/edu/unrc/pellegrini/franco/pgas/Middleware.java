@@ -1,11 +1,11 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
-import ar.edu.unrc.pellegrini.franco.utils.Configs;
+import ar.edu.unrc.pellegrini.franco.utils.Configs.HostConfig;
 
 public
-interface Middleware< I > {
+interface Middleware< I extends Comparable< I > > {
 
-    Configs.HostConfig getHostByPid( long pid );
+    HostConfig< I > getHostByPid( long pid );
 
     void receiveFrom( final long pid );
 
