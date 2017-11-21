@@ -45,7 +45,7 @@ class LongMiddleware
             try {
                 server = new Server(port, ( msg ) -> {
                     try {
-                        processIncommingMessage(msg);
+                        processIncomingMessage(msg);
                     } catch ( Exception e ) {
                         getLogger(LongMiddleware.class.getName()).log(Level.SEVERE, null, e);
                     }
@@ -62,7 +62,7 @@ class LongMiddleware
     }
 
     private
-    void processIncommingMessage( final Message incommingMessage )
+    void processIncomingMessage( final Message incomingMessage )
             throws IOException, InterruptedException {
         //        public static final char AND_REDUCE_MSG         = 'A';
         //        public static final char BARRIER_MSG            = 'B';
@@ -70,40 +70,40 @@ class LongMiddleware
         //        public static final char END_MSG                = 'E';
         //        public static final char READ_MSG               = 'R';
         //        public static final char WRITE_MSG              = 'W';
-        final HostConfig< Long > targetHost = configs.getHostsConfig(incommingMessage.getAddress(), incommingMessage.getPort());
-        switch ( incommingMessage.getType() ) {
+        final HostConfig< Long > targetHost = configs.getHostsConfig(incomingMessage.getAddress(), incomingMessage.getPort());
+        switch ( incomingMessage.getType() ) {
             case AND_REDUCE_MSG: {
                 assert longPGAS.isCoordinator();
-                targetHost.registerMsg(incommingMessage);
+                targetHost.registerMsg(incomingMessage);
                 break;
             }
             case BARRIER_MSG: {
                 assert longPGAS.isCoordinator();
-                targetHost.registerMsg(incommingMessage);
+                targetHost.registerMsg(incomingMessage);
                 break;
             }
             case CONTINUE_MSG: {
                 assert !longPGAS.isCoordinator();
-                targetHost.registerMsg(incommingMessage);
+                targetHost.registerMsg(incomingMessage);
                 break;
             }
             case END_MSG: {
                 break;
             }
             case READ_MSG: {
-                sendTo(targetHost, READ_RESPONSE_MSG, longPGAS.read(incommingMessage.getParameter1()));
+                sendTo(targetHost, READ_RESPONSE_MSG, longPGAS.read(incomingMessage.getParameter1()));
                 break;
             }
             case READ_RESPONSE_MSG: {
-                targetHost.registerMsg(incommingMessage);
+                targetHost.registerMsg(incomingMessage);
                 break;
             }
             case WRITE_MSG: {
-                longPGAS.write(incommingMessage.getParameter1(), incommingMessage.getParameter2());
+                longPGAS.write(incomingMessage.getParameter1(), incomingMessage.getParameter2());
                 break;
             }
             default:
-                throw new IllegalArgumentException("Unknown message type = " + incommingMessage.getType());
+                throw new IllegalArgumentException("Unknown message type = " + incomingMessage.getType());
         }
     }
 
