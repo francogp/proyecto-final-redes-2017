@@ -8,13 +8,8 @@ interface PGAS< I > {
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException;
 
-    String asString();
-
     void barrier()
             throws IOException, InterruptedException;
-
-    void endService()
-            throws IOException;
 
     int getPid();
 
@@ -22,13 +17,11 @@ interface PGAS< I > {
 
     boolean imLast();
 
-    boolean isCoordinator();
-
     long lowerIndex();
 
     long lowerIndex( final int pid );
 
-    I read( final long index )
+    I read( final Long index )
             throws IOException, InterruptedException;
 
     void swap(
@@ -42,7 +35,7 @@ interface PGAS< I > {
     long upperIndex( final int pid );
 
     void write(
-            final long index,
+            final Long index,
             final I value
     )
             throws IOException;

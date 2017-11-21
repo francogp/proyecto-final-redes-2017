@@ -3,7 +3,6 @@ package ar.edu.unrc.pellegrini.franco;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,20 +61,7 @@ class DistributedBubbleSortTest {
 
         @Override
         public
-        String asString() {
-            return array.toString();
-        }
-
-        @Override
-        public
         void barrier() {
-
-        }
-
-        @Override
-        public
-        void endService()
-                throws IOException {
 
         }
 
@@ -98,12 +84,6 @@ class DistributedBubbleSortTest {
         }
 
         @Override
-        public
-        boolean isCoordinator() {
-            return false;
-        }
-
-        @Override
         public final
         long lowerIndex( final int pid ) {
             throw new IllegalStateException();
@@ -117,11 +97,11 @@ class DistributedBubbleSortTest {
 
         @Override
         public final
-        Long read( final long index ) {
+        Long read( final Long index ) {
             if ( index < lowerIndex || index > upperIndex ) {
                 throw new IllegalArgumentException("index " + index + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
-            return array.get((int) index);
+            return array.get(index.intValue());
         }
 
         @Override
@@ -156,13 +136,13 @@ class DistributedBubbleSortTest {
         @Override
         public final
         void write(
-                final long index,
+                final Long index,
                 final Long value
         ) {
             if ( index < lowerIndex || index > upperIndex ) {
                 throw new IllegalArgumentException("index " + index + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
-            array.set((int) index, value);
+            array.set(index.intValue(), value);
         }
     }
 }

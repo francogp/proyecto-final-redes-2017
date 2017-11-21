@@ -1,7 +1,8 @@
 package ar.edu.unrc.pellegrini.franco;
 
-import ar.edu.unrc.pellegrini.franco.pgas.LongPGAS;
+import ar.edu.unrc.pellegrini.franco.pgas.AbstractPGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
+import ar.edu.unrc.pellegrini.franco.pgas.implementations.LongPGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ class DistributedBubbleSort
 
     public static final String ARG_CONFIG_FILE = "configFile";
     public static final String ARG_PID         = "pid";
-    private final PGAS< Long > longPGAS;
+    private final AbstractPGAS< Long > longPGAS;
 
     public
     DistributedBubbleSort(

@@ -2,7 +2,7 @@
   <configuration default="false" name="DistributedBubbleSort" type="Application" factoryName="Application" nameIsGenerated="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
-        <option name="PATTERN" value="ar.edu.unrc.pellegrini.franco.pgas.*" />
+        <option name="PATTERN" value="ar.edu.unrc.pellegrini.franco.pgas.implementations.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

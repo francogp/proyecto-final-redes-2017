@@ -8,32 +8,27 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.*;
-import static java.util.logging.Logger.getLogger;
 
-@SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public final
-class LongPGAS
-        implements PGAS< Long > {
+public abstract
+class AbstractPGAS< I extends Comparable< I > >
+        implements PGAS< I > {
 
     public static final int COORDINATOR_PID = 1;
-    private final long               currentLowerIndex;
-    private final long               currentUpperIndex;
-    private final boolean            imCoordinator;
-    private final List< Index >      indexList;
-    private final Middleware< Long > middleware;
-    private final long               pgasSize;
-    private final int                pid;
-    private final int                processQuantity;
-    private Long[] memory = null;
+    protected final long            currentLowerIndex;
+    protected final long            currentUpperIndex;
+    protected final boolean         imCoordinator;
+    protected final List< Index >   indexList;
+    protected final Middleware< I > middleware;
+    protected final long            pgasSize;
+    protected final int             pid;
+    protected final int             processQuantity;
+    protected List< I > memory = null;
 
 
     public
-    LongPGAS(
+    AbstractPGAS(
             final int pid,
             final String configsFilePath
     ) {
@@ -41,7 +36,7 @@ class LongPGAS
     }
 
     public
-    LongPGAS(
+    AbstractPGAS(
             final int pid,
             final String configsFilePath,
             final boolean startServer
@@ -50,7 +45,7 @@ class LongPGAS
     }
 
     public
-    LongPGAS(
+    AbstractPGAS(
             final int pid,
             final File configsFile
     ) {
@@ -58,12 +53,12 @@ class LongPGAS
     }
 
     public
-    LongPGAS(
+    AbstractPGAS(
             final int pid,
             final File configsFile,
             final boolean startServer
     ) {
-        final Configs< Long > configFile = new Configs<>(configsFile);
+        final Configs< I > configFile = new Configs<>(configsFile);
         processQuantity = configFile.getProcessQuantity();
         if ( pid <= 0 ) { throw new IllegalArgumentException("pid " + pid + " must be >= 0."); }
         if ( pid > processQuantity ) { throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file."); }
@@ -74,10 +69,10 @@ class LongPGAS
         long lowerIndex = 0L;
         long upperIndex = -1L;
         for ( int currentPid = 1; currentPid <= processQuantity; currentPid++ ) {
-            final HostConfig< Long > integerHostConfig = configFile.getHostsConfig(currentPid);
-            final List< Long >       toSort            = integerHostConfig.getToSort();
+            final HostConfig< I > integerHostConfig = configFile.getHostsConfig(currentPid);
+            final List< I >       toSort            = integerHostConfig.getToSort();
             if ( pid == currentPid ) {
-                memory = toSort.toArray(new Long[toSort.size()]);
+                memory = new ArrayList<>(toSort);
             }
             upperIndex = ( lowerIndex + ( toSort.size() ) ) - 1L;
             indexList.add(new Index(lowerIndex, upperIndex, toSort.size()));
@@ -88,10 +83,9 @@ class LongPGAS
         currentUpperIndex = upperIndex(pid);
         pgasSize = upperIndex + 1;
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        middleware = new LongMiddleware(this, configFile, startServer);
+        middleware = newMiddleware(startServer, configFile);
     }
 
-    @Override
     public
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException {
@@ -100,35 +94,26 @@ class LongPGAS
         if ( imCoordinator ) {
             assert pid == 1;
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                final Message msg = middleware.waitFor(targetPid, AND_REDUCE_MSG);
-                andReduce = andReduce && ( msg.getResponse() != 0 ); //true!=0, false==0
+                final Message< I > msg = middleware.waitFor(targetPid, AND_REDUCE_MSG);
+                andReduce = andReduce && responseAsBooleanRepresentation(msg);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                middleware.sendTo(targetPid, CONTINUE_MSG, ( andReduce ) ? 1L : 0L);
+                final Long reduceAsLong = ( andReduce ) ? 1L : 0L;
+                middleware.sendTo(targetPid, CONTINUE_MSG, (I) reduceAsLong, null);
             }
         } else {
             assert pid != 1;
-            middleware.sendTo(COORDINATOR_PID, AND_REDUCE_MSG, ( value ) ? 1L : 0L);
-            final Message msg = middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
-            andReduce = msg.getResponse() != 0;
+            final Long valueAsLong = ( value ) ? 1L : 0L;
+            middleware.sendTo(COORDINATOR_PID, AND_REDUCE_MSG, (I) valueAsLong, null);
+            final Message< I > msg = middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
+            andReduce = responseAsBooleanRepresentation(msg);
         }
         return andReduce;
     }
 
-    @Override
-    public
-    String asString() {
-        return LongStream.range(0L, pgasSize).mapToObj(index -> {
-            try {
-                return Long.toString(read(index));
-            } catch ( Exception e ) {
-                getLogger(LongPGAS.class.getName()).log(Level.SEVERE, null, e);
-                return "ERROR";
-            }
-        }).collect(Collectors.joining(","));
-    }
+    public abstract
+    String asString();
 
-    @Override
     public
     void barrier()
             throws IOException, InterruptedException {
@@ -138,21 +123,20 @@ class LongPGAS
                 middleware.waitFor(pid, BARRIER_MSG);
             }
             for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                middleware.sendTo(pid, CONTINUE_MSG);
+                middleware.sendTo(pid, CONTINUE_MSG, null, null);
             }
         } else {
             assert pid >= 1;
-            middleware.sendTo(COORDINATOR_PID, BARRIER_MSG);
+            middleware.sendTo(COORDINATOR_PID, BARRIER_MSG, null, null);
             middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
         }
     }
 
-    @Override
     public
     void endService()
             throws IOException {
         for ( int pid = 1; pid <= processQuantity; pid++ ) {
-            middleware.sendTo(pid, END_MSG);
+            middleware.sendTo(pid, END_MSG, null, null);
         }
     }
 
@@ -180,10 +164,9 @@ class LongPGAS
 
     public synchronized
     int getSize() {
-        return memory.length;
+        return memory.size();
     }
 
-    @Override
     public
     boolean imLast() {
         return pid == processQuantity;
@@ -194,34 +177,39 @@ class LongPGAS
         return imCoordinator;
     }
 
-    @Override
     public
     long lowerIndex( final int pid ) {
         return indexList.get(pid - 1).getLoweIndex();
     }
 
-    @Override
     public
     long lowerIndex() {
         return currentLowerIndex;
     }
 
-    @Override
+    protected abstract
+    Middleware< I > newMiddleware(
+            boolean startServer,
+            Configs< I > configFile
+    );
+
     public synchronized
-    Long read( final long index )
+    I read( final Long index )
             throws IOException, InterruptedException {
         final int i = (int) ( index - currentLowerIndex );
-        if ( ( i < 0 ) || ( i >= memory.length ) ) {
+        if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
-            middleware.sendTo(targetPid, READ_MSG, index);
-            final Message response = middleware.waitFor(targetPid, READ_RESPONSE_MSG);
+            middleware.sendTo(targetPid, READ_MSG, (I) index, null);
+            final Message< I > response = middleware.waitFor(targetPid, READ_RESPONSE_MSG);
             return response.getResponse();
         } else {
-            return memory[i];
+            return memory.get(i);
         }
     }
 
-    @Override
+    protected abstract
+    boolean responseAsBooleanRepresentation( Message< I > bool );
+
     public synchronized
     void swap(
             final long index1,
@@ -229,36 +217,33 @@ class LongPGAS
     )
             throws IOException, InterruptedException {
         //TODO REVISAR LOS SYNCHRONIZED!
-        final Long temp = read(index1);
+        final I temp = read(index1);
         write(index1, read(index2));
         write(index2, temp);
     }
 
-    @Override
     public
     long upperIndex( final int pid ) {
         return indexList.get(pid - 1).getUpperIndex();
     }
 
-    @Override
     public
     long upperIndex() {
         return currentUpperIndex;
     }
 
-    @Override
     public synchronized
     void write(
-            final long index,
-            final Long value
+            final Long index,
+            final I value
     )
             throws IOException {
         final int i = (int) ( index - currentLowerIndex );
-        if ( ( i < 0 ) || ( i >= memory.length ) ) {
+        if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
-            middleware.sendTo(targetPid, WRITE_MSG, index, value);
+            middleware.sendTo(targetPid, WRITE_MSG, (I) index, value);
         } else {
-            memory[i] = value;
+            memory.set(i, value);
         }
     }
 

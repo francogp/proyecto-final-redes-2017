@@ -4,22 +4,16 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.END_MSG;
-import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.bytesToLong;
-import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public final
-class Message {
-    public static final int MSG_BYTES_LENGHT       = 17;
-    public static final int PARAMETER_1_BYTE_INDEX = 1;
-    public static final int PARAMETER_2_BYTE_INDEX = 9;
-    public static final int TYPE_BYTE_INDEX        = 0;
-    private final InetAddress address;
-    private final byte[]      bytes;
-    private final long        parameter1;
-    private final long        parameter2;
-    private final int         port;
-    private final MessageType type;
+public abstract
+class Message< I extends Comparable< I > > {
+    protected InetAddress address;
+    protected byte[]      bytes;
+    protected I           parameter1;
+    protected I           parameter2;
+    protected int         port;
+    protected MessageType type;
 
     public
     Message(
@@ -29,13 +23,8 @@ class Message {
     ) {
         this.address = address;
         this.port = port;
-        if ( bytes.length != MSG_BYTES_LENGHT ) {
-            throw new IllegalArgumentException("Wrong bytes.length=" + bytes.length + ", must be " + MSG_BYTES_LENGHT);
-        }
         this.bytes = bytes;
-        type = MessageType.valueOf((char) bytes[TYPE_BYTE_INDEX]);
-        parameter1 = bytesToLong(bytes, PARAMETER_1_BYTE_INDEX, PARAMETER_1_BYTE_INDEX + 8);
-        parameter2 = bytesToLong(bytes, PARAMETER_2_BYTE_INDEX, PARAMETER_2_BYTE_INDEX + 8);
+        initFromBytes(bytes);
     }
 
     public
@@ -43,66 +32,35 @@ class Message {
             final InetAddress address,
             final int port,
             final MessageType type,
-            final long parameter1
-    ) {
-        this(address, port, type, parameter1, 0L);
-    }
-
-    public
-    Message(
-            final InetAddress address,
-            final int port,
-            final MessageType type
-    ) {
-        this(address, port, type, 0L, 0L);
-    }
-
-    public
-    Message(
-            final InetAddress address,
-            final int port,
-            final MessageType type,
-            final long parameter1,
-            final long parameter2
+            final I parameter1,
+            final I parameter2
     ) {
         this.address = address;
         this.port = port;
         this.type = type;
+        if ( parameter1 == null || parameter2 == null ) {
+            throw new IllegalArgumentException("parameters 1 and 2 cannot be null");
+        }
         this.parameter1 = parameter1;
         this.parameter2 = parameter2;
 
-        this.bytes = new byte[MSG_BYTES_LENGHT];
-        bytes[TYPE_BYTE_INDEX] = type.asByte();
-        final byte[] param1 = longToBytes(parameter1);
-        System.arraycopy(param1, 0, bytes, PARAMETER_1_BYTE_INDEX, PARAMETER_1_BYTE_INDEX + 8 - 1);
-        final byte[] param2 = longToBytes(parameter2);
-        System.arraycopy(param2, 0, bytes, PARAMETER_2_BYTE_INDEX, PARAMETER_2_BYTE_INDEX + 8 - 9);
-    }
-
-    public static
-    Message defaultEndQueueMsg(
-            final InetAddress address,
-            final int port
-    ) {
-        return new Message(address, port, END_MSG, 0L, 0L);
-    }
-
-    public static
-    Message defaultEndQueueMsg() {
-        return new Message(null, 0, END_MSG, 0L, 0L);
+        initBytes();
     }
 
     @Override
     public
-    boolean equals( final Object o ) {
+    boolean equals( Object o ) {
         if ( this == o ) { return true; }
         if ( !( o instanceof Message ) ) { return false; }
 
-        final Message message = (Message) o;
+        Message< ? > message = (Message< ? >) o;
 
         if ( port != message.port ) { return false; }
-        if ( ( address != null ) ? !address.equals(message.address) : ( message.address != null ) ) { return false; }
+        if ( address != null ? !address.equals(message.address) : message.address != null ) { return false; }
         if ( !Arrays.equals(bytes, message.bytes) ) { return false; }
+        if ( parameter1 != null ? !parameter1.equals(message.parameter1) : message.parameter1 != null ) { return false; }
+        if ( parameter2 != null ? !parameter2.equals(message.parameter2) : message.parameter2 != null ) { return false; }
+        if ( type != message.type ) { return false; }
 
         return true;
     }
@@ -118,14 +76,10 @@ class Message {
     }
 
     public
-    long getParameter1() {
-        return parameter1;
-    }
+    I getParameter1() {return parameter1;}
 
     public
-    long getParameter2() {
-        return parameter2;
-    }
+    I getParameter2() {return parameter2;}
 
     public
     int getPort() {
@@ -133,7 +87,7 @@ class Message {
     }
 
     public
-    long getResponse() {
+    I getResponse() {
         return parameter1;
     }
 
@@ -145,11 +99,20 @@ class Message {
     @Override
     public
     int hashCode() {
-        int result = ( address != null ) ? address.hashCode() : 0;
-        result = ( 31 * result ) + Arrays.hashCode(bytes);
-        result = ( 31 * result ) + port;
+        int result = address != null ? address.hashCode() : 0;
+        result = 31 * result + Arrays.hashCode(bytes);
+        result = 31 * result + ( parameter1 != null ? parameter1.hashCode() : 0 );
+        result = 31 * result + ( parameter2 != null ? parameter2.hashCode() : 0 );
+        result = 31 * result + port;
+        result = 31 * result + type.hashCode();
         return result;
     }
+
+    protected abstract
+    void initBytes();
+
+    protected abstract
+    void initFromBytes( final byte[] bytes );
 
     public
     boolean isEndMessage() {
@@ -159,8 +122,8 @@ class Message {
     @Override
     public
     String toString() {
-        return "Message{" + "address=" + address + ", parameter1=" + parameter1 + ", parameter2=" + parameter2 + ", port=" + port + ", type=" + type +
-               ", bytes=" + Arrays.toString(bytes) + '}';
+        return "Message{" + "address=" + address + ", parameter1=" + getParameter1() + ", parameter2=" + getParameter2() + ", port=" + port +
+               ", type=" + type + ", bytes=" + Arrays.toString(bytes) + '}';
     }
 
 }

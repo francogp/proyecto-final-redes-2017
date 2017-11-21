@@ -1,5 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
+import ar.edu.unrc.pellegrini.franco.pgas.implementations.LongPGAS;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ class LongPGASTest {
     @Test
     final
     void getSize() {
-        PGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
+        AbstractPGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
         assertThat(longPGAS.getSize(), is(3));
 
         //noinspection ReuseOfLocalVariable
@@ -28,7 +29,7 @@ class LongPGASTest {
     @Test
     final
     void imLast() {
-        PGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
+        AbstractPGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
         assertThat(longPGAS.imLast(), is(false));
 
         //noinspection ReuseOfLocalVariable
@@ -39,7 +40,7 @@ class LongPGASTest {
     @Test
     final
     void lowerIndex() {
-        final PGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
+        final AbstractPGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
 
         assertThat(longPGAS.lowerIndex(1), is(0L));
         assertThat(longPGAS.lowerIndex(2), is(3L));
@@ -52,7 +53,7 @@ class LongPGASTest {
         try {
             final Configs< Long > configs = new Configs<>(FILE);
             for ( int pid = 1; pid <= configs.getProcessQuantity(); pid++ ) {
-                final PGAS< Long > longPGAS = new LongPGAS(pid, FILE, false);
+                final AbstractPGAS< Long > longPGAS = new LongPGAS(pid, FILE, false);
                 for ( long i = longPGAS.lowerIndex(); i <= longPGAS.upperIndex(); i++ ) {
                     longPGAS.write(i, i);
                     assertThat(longPGAS.read(i), is(i));
@@ -68,7 +69,7 @@ class LongPGASTest {
     void swap() {
         try {
             for ( int pid = 1; pid <= 3; pid++ ) {
-                final PGAS< Long > longPGAS = new LongPGAS(pid, FILE, false);
+                final AbstractPGAS< Long > longPGAS = new LongPGAS(pid, FILE, false);
                 for ( long i = longPGAS.lowerIndex(); i <= longPGAS.upperIndex(); i++ ) {
                     longPGAS.write(i, i);
                 }
@@ -84,7 +85,7 @@ class LongPGASTest {
     @Test
     final
     void upperIndex() {
-        final PGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
+        final AbstractPGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
 
         assertThat(longPGAS.upperIndex(1), is(2L));
         assertThat(longPGAS.upperIndex(2), is(4L));

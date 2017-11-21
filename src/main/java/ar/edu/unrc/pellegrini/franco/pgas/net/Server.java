@@ -1,5 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.pgas.net;
 
+import ar.edu.unrc.pellegrini.franco.pgas.net.implementations.LongMessageServer;
 import ar.edu.unrc.pellegrini.franco.utils.MsgQueue;
 
 import java.io.IOException;
@@ -11,49 +12,39 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.MSG_BYTES_LENGHT;
+import static ar.edu.unrc.pellegrini.franco.pgas.net.implementations.LongMessage.MSG_BYTES_LENGHT;
 import static java.util.logging.Logger.getLogger;
 
-@SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public final
-class Server
+public abstract
+class Server< I extends Comparable< I > >
         implements Runnable {
+
     public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-    private final MsgQueue< Message > msgQueue;
-    private final Thread              msgQueueThread;
-    private final DatagramSocket      socket;
+    private final MsgQueue< Message< I > > msgQueue;
+    private final Thread                   msgQueueThread;
+    private final DatagramSocket           socket;
     private boolean running = false;
 
     public
     Server(
             final int port,
-            final Consumer< Message > messageConsumer
+            final Consumer< Message< I > > messageConsumer
     )
             throws SocketException {
-        this(port, messageConsumer, Server::isQueueFinalizationMsg);
+        this(port, messageConsumer, msg -> msg.isEndMessage());
     }
 
     public
     Server(
             final int port,
-            final Consumer< Message > messageConsumer,
-            final Function< Message, Boolean > isQueueFinalizationMsg
+            final Consumer< Message< I > > messageConsumer,
+            final Function< Message< I >, Boolean > isQueueFinalizationMsg
     )
             throws SocketException {
         socket = new DatagramSocket(port);
         msgQueue = new MsgQueue<>(messageConsumer, isQueueFinalizationMsg);
         msgQueueThread = new Thread(msgQueue);
         msgQueueThread.start();
-    }
-
-    private static
-    Boolean isQueueFinalizationMsg( final Message message ) {
-        return message.isEndMessage();
-    }
-
-    private static
-    void messageConsumer( final Message msg ) {
-        System.out.println("Server: " + msg);
     }
 
     public
@@ -66,14 +57,20 @@ class Server
         return running;
     }
 
+    protected abstract
+    DatagramPacket newDatagramPacket();
+
+    protected abstract
+    Message< I > newMessage( DatagramPacket packet );
+
     public
     void run() {
         try {
             running = true;
             while ( running ) {
-                final DatagramPacket packet = new DatagramPacket(new byte[MSG_BYTES_LENGHT], MSG_BYTES_LENGHT);
+                final DatagramPacket packet = newDatagramPacket();
                 socket.receive(packet);
-                final Message received = new Message(packet.getAddress(), packet.getPort(), packet.getData());
+                final Message< I > received = newMessage(packet);
                 msgQueue.enqueue(received);
                 if ( received.isEndMessage() ) {
                     running = false;
@@ -84,13 +81,13 @@ class Server
         } catch ( final InterruptedException ignored ) {
             //ignored
         } catch ( final Exception e ) {
-            getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
+            getLogger(LongMessageServer.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
     public synchronized
     void send(
-            final Message msg
+            final Message< I > msg
     )
             throws IOException {
         final DatagramPacket packet = new DatagramPacket(msg.getBytes(), MSG_BYTES_LENGHT, msg.getAddress(), msg.getPort());
