@@ -26,9 +26,12 @@ class Server
     private boolean running = false;
 
     public
-    Server( final int port )
+    Server(
+            final int port,
+            final Consumer< Message > messageConsumer
+    )
             throws SocketException {
-        this(port, Server::messageConsumer, Server::isQueueFinalizationMsg);
+        this(port, messageConsumer, Server::isQueueFinalizationMsg);
     }
 
     public
@@ -66,25 +69,22 @@ class Server
 
     public
     void run() {
-        running = true;
-        while ( running ) {
-            try {
-                final byte[]         buf    = new byte[MSG_BYTES_LENGHT];
-                final DatagramPacket packet = new DatagramPacket(buf, MSG_BYTES_LENGHT);
+        try {
+            running = true;
+            while ( running ) {
+                final DatagramPacket packet = new DatagramPacket(new byte[MSG_BYTES_LENGHT], MSG_BYTES_LENGHT);
                 socket.receive(packet);
                 final Message received = new Message(packet.getAddress(), packet.getPort(), packet.getData());
                 msgQueue.enqueue(received);
                 if ( received.isEndMessage() ) {
                     running = false;
                 }
-            } catch ( final IOException e ) {
-                getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
             }
-        }
-        socket.close();
-        try {
+            socket.close();
             msgQueueThread.join();
-        } catch ( final InterruptedException e ) {
+        } catch ( final InterruptedException ignored ) {
+            //ignored
+        } catch ( final Exception e ) {
             getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
         }
     }

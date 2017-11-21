@@ -12,9 +12,9 @@ public
 class MsgQueue< M >
         implements Runnable {
 
+    private final Function< M, Boolean >   isQueueFinalizationMsg;
     private final Consumer< M >            messageConsumer;
     private final LinkedBlockingQueue< M > queue;
-    private final Function< M, Boolean >   isQueueFinalizationMsg;
     private boolean running = false;
 
     public
@@ -57,8 +57,8 @@ class MsgQueue< M >
                 }
             }
         } catch ( final InterruptedException ignored ) {
-            //no hacer nada si se interrumpe esperando
-        } catch ( final Error e ) {
+            //ignored
+        } catch ( final Exception e ) {
             getLogger(MsgQueue.class.getName()).log(Level.SEVERE, null, e);
         }
     }

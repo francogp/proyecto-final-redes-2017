@@ -2,6 +2,7 @@ package ar.edu.unrc.pellegrini.franco.pgas.net;
 
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.List;
 
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.bytesToLong;
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
@@ -9,6 +10,7 @@ import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class Message {
+    public static final char AND_REDUCE_MSG         = 'A';
     public static final char BARRIER_MSG            = 'B';
     public static final char CONTINUE_MSG           = 'C';
     public static final char END_MSG                = 'E';
@@ -16,7 +18,7 @@ class Message {
     public static final int  PARAMETER_1_BYTE_INDEX = 1;
     public static final int  PARAMETER_2_BYTE_INDEX = 9;
     public static final char READ_MSG               = 'R';
-    public static final char RESULT_MSG             = 'S';
+    public static final char READ_RESPONSE_MSG      = 'S';
     public static final int  TYPE_BYTE_INDEX        = 0;
     public static final char WRITE_MSG              = 'W';
     private final InetAddress address;
@@ -97,6 +99,11 @@ class Message {
         return new Message(null, 0, END_MSG, 0L, 0L);
     }
 
+    public static
+    List< Character > getMsgTypeList() {
+        return List.of(AND_REDUCE_MSG, BARRIER_MSG, CONTINUE_MSG, END_MSG, READ_MSG, READ_RESPONSE_MSG, WRITE_MSG);
+    }
+
     @Override
     public
     boolean equals( final Object o ) {
@@ -135,6 +142,11 @@ class Message {
     public
     int getPort() {
         return port;
+    }
+
+    public
+    long getResponse() {
+        return parameter1;
     }
 
     public

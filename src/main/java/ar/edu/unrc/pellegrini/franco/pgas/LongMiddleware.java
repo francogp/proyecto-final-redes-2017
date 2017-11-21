@@ -7,6 +7,10 @@ import ar.edu.unrc.pellegrini.franco.utils.Configs.HostConfig;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.logging.Level;
+
+import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.*;
+import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
@@ -37,7 +41,13 @@ class LongMiddleware
         final int port = configs.getHostsConfig(pid).getPort();
         if ( starServer ) {
             try {
-                server = new Server(port);
+                server = new Server(port, ( msg ) -> {
+                    try {
+                        processIncommingMessage(msg);
+                    } catch ( Exception e ) {
+                        getLogger(LongMiddleware.class.getName()).log(Level.SEVERE, null, e);
+                    }
+                });
                 serverThread = new Thread(server);
                 serverThread.start();
             } catch ( final SocketException e ) {
@@ -49,22 +59,72 @@ class LongMiddleware
         }
     }
 
-    @Override
-    public
-    void receiveFrom( final int pid ) {
-
+    private
+    void processIncommingMessage( final Message incommingMessage )
+            throws IOException, InterruptedException {
+        //        public static final char AND_REDUCE_MSG         = 'A';
+        //        public static final char BARRIER_MSG            = 'B';
+        //        public static final char CONTINUE_MSG           = 'C';
+        //        public static final char END_MSG                = 'E';
+        //        public static final char READ_MSG               = 'R';
+        //        public static final char WRITE_MSG              = 'W';
+        final HostConfig< Long > incommingMsgHostWaitQueue = configs.getHostsConfig(incommingMessage.getAddress());
+        switch ( incommingMessage.getType() ) {
+            case AND_REDUCE_MSG: {
+                incommingMsgHostWaitQueue.registerMsg(incommingMessage);
+                break;
+            }
+            case BARRIER_MSG: {
+                incommingMsgHostWaitQueue.registerMsg(incommingMessage);
+                break;
+            }
+            case CONTINUE_MSG: {
+                incommingMsgHostWaitQueue.registerMsg(incommingMessage);
+                break;
+            }
+            case END_MSG: {
+                break;
+            }
+            case READ_MSG: {
+                sendTo(incommingMsgHostWaitQueue, READ_RESPONSE_MSG, longPGAS.read(incommingMessage.getParameter1()));
+                break;
+            }
+            case READ_RESPONSE_MSG: {
+                incommingMsgHostWaitQueue.registerMsg(incommingMessage);
+                break;
+            }
+            case WRITE_MSG: {
+                longPGAS.write(incommingMessage.getParameter1(), incommingMessage.getParameter2());
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Unknown message type = " + incommingMessage.getType());
+        }
     }
 
     @Override
     public
     void sendTo(
-            final int pid,
+            final HostConfig< Long > targetHost,
             final char msgType,
             final long parameter1,
             final long parameter2
     )
             throws IOException {
-        final HostConfig< Long > destHost = configs.getHostsConfig(pid);
+        final Message msg = new Message(targetHost.getInetAddress(), targetHost.getPort(), msgType, parameter1, parameter2);
+        server.send(msg);
+    }
+
+    @Override
+    public
+    void sendTo(
+            final int targetPid,
+            final char msgType,
+            final long parameter1,
+            final long parameter2
+    )
+            throws IOException {
+        final HostConfig< Long > destHost = configs.getHostsConfig(targetPid);
         final Message            msg      = new Message(destHost.getInetAddress(), destHost.getPort(), msgType, parameter1, parameter2);
         server.send(msg);
     }
@@ -72,63 +132,53 @@ class LongMiddleware
     @Override
     public
     void sendTo(
-            final int pid,
-            final char msgType,
-            final long parameter1
+            final HostConfig< Long > targetHost,
+            final char msgType
     )
             throws IOException {
-        sendTo(pid, msgType, parameter1, 0L);
+        sendTo(targetHost, msgType, 0L, 0L);
     }
 
     @Override
     public
     void sendTo(
-            final int pid,
-            final char msgType
-    )
-            throws IOException {
-        sendTo(pid, msgType, 0L, 0L);
-    }
-
-    @Override
-    public
-    Message waitFor(
-            final int pid,
-            final char msgType,
-            final long parameter1,
-            final long parameter2
-    )
-            throws IOException {
-        final HostConfig< Long > destHost = configs.getHostsConfig(pid);
-        final Message            msg      = new Message(destHost.getInetAddress(), destHost.getPort(), msgType, parameter1, parameter2);
-        server.send(msg);
-        //TODO completar!
-        return null;
-    }
-
-    @Override
-    public
-    Message waitFor(
-            final int pid,
+            final HostConfig< Long > targetHost,
             final char msgType,
             final long parameter1
     )
             throws IOException {
-        waitFor(pid, msgType, parameter1, 0L);
-        //TODO completar!
-        return null;
+        sendTo(targetHost, msgType, parameter1, 0L);
+    }
+
+    @Override
+    public
+    void sendTo(
+            final int targetPid,
+            final char msgType,
+            final long parameter1
+    )
+            throws IOException {
+        sendTo(targetPid, msgType, parameter1, 0L);
+    }
+
+    @Override
+    public
+    void sendTo(
+            final int targetPid,
+            final char msgType
+    )
+            throws IOException {
+        sendTo(targetPid, msgType, 0L, 0L);
     }
 
     @Override
     public
     Message waitFor(
-            final int pid,
+            final int senderPid,
             final char msgType
     )
-            throws IOException {
-        waitFor(pid, msgType, 0L, 0L);
-        //TODO completar!
-        return null;
+            throws IOException, InterruptedException {
+        return configs.getHostsConfig(senderPid).waitFor(msgType);
     }
 
 }

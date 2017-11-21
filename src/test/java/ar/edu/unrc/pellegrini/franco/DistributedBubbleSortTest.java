@@ -3,7 +3,6 @@ package ar.edu.unrc.pellegrini.franco;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ class DistributedBubbleSortTest {
             final PGAS< Long > PGAS  = new TestLongPGAS(array);
             DistributedBubbleSort.bubbleSort(PGAS, 0L, array.size() - 1L);
             assertThat(array, is(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)));
-        } catch ( final IOException e ) {
+        } catch ( final Exception e ) {
             fail(e);
         }
     }
@@ -63,6 +62,12 @@ class DistributedBubbleSortTest {
         public final
         boolean imLast() {
             return true;
+        }
+
+        @Override
+        public
+        boolean isCoordinator() {
+            return false;
         }
 
         @Override

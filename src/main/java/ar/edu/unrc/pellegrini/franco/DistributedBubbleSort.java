@@ -40,7 +40,7 @@ class DistributedBubbleSort
             final long lowerIndex,
             final long upperIndex
     )
-            throws IOException {
+            throws IOException, InterruptedException {
         boolean swapped = true;
         for ( long i = upperIndex; swapped && ( i >= lowerIndex ); i-- ) {
             swapped = false;
@@ -92,6 +92,9 @@ class DistributedBubbleSort
                 }
                 // reduce finish by and, then replicate result
                 finish = longPGAS.andReduce(finish);
+            }
+            if ( longPGAS.isCoordinator() ) {
+                System.out.println(longPGAS.toString());
             }
         } catch ( final Exception e ) {
             getLogger(DistributedBubbleSort.class.getName()).log(Level.SEVERE, "Unknown problem", e);

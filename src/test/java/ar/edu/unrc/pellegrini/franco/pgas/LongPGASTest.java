@@ -4,7 +4,6 @@ import ar.edu.unrc.pellegrini.franco.utils.Configs;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -67,7 +66,7 @@ class LongPGASTest {
                     assertThat(longPGAS.read(i), is(i));
                 }
             }
-        } catch ( final IOException e ) {
+        } catch ( final Exception e ) {
             fail(e);
         }
     }
@@ -86,7 +85,7 @@ class LongPGASTest {
                 assertThat(longPGAS.read(longPGAS.lowerIndex()), is(longPGAS.upperIndex()));
                 assertThat(longPGAS.read(longPGAS.upperIndex()), is(longPGAS.lowerIndex()));
             }
-        } catch ( final IOException e ) {
+        } catch ( final Exception e ) {
             fail(e);
         }
     }

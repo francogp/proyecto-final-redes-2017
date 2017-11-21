@@ -1,5 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.utils;
 
+import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
@@ -20,8 +22,9 @@ class Configs< I extends Comparable< I > > {
     public static final String INET_ADDRESS = "inetAddress";
     public static final String PORT         = "port";
     public static final String TO_SORT      = "toSort";
-    private final Map< Integer, HostConfig< I > > hosts;
-    private final int                             processQuantity;
+    private final Map< InetAddress, HostConfig< I > > hostsByAddress;
+    private final Map< Integer, HostConfig< I > >     hostsByPid;
+    private final int                                 processQuantity;
 
     /**
      * JSON file Format:
@@ -67,7 +70,8 @@ class Configs< I extends Comparable< I > > {
                 throw new IllegalArgumentException("wrong hosts quantity in config file \"" + configFilePath + "\".");
             }
             processQuantity = hostsInJSON.size();
-            hosts = new HashMap<>(processQuantity);
+            hostsByPid = new HashMap<>(processQuantity);
+            hostsByAddress = new HashMap<>(processQuantity);
 
             int pid = 1;
             for ( final Object hostInJSON : hostsInJSON ) {
@@ -85,7 +89,10 @@ class Configs< I extends Comparable< I > > {
                     final I value = (I) valueInJSON;
                     toSort.add(value);
                 }
-                hosts.put(pid, new HostConfig<>(inetAddress, port.intValue(), toSort));
+
+                HostConfig< I > hostConfig = new HostConfig<>(pid, inetAddress, port.intValue(), toSort);
+                hostsByPid.put(pid, hostConfig);
+                hostsByAddress.put(hostConfig.getInetAddress(), hostConfig);
                 pid++;
             }
         } catch ( final FileNotFoundException e ) {
@@ -101,7 +108,12 @@ class Configs< I extends Comparable< I > > {
 
     public
     HostConfig< I > getHostsConfig( final int pid ) {
-        return hosts.get(pid);
+        return hostsByPid.get(pid);
+    }
+
+    public
+    HostConfig< I > getHostsConfig( final InetAddress address ) {
+        return hostsByAddress.get(address);
     }
 
     public
@@ -111,40 +123,55 @@ class Configs< I extends Comparable< I > > {
 
     public
     int size() {
-        return hosts.size();
+        return hostsByPid.size();
     }
 
     @SuppressWarnings( { "ClassWithoutNoArgConstructor", "PublicInnerClass" } )
     public static
     class HostConfig< I extends Comparable< I > > {
-        private final InetAddress inetAddress;
-        private final Integer     port;
-        private final List< I >   toSort;
+        private final InetAddress                                      inetAddress;
+        private final int                                              pid;
+        private final Integer                                          port;
+        private final Map< Character, LinkedBlockingQueue< Message > > queues;
+        private final List< I >                                        toSort;
 
         public
         HostConfig(
+                final int pid,
                 final String inetAddress,
                 final Integer port,
                 final List< I > toSort
         )
                 throws UnknownHostException {
-            this(InetAddress.getByName(inetAddress), port, toSort);
+            this(pid, InetAddress.getByName(inetAddress), port, toSort);
         }
 
         public
         HostConfig(
+                final int pid,
                 final InetAddress inetAddress,
                 final Integer port,
                 final List< I > toSort
         ) {
+            this.pid = pid;
             this.inetAddress = inetAddress;
             this.port = port;
             this.toSort = toSort;
+            this.queues = new HashMap<>();
+            final List< Character > msgTypeList = Message.getMsgTypeList();
+            for ( Character type : msgTypeList ) {
+                queues.put(type, new LinkedBlockingQueue<>());
+            }
         }
 
         public
         InetAddress getInetAddress() {
             return inetAddress;
+        }
+
+        public
+        int getPid() {
+            return pid;
         }
 
         public
@@ -155,6 +182,17 @@ class Configs< I extends Comparable< I > > {
         public
         List< I > getToSort() {
             return toSort;
+        }
+
+        public
+        void registerMsg( final Message message ) {
+            queues.get(message.getType()).add(message);
+        }
+
+        public
+        Message waitFor( char msgType )
+                throws InterruptedException {
+            return queues.get(msgType).take();
         }
     }
 }
