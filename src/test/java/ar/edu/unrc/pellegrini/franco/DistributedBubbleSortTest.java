@@ -3,6 +3,7 @@ package ar.edu.unrc.pellegrini.franco;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,6 +69,13 @@ class DistributedBubbleSortTest {
         @Override
         public
         void barrier() {
+
+        }
+
+        @Override
+        public
+        void endService()
+                throws IOException {
 
         }
 

@@ -1,6 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.utils;
 
 import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
+import ar.edu.unrc.pellegrini.franco.pgas.net.MessageType;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -11,11 +12,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
 class HostConfig< I extends Comparable< I > > {
-    private final InetAddress                                      inetAddress;
-    private final int                                              pid;
-    private final Integer                                          port;
-    private final Map< Character, LinkedBlockingQueue< Message > > queues;
-    private final List< I >                                        toSort;
+    private final InetAddress                                        inetAddress;
+    private final int                                                pid;
+    private final Integer                                            port;
+    private final Map< MessageType, LinkedBlockingQueue< Message > > queues;
+    private final List< I >                                          toSort;
 
     public
     HostConfig(
@@ -29,8 +30,8 @@ class HostConfig< I extends Comparable< I > > {
         this.port = port;
         this.toSort = toSort;
         this.queues = new ConcurrentHashMap<>();
-        final List< Character > msgTypeList = Message.getMsgTypeList();
-        for ( Character type : msgTypeList ) {
+        final MessageType[] msgTypeList = MessageType.values();
+        for ( MessageType type : msgTypeList ) {
             queues.put(type, new LinkedBlockingQueue<>());
         }
     }
@@ -63,7 +64,7 @@ class HostConfig< I extends Comparable< I > > {
     }
 
     public
-    Message waitFor( char msgType )
+    Message waitFor( MessageType msgType )
             throws InterruptedException {
         final LinkedBlockingQueue< Message > messages = queues.get(msgType);
         return messages.take();

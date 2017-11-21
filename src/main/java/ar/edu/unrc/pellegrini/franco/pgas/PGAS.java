@@ -13,6 +13,9 @@ interface PGAS< I > {
     void barrier()
             throws IOException, InterruptedException;
 
+    void endService()
+            throws IOException;
+
     int getPid();
 
     int getSize();

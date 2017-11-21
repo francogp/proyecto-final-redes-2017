@@ -2,31 +2,24 @@ package ar.edu.unrc.pellegrini.franco.pgas.net;
 
 import java.net.InetAddress;
 import java.util.Arrays;
-import java.util.List;
 
+import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.END_MSG;
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.bytesToLong;
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class Message {
-    public static final char AND_REDUCE_MSG         = 'A';
-    public static final char BARRIER_MSG            = 'B';
-    public static final char CONTINUE_MSG           = 'C';
-    public static final char END_MSG                = 'E';
-    public static final int  MSG_BYTES_LENGHT       = 17;
-    public static final int  PARAMETER_1_BYTE_INDEX = 1;
-    public static final int  PARAMETER_2_BYTE_INDEX = 9;
-    public static final char READ_MSG               = 'R';
-    public static final char READ_RESPONSE_MSG      = 'S';
-    public static final int  TYPE_BYTE_INDEX        = 0;
-    public static final char WRITE_MSG              = 'W';
+    public static final int MSG_BYTES_LENGHT       = 17;
+    public static final int PARAMETER_1_BYTE_INDEX = 1;
+    public static final int PARAMETER_2_BYTE_INDEX = 9;
+    public static final int TYPE_BYTE_INDEX        = 0;
     private final InetAddress address;
     private final byte[]      bytes;
     private final long        parameter1;
     private final long        parameter2;
     private final int         port;
-    private final char        type;
+    private final MessageType type;
 
     public
     Message(
@@ -40,7 +33,7 @@ class Message {
             throw new IllegalArgumentException("Wrong bytes.length=" + bytes.length + ", must be " + MSG_BYTES_LENGHT);
         }
         this.bytes = bytes;
-        type = (char) bytes[TYPE_BYTE_INDEX];
+        type = MessageType.valueOf((char) bytes[TYPE_BYTE_INDEX]);
         parameter1 = bytesToLong(bytes, PARAMETER_1_BYTE_INDEX, PARAMETER_1_BYTE_INDEX + 8);
         parameter2 = bytesToLong(bytes, PARAMETER_2_BYTE_INDEX, PARAMETER_2_BYTE_INDEX + 8);
     }
@@ -49,7 +42,7 @@ class Message {
     Message(
             final InetAddress address,
             final int port,
-            final char type,
+            final MessageType type,
             final long parameter1
     ) {
         this(address, port, type, parameter1, 0L);
@@ -59,7 +52,7 @@ class Message {
     Message(
             final InetAddress address,
             final int port,
-            final char type
+            final MessageType type
     ) {
         this(address, port, type, 0L, 0L);
     }
@@ -68,7 +61,7 @@ class Message {
     Message(
             final InetAddress address,
             final int port,
-            final char type,
+            final MessageType type,
             final long parameter1,
             final long parameter2
     ) {
@@ -79,7 +72,7 @@ class Message {
         this.parameter2 = parameter2;
 
         this.bytes = new byte[MSG_BYTES_LENGHT];
-        bytes[TYPE_BYTE_INDEX] = (byte) type;
+        bytes[TYPE_BYTE_INDEX] = type.asByte();
         final byte[] param1 = longToBytes(parameter1);
         System.arraycopy(param1, 0, bytes, PARAMETER_1_BYTE_INDEX, PARAMETER_1_BYTE_INDEX + 8 - 1);
         final byte[] param2 = longToBytes(parameter2);
@@ -97,11 +90,6 @@ class Message {
     public static
     Message defaultEndQueueMsg() {
         return new Message(null, 0, END_MSG, 0L, 0L);
-    }
-
-    public static
-    List< Character > getMsgTypeList() {
-        return List.of(AND_REDUCE_MSG, BARRIER_MSG, CONTINUE_MSG, END_MSG, READ_MSG, READ_RESPONSE_MSG, WRITE_MSG);
     }
 
     @Override
@@ -150,7 +138,7 @@ class Message {
     }
 
     public
-    char getType() {
+    MessageType getType() {
         return type;
     }
 

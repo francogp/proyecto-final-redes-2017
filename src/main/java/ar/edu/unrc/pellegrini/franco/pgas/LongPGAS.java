@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.*;
+import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.*;
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
@@ -96,15 +96,18 @@ class LongPGAS
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException {
         boolean andReduce = value;
+        assert COORDINATOR_PID == 1;
         if ( imCoordinator ) {
-            for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                final Message msg = middleware.waitFor(pid, AND_REDUCE_MSG);
+            assert pid == 1;
+            for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                final Message msg = middleware.waitFor(targetPid, AND_REDUCE_MSG);
                 andReduce = andReduce && ( msg.getResponse() != 0 ); //true!=0, false==0
             }
-            for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                middleware.sendTo(pid, CONTINUE_MSG, ( andReduce ) ? 1L : 0L);
+            for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                middleware.sendTo(targetPid, CONTINUE_MSG, ( andReduce ) ? 1L : 0L);
             }
         } else {
+            assert pid != 1;
             middleware.sendTo(COORDINATOR_PID, AND_REDUCE_MSG, ( value ) ? 1L : 0L);
             final Message msg = middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
             andReduce = msg.getResponse() != 0;
@@ -132,19 +135,24 @@ class LongPGAS
         if ( imCoordinator ) {
             assert pid == 1;
             for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                //                System.out.println("Flag wait Barrier + pid=" + pid + " " + Thread.currentThread().getName());
                 middleware.waitFor(pid, BARRIER_MSG);
             }
             for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                //                System.out.println("Flag send continue + pid=" + pid + " " + Thread.currentThread().getName());
                 middleware.sendTo(pid, CONTINUE_MSG);
             }
         } else {
             assert pid >= 1;
-            //            System.out.println("Flag send barrier + pid=" + pid + " " + Thread.currentThread().getName());
             middleware.sendTo(COORDINATOR_PID, BARRIER_MSG);
-            //            System.out.println("Flag wait continue + pid=" + pid + " " + Thread.currentThread().getName());
             middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
+        }
+    }
+
+    @Override
+    public
+    void endService()
+            throws IOException {
+        for ( int pid = 1; pid <= processQuantity; pid++ ) {
+            middleware.sendTo(pid, END_MSG);
         }
     }
 

@@ -18,7 +18,6 @@ import static java.util.logging.Logger.getLogger;
 public final
 class Server
         implements Runnable {
-
     public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
     private final MsgQueue< Message > msgQueue;
     private final Thread              msgQueueThread;

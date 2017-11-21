@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.READ_MSG;
-import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.WRITE_MSG;
+import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.READ_MSG;
+import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.WRITE_MSG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;

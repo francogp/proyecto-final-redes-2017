@@ -1,6 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
+import ar.edu.unrc.pellegrini.franco.pgas.net.MessageType;
 import ar.edu.unrc.pellegrini.franco.pgas.net.Server;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 import ar.edu.unrc.pellegrini.franco.utils.HostConfig;
@@ -9,13 +10,14 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.logging.Level;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.Message.*;
+import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.READ_RESPONSE_MSG;
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class LongMiddleware
         implements Middleware< Long > {
+    public static final boolean DEBUG_MODE = true;
     private final Configs< Long >    configs;
     private final HostConfig< Long > hostsConfig;
     private final PGAS< Long >       longPGAS;
@@ -70,6 +72,7 @@ class LongMiddleware
         //        public static final char END_MSG                = 'E';
         //        public static final char READ_MSG               = 'R';
         //        public static final char WRITE_MSG              = 'W';
+        //TODO buscar asi el pid o mandar por mensaje?
         final HostConfig< Long > targetHost = configs.getHostsConfig(incomingMessage.getAddress(), incomingMessage.getPort());
         switch ( incomingMessage.getType() ) {
             case AND_REDUCE_MSG: {
@@ -111,12 +114,17 @@ class LongMiddleware
     public
     void sendTo(
             final HostConfig< Long > targetHost,
-            final char msgType,
+            final MessageType msgType,
             final long parameter1,
             final long parameter2
     )
             throws IOException {
         final Message msg = new Message(targetHost.getInetAddress(), targetHost.getPort(), msgType, parameter1, parameter2);
+        if ( DEBUG_MODE ) {
+            System.out.println(
+                    longPGAS.getPid() + " sendTo( pid=" + configs.getHostsConfig(targetHost.getInetAddress(), targetHost.getPort()).getPid() +
+                    " ) type=" + msgType + " param1=" + parameter1 + " param2=" + parameter2);
+        }
         server.send(msg);
     }
 
@@ -124,13 +132,17 @@ class LongMiddleware
     public
     void sendTo(
             final int targetPid,
-            final char msgType,
+            final MessageType msgType,
             final long parameter1,
             final long parameter2
     )
             throws IOException {
         final HostConfig< Long > destHost = configs.getHostsConfig(targetPid);
         final Message            msg      = new Message(destHost.getInetAddress(), destHost.getPort(), msgType, parameter1, parameter2);
+        if ( DEBUG_MODE ) {
+            System.out.println(
+                    longPGAS.getPid() + " sendTo( pid=" + targetPid + " ) type=" + msgType + " param1=" + parameter1 + " param2=" + parameter2);
+        }
         server.send(msg);
     }
 
@@ -138,7 +150,7 @@ class LongMiddleware
     public
     void sendTo(
             final HostConfig< Long > targetHost,
-            final char msgType
+            final MessageType msgType
     )
             throws IOException {
         sendTo(targetHost, msgType, 0L, 0L);
@@ -148,7 +160,7 @@ class LongMiddleware
     public
     void sendTo(
             final HostConfig< Long > targetHost,
-            final char msgType,
+            final MessageType msgType,
             final long parameter1
     )
             throws IOException {
@@ -159,7 +171,7 @@ class LongMiddleware
     public
     void sendTo(
             final int targetPid,
-            final char msgType,
+            final MessageType msgType,
             final long parameter1
     )
             throws IOException {
@@ -170,7 +182,7 @@ class LongMiddleware
     public
     void sendTo(
             final int targetPid,
-            final char msgType
+            final MessageType msgType
     )
             throws IOException {
         sendTo(targetPid, msgType, 0L, 0L);
@@ -180,10 +192,13 @@ class LongMiddleware
     public
     Message waitFor(
             final int senderPid,
-            final char msgType
+            final MessageType msgType
     )
             throws IOException, InterruptedException {
         final HostConfig< Long > hostsConfig = configs.getHostsConfig(senderPid);
+        if ( DEBUG_MODE ) {
+            System.out.println(longPGAS.getPid() + " waitFor( pid=" + senderPid + " ) type=" + msgType);
+        }
         return hostsConfig.waitFor(msgType);
     }
 

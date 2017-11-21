@@ -74,25 +74,39 @@ class DistributedBubbleSort
                 finish = true;
                 final long upperIndex = longPGAS.upperIndex();
                 final long lowerIndex = longPGAS.lowerIndex();
+                System.out.println(longPGAS.getPid() + ": flag 1");
 
                 // sort local block
                 bubbleSort(longPGAS, lowerIndex, upperIndex);
 
+                System.out.println(longPGAS.getPid() + ": flag 2");
                 longPGAS.barrier();
 
+                System.out.println(longPGAS.getPid() + ": flag 3");
                 if ( !longPGAS.imLast() ) {
                     final long lowerIndexRight = longPGAS.lowerIndex(longPGAS.getPid() + 1);
+                    System.out.println(longPGAS.getPid() + ": flag 3a");
                     if ( longPGAS.read(upperIndex) > longPGAS.read(lowerIndexRight) ) {
+                        System.out.println(longPGAS.getPid() + ": flag 3 swap");
                         longPGAS.swap(upperIndex, lowerIndexRight);
+                        System.out.println(longPGAS.getPid() + ": flag 3 end swap");
                         finish = false;  // update local copy
                     }
                 }
+                System.out.println(longPGAS.getPid() + ": flag 4");
                 // reduce finish by and, then replicate result
                 finish = longPGAS.andReduce(finish);
+
+                System.out.println(longPGAS.getPid() + ": flag 5");
             }
+
+            System.out.println(longPGAS.getPid() + ": flag 6");
             if ( longPGAS.isCoordinator() ) {
                 System.out.println(longPGAS.asString());
+                longPGAS.endService();
             }
+            System.out.println(longPGAS.getPid() + ": flag 7");
+            longPGAS.barrier();
         } catch ( final Exception e ) {
             getLogger(DistributedBubbleSort.class.getName()).log(Level.SEVERE, "Unknown problem", e);
         }

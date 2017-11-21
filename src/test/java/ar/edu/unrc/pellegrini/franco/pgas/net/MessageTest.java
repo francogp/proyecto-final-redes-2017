@@ -2,12 +2,13 @@ package ar.edu.unrc.pellegrini.franco.pgas.net;
 
 import org.junit.jupiter.api.Test;
 
+import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.READ_MSG;
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.bytesToLong;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class MessageTest {
-    private final Message msg = new Message(null, 0, Message.READ_MSG, 15L);
+    private final Message msg = new Message(null, 0, READ_MSG, 15L);
 
     @Test
     final
@@ -30,11 +31,11 @@ class MessageTest {
 
     @Test
     void getType() {
-        assertThat(msg.getType(), is(Message.READ_MSG));
+        assertThat(msg.getType(), is(READ_MSG));
 
         final byte[] bytes = msg.getBytes();
         final char   type  = (char) bytes[Message.TYPE_BYTE_INDEX];
-        assertThat(msg.getType(), is(type));
+        assertThat(msg.getType().asChar(), is(type));
 
     }
 
