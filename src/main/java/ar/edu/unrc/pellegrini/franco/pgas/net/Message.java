@@ -171,6 +171,7 @@ class Message {
     @Override
     public
     String toString() {
-        return "Message{" + "address=" + address + ", port=" + port + ", value=" + Arrays.toString(bytes) + '}';
+        return "Message{" + "address=" + address + ", parameter1=" + parameter1 + ", parameter2=" + parameter2 + ", port=" + port + ", type=" + type +
+               ", bytes=" + Arrays.toString(bytes) + '}';
     }
 }

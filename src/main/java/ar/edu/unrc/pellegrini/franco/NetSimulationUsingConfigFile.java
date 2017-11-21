@@ -19,7 +19,8 @@ class NetSimulationUsingConfigFile {
         arguments.loadArguments(args);
         final Configs< Long > configFile = new Configs<>(arguments.parseString(ARG_CONFIG_FILE));
         IntStream.rangeClosed(1, configFile.size())
-                .mapToObj(pid -> new DistributedBubbleSort(pid, configFile))
+                .mapToObj(pid -> new DistributedBubbleSort(pid,
+                        arguments.parseString(ARG_CONFIG_FILE))) //TODO move threads blocker to other places to avoid this
                 .map(Thread::new)
                 .forEach(Thread::start);
     }

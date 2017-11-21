@@ -71,14 +71,17 @@ class LongMiddleware
         final HostConfig< Long > incommingMsgHostWaitQueue = configs.getHostsConfig(incommingMessage.getAddress());
         switch ( incommingMessage.getType() ) {
             case AND_REDUCE_MSG: {
+                assert longPGAS.isCoordinator();
                 incommingMsgHostWaitQueue.registerMsg(incommingMessage);
                 break;
             }
             case BARRIER_MSG: {
+                assert longPGAS.isCoordinator();
                 incommingMsgHostWaitQueue.registerMsg(incommingMessage);
                 break;
             }
             case CONTINUE_MSG: {
+                assert !longPGAS.isCoordinator();
                 incommingMsgHostWaitQueue.registerMsg(incommingMessage);
                 break;
             }

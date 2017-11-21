@@ -4,6 +4,7 @@ import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 import ar.edu.unrc.pellegrini.franco.utils.Configs.HostConfig;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,21 +31,40 @@ class LongPGAS
     private final int                processQuantity;
     private Long[] memory = null;
 
+
     public
     LongPGAS(
             final int pid,
-            final Configs< Long > configs
+            final String configsFilePath
     ) {
-        this(pid, configs, true);
+        this(pid, new File(configsFilePath), true);
     }
 
     public
     LongPGAS(
             final int pid,
-            final Configs< Long > configs,
+            final String configsFilePath,
             final boolean startServer
     ) {
-        processQuantity = configs.getProcessQuantity();
+        this(pid, new File(configsFilePath), startServer);
+    }
+
+    public
+    LongPGAS(
+            final int pid,
+            final File configsFile
+    ) {
+        this(pid, configsFile, true);
+    }
+
+    public
+    LongPGAS(
+            final int pid,
+            final File configsFile,
+            final boolean startServer
+    ) {
+        final Configs< Long > configFile = new Configs<>(configsFile);
+        processQuantity = configFile.getProcessQuantity();
         if ( pid <= 0 ) { throw new IllegalArgumentException("pid " + pid + " must be >= 0."); }
         if ( pid > processQuantity ) { throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file."); }
         this.pid = pid;
@@ -54,7 +74,7 @@ class LongPGAS
         long lowerIndex = 0L;
         long upperIndex = -1L;
         for ( int currentPid = 1; currentPid <= processQuantity; currentPid++ ) {
-            final HostConfig< Long > integerHostConfig = configs.getHostsConfig(currentPid);
+            final HostConfig< Long > integerHostConfig = configFile.getHostsConfig(currentPid);
             final List< Long >       toSort            = integerHostConfig.getToSort();
             if ( pid == currentPid ) {
                 memory = toSort.toArray(new Long[toSort.size()]);
@@ -68,7 +88,7 @@ class LongPGAS
         currentUpperIndex = upperIndex(pid);
         pgasSize = upperIndex + 1;
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        middleware = new LongMiddleware(this, configs, startServer);
+        middleware = new LongMiddleware(this, configFile, startServer);
     }
 
     @Override
@@ -97,14 +117,20 @@ class LongPGAS
     void barrier()
             throws IOException, InterruptedException {
         if ( imCoordinator ) {
+            assert pid == 1;
             for ( int pid = 2; pid <= processQuantity; pid++ ) {
+                System.out.println("Flag wait Barrier + pid=" + pid + " " + Thread.currentThread().getName());
                 middleware.waitFor(pid, BARRIER_MSG);
             }
             for ( int pid = 2; pid <= processQuantity; pid++ ) {
+                System.out.println("Flag send continue + pid=" + pid + " " + Thread.currentThread().getName());
                 middleware.sendTo(pid, CONTINUE_MSG);
             }
         } else {
+            assert pid >= 1;
+            System.out.println("Flag send barrier + pid=" + pid + " " + Thread.currentThread().getName());
             middleware.sendTo(COORDINATOR_PID, BARRIER_MSG);
+            System.out.println("Flag wait continue + pid=" + pid + " " + Thread.currentThread().getName());
             middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
         }
     }

@@ -3,7 +3,6 @@ package ar.edu.unrc.pellegrini.franco;
 import ar.edu.unrc.pellegrini.franco.pgas.LongPGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
-import ar.edu.unrc.pellegrini.franco.utils.Configs;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -22,9 +21,9 @@ class DistributedBubbleSort
     public
     DistributedBubbleSort(
             final int pid,
-            final Configs< Long > configFile
+            final String configFilePath
     ) {
-        longPGAS = new LongPGAS(pid, configFile);
+        longPGAS = new LongPGAS(pid, configFilePath);
     }
 
     /**
@@ -44,7 +43,7 @@ class DistributedBubbleSort
         boolean swapped = true;
         for ( long i = upperIndex; swapped && ( i >= lowerIndex ); i-- ) {
             swapped = false;
-            for ( long j = 0L; j < i; j++ ) {
+            for ( long j = lowerIndex; j < i; j++ ) {
                 if ( longPGAS.read(j) > longPGAS.read(j + 1L) ) {
                     swapped = true;
                     longPGAS.swap(j, j + 1L);
@@ -60,10 +59,8 @@ class DistributedBubbleSort
         arguments.addValidArg(ARG_CONFIG_FILE);
 
         arguments.loadArguments(args);
-        final int             pid        = arguments.parseInteger(ARG_PID);
-        final Configs< Long > configFile = new Configs<>(arguments.parseString(ARG_CONFIG_FILE));
-
-        final DistributedBubbleSort bubbleSort = new DistributedBubbleSort(pid, configFile);
+        final int                   pid        = arguments.parseInteger(ARG_PID);
+        final DistributedBubbleSort bubbleSort = new DistributedBubbleSort(pid, arguments.parseString(ARG_CONFIG_FILE));
         bubbleSort.run();
     }
 
@@ -71,18 +68,23 @@ class DistributedBubbleSort
     public
     void run() {
         try {
+            System.out.println("Flag 1 " + Thread.currentThread().getName());
             boolean finish = false;
 
             while ( !finish ) {
                 finish = true;
+                System.out.println("Flag 2 " + Thread.currentThread().getName());
                 final long upperIndex = longPGAS.upperIndex();
                 final long lowerIndex = longPGAS.lowerIndex();
 
+                System.out.println("Flag 3 " + Thread.currentThread().getName());
                 // sort local block
                 bubbleSort(longPGAS, lowerIndex, upperIndex);
 
+                System.out.println("Flag 4 " + Thread.currentThread().getName());
                 longPGAS.barrier();
 
+                System.out.println("Flag 5 " + Thread.currentThread().getName());
                 if ( !longPGAS.imLast() ) {
                     final long lowerIndexRight = longPGAS.lowerIndex(longPGAS.getPid() + 1);
                     if ( longPGAS.read(upperIndex) > longPGAS.read(lowerIndexRight) ) {
@@ -90,9 +92,12 @@ class DistributedBubbleSort
                         finish = false;  // update local copy
                     }
                 }
+                //TODO cleanup debug code
+                //                System.out.println("Flag 6 " + Thread.currentThread().getName());
                 // reduce finish by and, then replicate result
                 finish = longPGAS.andReduce(finish);
             }
+            System.out.println("Flag 7 " + Thread.currentThread().getName());
             if ( longPGAS.isCoordinator() ) {
                 System.out.println(longPGAS.toString());
             }

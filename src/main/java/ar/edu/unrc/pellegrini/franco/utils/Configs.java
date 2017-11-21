@@ -185,8 +185,10 @@ class Configs< I extends Comparable< I > > {
         }
 
         public
-        void registerMsg( final Message message ) {
-            queues.get(message.getType()).add(message);
+        void registerMsg( final Message message )
+                throws InterruptedException {
+            LinkedBlockingQueue< Message > messages = queues.get(message.getType());
+            messages.put(message);
         }
 
         public
