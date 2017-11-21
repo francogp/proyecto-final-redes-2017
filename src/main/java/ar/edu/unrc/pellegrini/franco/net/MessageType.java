@@ -1,4 +1,4 @@
-package ar.edu.unrc.pellegrini.franco.pgas.net;
+package ar.edu.unrc.pellegrini.franco.net;
 
 public
 enum MessageType {
@@ -13,36 +13,29 @@ enum MessageType {
     private final char charType;
 
     MessageType(
-            char charType
+            final char charType
     ) {
         this.charType = charType;
     }
 
     public static
-    MessageType valueOf( char type ) {
+    MessageType valueOf( final char type ) {
         //TODO optimize this! search for google
         switch ( type ) {
-            case 'A': {
+            case 'A':
                 return AND_REDUCE_MSG;
-            }
-            case 'B': {
+            case 'B':
                 return BARRIER_MSG;
-            }
-            case 'C': {
+            case 'C':
                 return CONTINUE_MSG;
-            }
-            case 'E': {
+            case 'E':
                 return END_MSG;
-            }
-            case 'R': {
+            case 'R':
                 return READ_MSG;
-            }
-            case 'S': {
+            case 'S':
                 return READ_RESPONSE_MSG;
-            }
-            case 'W': {
+            case 'W':
                 return WRITE_MSG;
-            }
             default:
                 throw new IllegalArgumentException("unknown charType " + type);
         }

@@ -1,13 +1,14 @@
-package ar.edu.unrc.pellegrini.franco.pgas.net;
+package ar.edu.unrc.pellegrini.franco.net;
 
-import ar.edu.unrc.pellegrini.franco.pgas.net.implementations.LongMessage;
+import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import org.junit.jupiter.api.Test;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.READ_MSG;
+import static ar.edu.unrc.pellegrini.franco.net.MessageType.READ_MSG;
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.bytesToLong;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@SuppressWarnings( "ClassWithoutConstructor" )
 class MessageTest {
     private final Message< Long > msg = new LongMessage(null, 0, READ_MSG, 15L, 0L);
 

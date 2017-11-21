@@ -1,8 +1,8 @@
 package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
+import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.pgas.AbstractPGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
-import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 
 import java.io.File;
@@ -19,34 +19,34 @@ class LongPGAS
 
     public
     LongPGAS(
-            int pid,
-            String configsFilePath
+            final int pid,
+            final String configsFilePath
     ) {
         super(pid, configsFilePath);
     }
 
     public
     LongPGAS(
-            int pid,
-            String configsFilePath,
-            boolean startServer
+            final int pid,
+            final String configsFilePath,
+            final boolean startServer
     ) {
         super(pid, configsFilePath, startServer);
     }
 
     public
     LongPGAS(
-            int pid,
-            File configsFile
+            final int pid,
+            final File configsFile
     ) {
         super(pid, configsFile);
     }
 
     public
     LongPGAS(
-            int pid,
-            File configsFile,
-            boolean startServer
+            final int pid,
+            final File configsFile,
+            final boolean startServer
     ) {
         super(pid, configsFile, startServer);
     }
@@ -63,25 +63,40 @@ class LongPGAS
         }).collect(Collectors.joining(","));
     }
 
+    /**
+     * @param value
+     *
+     * @return true!=0, false==0
+     */
+    @Override
+    protected
+    Long booleanAsMessageParameter( final boolean value ) {
+        return ( value ) ? 1L : 0L;
+    }
+
+    @Override
+    protected
+    Long indexAsMessageParameter( final Long index ) {
+        return index;
+    }
+
     @Override
     protected
     Middleware< Long > newMiddleware(
-            boolean startServer,
-            Configs< Long > configFile
+            final boolean startServer,
+            final Configs< Long > configFile
     ) {
         return new LongMiddleware(this, configFile, startServer);
     }
 
     /**
-     * true!=0, false==0
+     * @param msg
      *
-     * @param bool
-     *
-     * @return
+     * @return true!=0, false==0
      */
     @Override
     protected
-    boolean responseAsBooleanRepresentation( Message< Long > msg ) {
-        return msg.getResponse() != 0;
+    boolean responseToBooleanRepresentation( final Message< Long > msg ) {
+        return msg.getResponse() != 0L;
     }
 }

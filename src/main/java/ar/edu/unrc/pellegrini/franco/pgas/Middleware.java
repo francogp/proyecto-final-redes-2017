@@ -1,8 +1,8 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
-import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
-import ar.edu.unrc.pellegrini.franco.pgas.net.MessageType;
-import ar.edu.unrc.pellegrini.franco.pgas.net.Server;
+import ar.edu.unrc.pellegrini.franco.net.Message;
+import ar.edu.unrc.pellegrini.franco.net.MessageType;
+import ar.edu.unrc.pellegrini.franco.net.Server;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 import ar.edu.unrc.pellegrini.franco.utils.HostConfig;
 
@@ -10,18 +10,17 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.READ_RESPONSE_MSG;
+import static ar.edu.unrc.pellegrini.franco.net.MessageType.READ_RESPONSE_MSG;
 
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public abstract
 class Middleware< I extends Comparable< I > > {
     public static final boolean DEBUG_MODE = true;
     private final Configs< I >      configs;
-    private final HostConfig< I >   hostsConfig;
     private final AbstractPGAS< I > pgas;
     private final Server< I >       server;
-    private final Thread            serverThread;
 
-    public
+    protected
     Middleware(
             final AbstractPGAS< I > pgas,
             final Configs< I > configs
@@ -29,7 +28,7 @@ class Middleware< I extends Comparable< I > > {
         this(pgas, configs, true);
     }
 
-    public
+    protected
     Middleware(
             final AbstractPGAS< I > pgas,
             final Configs< I > configs,
@@ -37,9 +36,10 @@ class Middleware< I extends Comparable< I > > {
     ) {
         this.pgas = pgas;
         this.configs = configs;
-        final int pid = pgas.getPid();
-        hostsConfig = configs.getHostsConfig(pid);
-        final int port = hostsConfig.getPort();
+        final int             pid         = pgas.getPid();
+        final HostConfig< I > hostsConfig = configs.getHostsConfig(pid);
+        final int             port        = hostsConfig.getPort();
+        final Thread          serverThread;
         if ( starServer ) {
             try {
                 server = newServer(port);
@@ -50,14 +50,13 @@ class Middleware< I extends Comparable< I > > {
             }
         } else {
             server = null;
-            serverThread = null;
         }
     }
 
     /**
      * @param inetAddress
      * @param port
-     * @param msgtype
+     * @param messageType
      * @param parameter1  cannot be null
      * @param parameter2  cannot be null
      *
@@ -67,7 +66,7 @@ class Middleware< I extends Comparable< I > > {
     Message< I > newMessageInstanceFrom(
             final InetAddress inetAddress,
             final int port,
-            final MessageType msgtype,
+            final MessageType messageType,
             final I parameter1,
             final I parameter2
     );
@@ -88,36 +87,29 @@ class Middleware< I extends Comparable< I > > {
         //TODO buscar asi el pid o mandar por mensaje?
         final HostConfig< I > targetHost = configs.getHostsConfig(incomingMessage.getAddress(), incomingMessage.getPort());
         switch ( incomingMessage.getType() ) {
-            case AND_REDUCE_MSG: {
+            case AND_REDUCE_MSG:
                 assert pgas.isCoordinator();
                 targetHost.registerMsg(incomingMessage);
                 break;
-            }
-            case BARRIER_MSG: {
+            case BARRIER_MSG:
                 assert pgas.isCoordinator();
                 targetHost.registerMsg(incomingMessage);
                 break;
-            }
-            case CONTINUE_MSG: {
+            case CONTINUE_MSG:
                 assert !pgas.isCoordinator();
                 targetHost.registerMsg(incomingMessage);
                 break;
-            }
-            case END_MSG: {
+            case END_MSG:
                 break;
-            }
-            case READ_MSG: {
+            case READ_MSG:
                 sendTo(targetHost, READ_RESPONSE_MSG, pgas.read((Long) incomingMessage.getParameter1()), null);
                 break;
-            }
-            case READ_RESPONSE_MSG: {
+            case READ_RESPONSE_MSG:
                 targetHost.registerMsg(incomingMessage);
                 break;
-            }
-            case WRITE_MSG: {
+            case WRITE_MSG:
                 pgas.write((Long) incomingMessage.getParameter1(), incomingMessage.getParameter2());
                 break;
-            }
             default:
                 throw new IllegalArgumentException("Unknown Message<I> type = " + incomingMessage.getType());
         }
@@ -150,8 +142,7 @@ class Middleware< I extends Comparable< I > > {
         final HostConfig< I > destHost = configs.getHostsConfig(targetPid);
         final Message< I >    msg      = newMessageInstanceFrom(destHost.getInetAddress(), destHost.getPort(), msgType, parameter1, parameter2);
         if ( DEBUG_MODE ) {
-            System.out.println(
-                    pgas.getPid() + " sendTo( pid=" + targetPid + " ) type=" + msgType + " param1=" + parameter1 + " param2=" + parameter2);
+            System.out.println(pgas.getPid() + " sendTo( pid=" + targetPid + " ) type=" + msgType + " param1=" + parameter1 + " param2=" + parameter2);
         }
         server.send(msg);
     }
@@ -161,7 +152,7 @@ class Middleware< I extends Comparable< I > > {
             final int senderPid,
             final MessageType msgType
     )
-            throws IOException, InterruptedException {
+            throws InterruptedException {
         final HostConfig< I > hostsConfig = configs.getHostsConfig(senderPid);
         if ( DEBUG_MODE ) {
             System.out.println(pgas.getPid() + " waitFor( pid=" + senderPid + " ) type=" + msgType);

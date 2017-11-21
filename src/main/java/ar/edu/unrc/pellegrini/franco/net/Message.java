@@ -1,22 +1,23 @@
-package ar.edu.unrc.pellegrini.franco.pgas.net;
+package ar.edu.unrc.pellegrini.franco.net;
 
 import java.net.InetAddress;
 import java.util.Arrays;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.END_MSG;
+import static ar.edu.unrc.pellegrini.franco.net.MessageType.END_MSG;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public abstract
 class Message< I extends Comparable< I > > {
-    protected InetAddress address;
-    protected byte[]      bytes;
-    protected I           parameter1;
-    protected I           parameter2;
-    protected int         port;
-    protected MessageType type;
+    protected final InetAddress address;
+    protected final int         port;
+    protected       byte[]      bytes;
+    protected       I           parameter1;
+    protected       I           parameter2;
+    protected       MessageType type;
 
-    public
+    protected
     Message(
+
             final InetAddress address,
             final int port,
             final byte[] bytes
@@ -27,7 +28,7 @@ class Message< I extends Comparable< I > > {
         initFromBytes(bytes);
     }
 
-    public
+    protected
     Message(
             final InetAddress address,
             final int port,
@@ -38,7 +39,7 @@ class Message< I extends Comparable< I > > {
         this.address = address;
         this.port = port;
         this.type = type;
-        if ( parameter1 == null || parameter2 == null ) {
+        if ( ( parameter1 == null ) || ( parameter2 == null ) ) {
             throw new IllegalArgumentException("parameters 1 and 2 cannot be null");
         }
         this.parameter1 = parameter1;
@@ -56,13 +57,25 @@ class Message< I extends Comparable< I > > {
         Message< ? > message = (Message< ? >) o;
 
         if ( port != message.port ) { return false; }
-        if ( address != null ? !address.equals(message.address) : message.address != null ) { return false; }
+        if ( !address.equals(message.address) ) { return false; }
         if ( !Arrays.equals(bytes, message.bytes) ) { return false; }
         if ( parameter1 != null ? !parameter1.equals(message.parameter1) : message.parameter1 != null ) { return false; }
         if ( parameter2 != null ? !parameter2.equals(message.parameter2) : message.parameter2 != null ) { return false; }
         if ( type != message.type ) { return false; }
 
         return true;
+    }
+
+    @Override
+    public
+    int hashCode() {
+        int result = address.hashCode();
+        result = 31 * result + Arrays.hashCode(bytes);
+        result = 31 * result + ( parameter1 != null ? parameter1.hashCode() : 0 );
+        result = 31 * result + ( parameter2 != null ? parameter2.hashCode() : 0 );
+        result = 31 * result + port;
+        result = 31 * result + ( type != null ? type.hashCode() : 0 );
+        return result;
     }
 
     public
@@ -96,18 +109,6 @@ class Message< I extends Comparable< I > > {
         return type;
     }
 
-    @Override
-    public
-    int hashCode() {
-        int result = address != null ? address.hashCode() : 0;
-        result = 31 * result + Arrays.hashCode(bytes);
-        result = 31 * result + ( parameter1 != null ? parameter1.hashCode() : 0 );
-        result = 31 * result + ( parameter2 != null ? parameter2.hashCode() : 0 );
-        result = 31 * result + port;
-        result = 31 * result + type.hashCode();
-        return result;
-    }
-
     protected abstract
     void initBytes();
 
@@ -122,7 +123,7 @@ class Message< I extends Comparable< I > > {
     @Override
     public
     String toString() {
-        return "Message{" + "address=" + address + ", parameter1=" + getParameter1() + ", parameter2=" + getParameter2() + ", port=" + port +
+        return "Message{" + "address=" + address + ", parameter1=" + parameter1 + ", parameter2=" + parameter2 + ", port=" + port +
                ", type=" + type + ", bytes=" + Arrays.toString(bytes) + '}';
     }
 

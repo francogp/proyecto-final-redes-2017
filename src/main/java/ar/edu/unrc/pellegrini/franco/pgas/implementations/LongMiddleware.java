@@ -1,12 +1,12 @@
 package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
+import ar.edu.unrc.pellegrini.franco.net.Message;
+import ar.edu.unrc.pellegrini.franco.net.MessageType;
+import ar.edu.unrc.pellegrini.franco.net.Server;
+import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
+import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessageServer;
 import ar.edu.unrc.pellegrini.franco.pgas.AbstractPGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
-import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
-import ar.edu.unrc.pellegrini.franco.pgas.net.MessageType;
-import ar.edu.unrc.pellegrini.franco.pgas.net.Server;
-import ar.edu.unrc.pellegrini.franco.pgas.net.implementations.LongMessage;
-import ar.edu.unrc.pellegrini.franco.pgas.net.implementations.LongMessageServer;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 
 import java.net.InetAddress;
@@ -23,17 +23,17 @@ class LongMiddleware
 
     public
     LongMiddleware(
-            AbstractPGAS< Long > pgas,
-            Configs< Long > configs
+            final AbstractPGAS< Long > pgas,
+            final Configs< Long > configs
     ) {
         super(pgas, configs);
     }
 
     public
     LongMiddleware(
-            AbstractPGAS< Long > pgas,
-            Configs< Long > configs,
-            boolean starServer
+            final AbstractPGAS< Long > pgas,
+            final Configs< Long > configs,
+            final boolean starServer
     ) {
         super(pgas, configs, starServer);
     }
@@ -41,23 +41,23 @@ class LongMiddleware
     @Override
     protected
     Message< Long > newMessageInstanceFrom(
-            InetAddress inetAddress,
-            int port,
-            MessageType msgtype,
-            Long parameter1,
-            Long parameter2
+            final InetAddress inetAddress,
+            final int port,
+            final MessageType messageType,
+            final Long parameter1,
+            final Long parameter2
     ) {
-        return new LongMessage(inetAddress, port, msgtype, parameter1, parameter2);
+        return new LongMessage(inetAddress, port, messageType, parameter1, parameter2);
     }
 
     @Override
     protected
-    Server< Long > newServer( int port )
+    Server< Long > newServer( final int port )
             throws SocketException {
         return new LongMessageServer(port, ( msg ) -> {
             try {
                 processIncomingMessage(msg);
-            } catch ( Exception e ) {
+            } catch ( final Exception e ) {
                 getLogger(LongMiddleware.class.getName()).log(Level.SEVERE, null, e);
             }
         });

@@ -1,6 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
-import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
+import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
 import ar.edu.unrc.pellegrini.franco.utils.HostConfig;
 
@@ -9,8 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.*;
+import static ar.edu.unrc.pellegrini.franco.net.MessageType.*;
 
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public abstract
 class AbstractPGAS< I extends Comparable< I > >
         implements PGAS< I > {
@@ -24,10 +25,10 @@ class AbstractPGAS< I extends Comparable< I > >
     protected final long            pgasSize;
     protected final int             pid;
     protected final int             processQuantity;
-    protected List< I > memory = null;
+    private List< I > memory = null;
 
 
-    public
+    protected
     AbstractPGAS(
             final int pid,
             final String configsFilePath
@@ -35,7 +36,7 @@ class AbstractPGAS< I extends Comparable< I > >
         this(pid, new File(configsFilePath), true);
     }
 
-    public
+    protected
     AbstractPGAS(
             final int pid,
             final String configsFilePath,
@@ -44,7 +45,7 @@ class AbstractPGAS< I extends Comparable< I > >
         this(pid, new File(configsFilePath), startServer);
     }
 
-    public
+    protected
     AbstractPGAS(
             final int pid,
             final File configsFile
@@ -52,7 +53,7 @@ class AbstractPGAS< I extends Comparable< I > >
         this(pid, configsFile, true);
     }
 
-    public
+    protected
     AbstractPGAS(
             final int pid,
             final File configsFile,
@@ -81,7 +82,7 @@ class AbstractPGAS< I extends Comparable< I > >
         // inicializamos lowerIndex y upperIndex del proceso actual (a modo de cache)
         currentLowerIndex = lowerIndex(pid);
         currentUpperIndex = upperIndex(pid);
-        pgasSize = upperIndex + 1;
+        pgasSize = upperIndex + 1L;
         // indicamos al middleware quien es el arreglo distribuido a utilizar
         middleware = newMiddleware(startServer, configFile);
     }
@@ -90,23 +91,18 @@ class AbstractPGAS< I extends Comparable< I > >
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException {
         boolean andReduce = value;
-        assert COORDINATOR_PID == 1;
         if ( imCoordinator ) {
-            assert pid == 1;
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
                 final Message< I > msg = middleware.waitFor(targetPid, AND_REDUCE_MSG);
-                andReduce = andReduce && responseAsBooleanRepresentation(msg);
+                andReduce = andReduce && responseToBooleanRepresentation(msg);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                final Long reduceAsLong = ( andReduce ) ? 1L : 0L;
-                middleware.sendTo(targetPid, CONTINUE_MSG, (I) reduceAsLong, null);
+                middleware.sendTo(targetPid, CONTINUE_MSG, booleanAsMessageParameter(andReduce), null);
             }
         } else {
-            assert pid != 1;
-            final Long valueAsLong = ( value ) ? 1L : 0L;
-            middleware.sendTo(COORDINATOR_PID, AND_REDUCE_MSG, (I) valueAsLong, null);
+            middleware.sendTo(COORDINATOR_PID, AND_REDUCE_MSG, booleanAsMessageParameter(value), null);
             final Message< I > msg = middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
-            andReduce = responseAsBooleanRepresentation(msg);
+            andReduce = responseToBooleanRepresentation(msg);
         }
         return andReduce;
     }
@@ -131,6 +127,9 @@ class AbstractPGAS< I extends Comparable< I > >
             middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
         }
     }
+
+    protected abstract
+    I booleanAsMessageParameter( final boolean value );
 
     public
     void endService()
@@ -172,6 +171,9 @@ class AbstractPGAS< I extends Comparable< I > >
         return pid == processQuantity;
     }
 
+    protected abstract
+    I indexAsMessageParameter( final Long index );
+
     public
     boolean isCoordinator() {
         return imCoordinator;
@@ -199,7 +201,7 @@ class AbstractPGAS< I extends Comparable< I > >
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
-            middleware.sendTo(targetPid, READ_MSG, (I) index, null);
+            middleware.sendTo(targetPid, READ_MSG, indexAsMessageParameter(index), null);
             final Message< I > response = middleware.waitFor(targetPid, READ_RESPONSE_MSG);
             return response.getResponse();
         } else {
@@ -208,7 +210,7 @@ class AbstractPGAS< I extends Comparable< I > >
     }
 
     protected abstract
-    boolean responseAsBooleanRepresentation( Message< I > bool );
+    boolean responseToBooleanRepresentation( Message< I > bool );
 
     public synchronized
     void swap(
@@ -241,7 +243,7 @@ class AbstractPGAS< I extends Comparable< I > >
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
-            middleware.sendTo(targetPid, WRITE_MSG, (I) index, value);
+            middleware.sendTo(targetPid, WRITE_MSG, indexAsMessageParameter(index), value);
         } else {
             memory.set(i, value);
         }
@@ -250,9 +252,9 @@ class AbstractPGAS< I extends Comparable< I > >
     @SuppressWarnings( "ClassWithoutNoArgConstructor" )
     private static final
     class Index {
-        protected final long loweIndex;
-        protected final int  size;
-        protected final long upperIndex;
+        final long loweIndex;
+        final int  size;
+        final long upperIndex;
 
         public
         Index(

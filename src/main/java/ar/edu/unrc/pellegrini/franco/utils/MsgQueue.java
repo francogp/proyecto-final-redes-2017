@@ -27,11 +27,6 @@ class MsgQueue< M >
         queue = new LinkedBlockingQueue<>();
     }
 
-    public static
-    Object endServerMsg() {
-        return null;
-    }
-
     public
     void enqueue( final M msg ) {
         queue.add(msg);
@@ -42,7 +37,6 @@ class MsgQueue< M >
         return running;
     }
 
-    @SuppressWarnings( "ErrorNotRethrown" )
     @Override
     public
     void run() {

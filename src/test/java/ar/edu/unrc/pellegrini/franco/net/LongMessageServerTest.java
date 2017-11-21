@@ -1,7 +1,7 @@
-package ar.edu.unrc.pellegrini.franco.pgas.net;
+package ar.edu.unrc.pellegrini.franco.net;
 
-import ar.edu.unrc.pellegrini.franco.pgas.net.implementations.LongMessage;
-import ar.edu.unrc.pellegrini.franco.pgas.net.implementations.LongMessageServer;
+import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
+import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessageServer;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.MessageType.*;
+import static ar.edu.unrc.pellegrini.franco.net.MessageType.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;

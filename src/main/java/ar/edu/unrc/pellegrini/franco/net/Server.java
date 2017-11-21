@@ -1,6 +1,6 @@
-package ar.edu.unrc.pellegrini.franco.pgas.net;
+package ar.edu.unrc.pellegrini.franco.net;
 
-import ar.edu.unrc.pellegrini.franco.pgas.net.implementations.LongMessageServer;
+import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessageServer;
 import ar.edu.unrc.pellegrini.franco.utils.MsgQueue;
 
 import java.io.IOException;
@@ -12,9 +12,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import static ar.edu.unrc.pellegrini.franco.pgas.net.implementations.LongMessage.MSG_BYTES_LENGHT;
+import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.MSG_BYTES_LENGTH;
 import static java.util.logging.Logger.getLogger;
 
+@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public abstract
 class Server< I extends Comparable< I > >
         implements Runnable {
@@ -25,16 +26,16 @@ class Server< I extends Comparable< I > >
     private final DatagramSocket           socket;
     private boolean running = false;
 
-    public
+    protected
     Server(
             final int port,
             final Consumer< Message< I > > messageConsumer
     )
             throws SocketException {
-        this(port, messageConsumer, msg -> msg.isEndMessage());
+        this(port, messageConsumer, Message::isEndMessage);
     }
 
-    public
+    protected
     Server(
             final int port,
             final Consumer< Message< I > > messageConsumer,
@@ -90,7 +91,7 @@ class Server< I extends Comparable< I > >
             final Message< I > msg
     )
             throws IOException {
-        final DatagramPacket packet = new DatagramPacket(msg.getBytes(), MSG_BYTES_LENGHT, msg.getAddress(), msg.getPort());
+        final DatagramPacket packet = new DatagramPacket(msg.getBytes(), MSG_BYTES_LENGTH, msg.getAddress(), msg.getPort());
         socket.send(packet);
     }
 }

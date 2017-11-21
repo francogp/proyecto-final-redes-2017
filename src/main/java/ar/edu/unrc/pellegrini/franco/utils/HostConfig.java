@@ -1,7 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.utils;
 
-import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
-import ar.edu.unrc.pellegrini.franco.pgas.net.MessageType;
+import ar.edu.unrc.pellegrini.franco.net.Message;
+import ar.edu.unrc.pellegrini.franco.net.MessageType;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -12,11 +12,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
 class HostConfig< I extends Comparable< I > > {
-    private final InetAddress                                        inetAddress;
-    private final int                                                pid;
-    private final Integer                                            port;
-    private final Map< MessageType, LinkedBlockingQueue< Message > > queues;
-    private final List< I >                                          toSort;
+    private final InetAddress                                             inetAddress;
+    private final int                                                     pid;
+    private final Integer                                                 port;
+    private final Map< MessageType, LinkedBlockingQueue< Message< I > > > queues;
+    private final List< I >                                               toSort;
 
     public
     HostConfig(
@@ -29,9 +29,9 @@ class HostConfig< I extends Comparable< I > > {
         this.inetAddress = inetAddress;
         this.port = port;
         this.toSort = toSort;
-        this.queues = new ConcurrentHashMap<>();
         final MessageType[] msgTypeList = MessageType.values();
-        for ( MessageType type : msgTypeList ) {
+        queues = new ConcurrentHashMap<>(msgTypeList.length);
+        for ( final MessageType type : msgTypeList ) {
             queues.put(type, new LinkedBlockingQueue<>());
         }
     }
@@ -57,16 +57,16 @@ class HostConfig< I extends Comparable< I > > {
     }
 
     public
-    void registerMsg( final Message message )
+    void registerMsg( final Message< I > message )
             throws InterruptedException {
-        final LinkedBlockingQueue< Message > messages = queues.get(message.getType());
+        final LinkedBlockingQueue< Message< I > > messages = queues.get(message.getType());
         messages.put(message);
     }
 
     public
-    Message waitFor( MessageType msgType )
+    Message< I > waitFor( final MessageType msgType )
             throws InterruptedException {
-        final LinkedBlockingQueue< Message > messages = queues.get(msgType);
+        final LinkedBlockingQueue< Message< I > > messages = queues.get(msgType);
         return messages.take();
     }
 }

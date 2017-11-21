@@ -89,20 +89,16 @@ class Configs< I extends Comparable< I > > {
                     toSort.add(value);
                 }
 
-                final InetAddress hostInetAddress = InetAddress.getByName(inetAddress);
-                HostConfig< I >   hostConfig      = new HostConfig<>(pid, hostInetAddress, port.intValue(), toSort);
+                final InetAddress     hostInetAddress = InetAddress.getByName(inetAddress);
+                final HostConfig< I > hostConfig      = new HostConfig<>(pid, hostInetAddress, port.intValue(), toSort);
                 //mapping from pid to HostConfig.
                 hostsByPid.put(pid, hostConfig);
 
-                //mapping from InetAdress+port to HostConfig.
-                Map< Integer, HostConfig< I > > hostByPort = hostsByAddress.get(hostInetAddress);
-                if ( hostByPort == null ) {
-                    hostByPort = new ConcurrentHashMap<>();
-                    hostsByAddress.put(hostInetAddress, hostByPort);
-                }
+                //mapping from InetAddress+port to HostConfig.
+                Map< Integer, HostConfig< I > > hostByPort = hostsByAddress.computeIfAbsent(hostInetAddress, k -> new ConcurrentHashMap<>());
                 final HostConfig< I > newHostByPort = hostByPort.get(port.intValue());
                 if ( newHostByPort != null ) {
-                    throw new IllegalArgumentException("there's two hosts with the same adress : InetAddress=" + hostInetAddress + " port=" + port);
+                    throw new IllegalArgumentException("there's two hosts with the same address : InetAddress=" + hostInetAddress + " port=" + port);
                 }
                 hostByPort.put(port.intValue(), hostConfig);
 
@@ -110,7 +106,7 @@ class Configs< I extends Comparable< I > > {
             }
         } catch ( final FileNotFoundException e ) {
             throw new IllegalArgumentException("file not found: \"" + configFilePath + "\".", e);
-        } catch ( UnknownHostException e ) {
+        } catch ( final UnknownHostException e ) {
             throw new IllegalStateException("unknown host from file: \"" + configFilePath + "\".", e);
         } catch ( final IOException e ) {
             throw new IllegalArgumentException("problems loading \"" + configFilePath + "\".", e);

@@ -17,15 +17,15 @@ class DistributedBubbleSortTest {
     void bubbleSort() {
         try {
             final List< Long > array      = new ArrayList<>(List.of(9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L));
-            long               lowerIndex = 0L;
-            long               upperIndex = array.size() - 1L;
+            final long         lowerIndex = 0L;
+            final long         upperIndex = array.size() - 1L;
             final PGAS< Long > PGAS       = new TestLongPGAS(array, lowerIndex, upperIndex);
             DistributedBubbleSort.bubbleSort(PGAS, lowerIndex, upperIndex);
             assertThat(array, is(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)));
 
             final List< Long > array2      = new ArrayList<>(List.of(9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L));
-            long               lowerIndex2 = 3L;
-            long               upperIndex2 = array.size() - 4L;
+            final long         lowerIndex2 = 3L;
+            final long         upperIndex2 = array.size() - 4L;
             final PGAS< Long > PGAS2       = new TestLongPGAS(array2, lowerIndex2, upperIndex2);
             DistributedBubbleSort.bubbleSort(PGAS2, lowerIndex2, upperIndex2);
             assertThat(array2, is(List.of(9L, 8L, 7L, 4L, 5L, 6L, 3L, 2L, 1L)));
@@ -39,8 +39,8 @@ class DistributedBubbleSortTest {
     class TestLongPGAS
             implements PGAS< Long > {
         private final List< Long > array;
-        private       long         lowerIndex;
-        private       long         upperIndex;
+        private final long         lowerIndex;
+        private final long         upperIndex;
 
         public
         TestLongPGAS(
@@ -98,7 +98,7 @@ class DistributedBubbleSortTest {
         @Override
         public final
         Long read( final Long index ) {
-            if ( index < lowerIndex || index > upperIndex ) {
+            if ( ( index < lowerIndex ) || ( index > upperIndex ) ) {
                 throw new IllegalArgumentException("index " + index + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
             return array.get(index.intValue());
@@ -110,10 +110,10 @@ class DistributedBubbleSortTest {
                 final long index1,
                 final long index2
         ) {
-            if ( index1 < lowerIndex || index1 > upperIndex ) {
+            if ( ( index1 < lowerIndex ) || ( index1 > upperIndex ) ) {
                 throw new IllegalArgumentException("index " + index1 + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
-            if ( index2 < lowerIndex || index2 > upperIndex ) {
+            if ( ( index2 < lowerIndex ) || ( index2 > upperIndex ) ) {
                 throw new IllegalArgumentException("index " + index2 + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
             final Long temp = array.get((int) index1);
@@ -139,7 +139,7 @@ class DistributedBubbleSortTest {
                 final Long index,
                 final Long value
         ) {
-            if ( index < lowerIndex || index > upperIndex ) {
+            if ( ( index < lowerIndex ) || ( index > upperIndex ) ) {
                 throw new IllegalArgumentException("index " + index + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
             array.set(index.intValue(), value);
