@@ -99,7 +99,7 @@ class DistributedBubbleSort
             }
             System.out.println("Flag 7 " + Thread.currentThread().getName());
             if ( longPGAS.isCoordinator() ) {
-                System.out.println(longPGAS.toString());
+                System.out.println(longPGAS.asString());
             }
         } catch ( final Exception e ) {
             getLogger(DistributedBubbleSort.class.getName()).log(Level.SEVERE, "Unknown problem", e);

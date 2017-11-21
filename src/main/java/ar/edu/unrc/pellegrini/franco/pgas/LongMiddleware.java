@@ -3,7 +3,7 @@ package ar.edu.unrc.pellegrini.franco.pgas;
 import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
 import ar.edu.unrc.pellegrini.franco.pgas.net.Server;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
-import ar.edu.unrc.pellegrini.franco.utils.Configs.HostConfig;
+import ar.edu.unrc.pellegrini.franco.utils.HostConfig;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -16,10 +16,11 @@ import static java.util.logging.Logger.getLogger;
 public final
 class LongMiddleware
         implements Middleware< Long > {
-    private final Configs< Long > configs;
-    private final PGAS< Long >    longPGAS;
-    private final Server          server;
-    private final Thread          serverThread;
+    private final Configs< Long >    configs;
+    private final HostConfig< Long > hostsConfig;
+    private final PGAS< Long >       longPGAS;
+    private final Server             server;
+    private final Thread             serverThread;
 
     public
     LongMiddleware(
@@ -37,8 +38,9 @@ class LongMiddleware
     ) {
         this.longPGAS = longPGAS;
         this.configs = configs;
-        final int pid  = longPGAS.getPid();
-        final int port = configs.getHostsConfig(pid).getPort();
+        final int pid = longPGAS.getPid();
+        hostsConfig = configs.getHostsConfig(pid);
+        final int port = hostsConfig.getPort();
         if ( starServer ) {
             try {
                 server = new Server(port, ( msg ) -> {
@@ -68,32 +70,31 @@ class LongMiddleware
         //        public static final char END_MSG                = 'E';
         //        public static final char READ_MSG               = 'R';
         //        public static final char WRITE_MSG              = 'W';
-        final HostConfig< Long > incommingMsgHostWaitQueue = configs.getHostsConfig(incommingMessage.getAddress());
         switch ( incommingMessage.getType() ) {
             case AND_REDUCE_MSG: {
                 assert longPGAS.isCoordinator();
-                incommingMsgHostWaitQueue.registerMsg(incommingMessage);
+                hostsConfig.registerMsg(incommingMessage);
                 break;
             }
             case BARRIER_MSG: {
                 assert longPGAS.isCoordinator();
-                incommingMsgHostWaitQueue.registerMsg(incommingMessage);
+                hostsConfig.registerMsg(incommingMessage);
                 break;
             }
             case CONTINUE_MSG: {
                 assert !longPGAS.isCoordinator();
-                incommingMsgHostWaitQueue.registerMsg(incommingMessage);
+                hostsConfig.registerMsg(incommingMessage);
                 break;
             }
             case END_MSG: {
                 break;
             }
             case READ_MSG: {
-                sendTo(incommingMsgHostWaitQueue, READ_RESPONSE_MSG, longPGAS.read(incommingMessage.getParameter1()));
+                sendTo(configs.getHostsConfig(incommingMessage.getAddress()), READ_RESPONSE_MSG, longPGAS.read(incommingMessage.getParameter1()));
                 break;
             }
             case READ_RESPONSE_MSG: {
-                incommingMsgHostWaitQueue.registerMsg(incommingMessage);
+                hostsConfig.registerMsg(incommingMessage);
                 break;
             }
             case WRITE_MSG: {
@@ -181,7 +182,8 @@ class LongMiddleware
             final char msgType
     )
             throws IOException, InterruptedException {
-        return configs.getHostsConfig(senderPid).waitFor(msgType);
+        final HostConfig< Long > hostsConfig = configs.getHostsConfig(senderPid);
+        return hostsConfig.waitFor(msgType);
     }
 
 }

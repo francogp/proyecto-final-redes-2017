@@ -2,7 +2,7 @@ package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
 import ar.edu.unrc.pellegrini.franco.utils.Configs;
-import ar.edu.unrc.pellegrini.franco.utils.Configs.HostConfig;
+import ar.edu.unrc.pellegrini.franco.utils.HostConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,6 +114,19 @@ class LongPGAS
 
     @Override
     public
+    String asString() {
+        return LongStream.range(0L, pgasSize).mapToObj(index -> {
+            try {
+                return Long.toString(read(index));
+            } catch ( Exception e ) {
+                getLogger(LongPGAS.class.getName()).log(Level.SEVERE, null, e);
+                return "ERROR";
+            }
+        }).collect(Collectors.joining(","));
+    }
+
+    @Override
+    public
     void barrier()
             throws IOException, InterruptedException {
         if ( imCoordinator ) {
@@ -211,19 +224,6 @@ class LongPGAS
         final Long temp = read(index1);
         write(index1, read(index2));
         write(index2, temp);
-    }
-
-    @Override
-    public
-    String toString() {
-        return LongStream.range(0L, pgasSize).mapToObj(index -> {
-            try {
-                return Long.toString(read(index));
-            } catch ( Exception e ) {
-                getLogger(LongPGAS.class.getName()).log(Level.SEVERE, null, e);
-                return "ERROR";
-            }
-        }).collect(Collectors.joining(","));
     }
 
     @Override

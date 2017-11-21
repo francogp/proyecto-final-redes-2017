@@ -1,6 +1,5 @@
 package ar.edu.unrc.pellegrini.franco.utils;
 
-import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
@@ -124,77 +122,5 @@ class Configs< I extends Comparable< I > > {
     public
     int size() {
         return hostsByPid.size();
-    }
-
-    @SuppressWarnings( { "ClassWithoutNoArgConstructor", "PublicInnerClass" } )
-    public static
-    class HostConfig< I extends Comparable< I > > {
-        private final InetAddress                                      inetAddress;
-        private final int                                              pid;
-        private final Integer                                          port;
-        private final Map< Character, LinkedBlockingQueue< Message > > queues;
-        private final List< I >                                        toSort;
-
-        public
-        HostConfig(
-                final int pid,
-                final String inetAddress,
-                final Integer port,
-                final List< I > toSort
-        )
-                throws UnknownHostException {
-            this(pid, InetAddress.getByName(inetAddress), port, toSort);
-        }
-
-        public
-        HostConfig(
-                final int pid,
-                final InetAddress inetAddress,
-                final Integer port,
-                final List< I > toSort
-        ) {
-            this.pid = pid;
-            this.inetAddress = inetAddress;
-            this.port = port;
-            this.toSort = toSort;
-            this.queues = new HashMap<>();
-            final List< Character > msgTypeList = Message.getMsgTypeList();
-            for ( Character type : msgTypeList ) {
-                queues.put(type, new LinkedBlockingQueue<>());
-            }
-        }
-
-        public
-        InetAddress getInetAddress() {
-            return inetAddress;
-        }
-
-        public
-        int getPid() {
-            return pid;
-        }
-
-        public
-        Integer getPort() {
-            return port;
-        }
-
-        public
-        List< I > getToSort() {
-            return toSort;
-        }
-
-        public
-        void registerMsg( final Message message )
-                throws InterruptedException {
-            LinkedBlockingQueue< Message > messages = queues.get(message.getType());
-            messages.put(message);
-        }
-
-        public
-        Message waitFor( char msgType )
-                throws InterruptedException {
-            return queues.get(msgType).take();
-        }
     }
 }

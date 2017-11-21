@@ -8,6 +8,8 @@ interface PGAS< I > {
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException;
 
+    String asString();
+
     void barrier()
             throws IOException, InterruptedException;
 
