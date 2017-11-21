@@ -132,18 +132,18 @@ class LongPGAS
         if ( imCoordinator ) {
             assert pid == 1;
             for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                System.out.println("Flag wait Barrier + pid=" + pid + " " + Thread.currentThread().getName());
+                //                System.out.println("Flag wait Barrier + pid=" + pid + " " + Thread.currentThread().getName());
                 middleware.waitFor(pid, BARRIER_MSG);
             }
             for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                System.out.println("Flag send continue + pid=" + pid + " " + Thread.currentThread().getName());
+                //                System.out.println("Flag send continue + pid=" + pid + " " + Thread.currentThread().getName());
                 middleware.sendTo(pid, CONTINUE_MSG);
             }
         } else {
             assert pid >= 1;
-            System.out.println("Flag send barrier + pid=" + pid + " " + Thread.currentThread().getName());
+            //            System.out.println("Flag send barrier + pid=" + pid + " " + Thread.currentThread().getName());
             middleware.sendTo(COORDINATOR_PID, BARRIER_MSG);
-            System.out.println("Flag wait continue + pid=" + pid + " " + Thread.currentThread().getName());
+            //            System.out.println("Flag wait continue + pid=" + pid + " " + Thread.currentThread().getName());
             middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
         }
     }

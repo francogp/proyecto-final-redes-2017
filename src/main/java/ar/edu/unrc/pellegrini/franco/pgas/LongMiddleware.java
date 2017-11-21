@@ -70,31 +70,32 @@ class LongMiddleware
         //        public static final char END_MSG                = 'E';
         //        public static final char READ_MSG               = 'R';
         //        public static final char WRITE_MSG              = 'W';
+        final HostConfig< Long > targetHost = configs.getHostsConfig(incommingMessage.getAddress(), incommingMessage.getPort());
         switch ( incommingMessage.getType() ) {
             case AND_REDUCE_MSG: {
                 assert longPGAS.isCoordinator();
-                hostsConfig.registerMsg(incommingMessage);
+                targetHost.registerMsg(incommingMessage);
                 break;
             }
             case BARRIER_MSG: {
                 assert longPGAS.isCoordinator();
-                hostsConfig.registerMsg(incommingMessage);
+                targetHost.registerMsg(incommingMessage);
                 break;
             }
             case CONTINUE_MSG: {
                 assert !longPGAS.isCoordinator();
-                hostsConfig.registerMsg(incommingMessage);
+                targetHost.registerMsg(incommingMessage);
                 break;
             }
             case END_MSG: {
                 break;
             }
             case READ_MSG: {
-                sendTo(configs.getHostsConfig(incommingMessage.getAddress()), READ_RESPONSE_MSG, longPGAS.read(incommingMessage.getParameter1()));
+                sendTo(targetHost, READ_RESPONSE_MSG, longPGAS.read(incommingMessage.getParameter1()));
                 break;
             }
             case READ_RESPONSE_MSG: {
-                hostsConfig.registerMsg(incommingMessage);
+                targetHost.registerMsg(incommingMessage);
                 break;
             }
             case WRITE_MSG: {

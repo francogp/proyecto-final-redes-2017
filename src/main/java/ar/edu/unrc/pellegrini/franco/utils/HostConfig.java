@@ -3,7 +3,6 @@ package ar.edu.unrc.pellegrini.franco.utils;
 import ar.edu.unrc.pellegrini.franco.pgas.net.Message;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,17 +16,6 @@ class HostConfig< I extends Comparable< I > > {
     private final Integer                                          port;
     private final Map< Character, LinkedBlockingQueue< Message > > queues;
     private final List< I >                                        toSort;
-
-    public
-    HostConfig(
-            final int pid,
-            final String inetAddress,
-            final Integer port,
-            final List< I > toSort
-    )
-            throws UnknownHostException {
-        this(pid, InetAddress.getByName(inetAddress), port, toSort);
-    }
 
     public
     HostConfig(

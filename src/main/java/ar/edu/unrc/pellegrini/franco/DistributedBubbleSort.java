@@ -68,23 +68,18 @@ class DistributedBubbleSort
     public
     void run() {
         try {
-            System.out.println("Flag 1 " + Thread.currentThread().getName());
             boolean finish = false;
 
             while ( !finish ) {
                 finish = true;
-                System.out.println("Flag 2 " + Thread.currentThread().getName());
                 final long upperIndex = longPGAS.upperIndex();
                 final long lowerIndex = longPGAS.lowerIndex();
 
-                System.out.println("Flag 3 " + Thread.currentThread().getName());
                 // sort local block
                 bubbleSort(longPGAS, lowerIndex, upperIndex);
 
-                System.out.println("Flag 4 " + Thread.currentThread().getName());
                 longPGAS.barrier();
 
-                System.out.println("Flag 5 " + Thread.currentThread().getName());
                 if ( !longPGAS.imLast() ) {
                     final long lowerIndexRight = longPGAS.lowerIndex(longPGAS.getPid() + 1);
                     if ( longPGAS.read(upperIndex) > longPGAS.read(lowerIndexRight) ) {
@@ -92,12 +87,9 @@ class DistributedBubbleSort
                         finish = false;  // update local copy
                     }
                 }
-                //TODO cleanup debug code
-                //                System.out.println("Flag 6 " + Thread.currentThread().getName());
                 // reduce finish by and, then replicate result
                 finish = longPGAS.andReduce(finish);
             }
-            System.out.println("Flag 7 " + Thread.currentThread().getName());
             if ( longPGAS.isCoordinator() ) {
                 System.out.println(longPGAS.asString());
             }

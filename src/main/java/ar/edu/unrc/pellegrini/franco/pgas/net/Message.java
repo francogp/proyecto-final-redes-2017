@@ -174,4 +174,5 @@ class Message {
         return "Message{" + "address=" + address + ", parameter1=" + parameter1 + ", parameter2=" + parameter2 + ", port=" + port + ", type=" + type +
                ", bytes=" + Arrays.toString(bytes) + '}';
     }
+
 }

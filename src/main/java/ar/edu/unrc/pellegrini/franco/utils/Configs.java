@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
@@ -20,9 +21,9 @@ class Configs< I extends Comparable< I > > {
     public static final String INET_ADDRESS = "inetAddress";
     public static final String PORT         = "port";
     public static final String TO_SORT      = "toSort";
-    private final Map< InetAddress, HostConfig< I > > hostsByAddress;
-    private final Map< Integer, HostConfig< I > >     hostsByPid;
-    private final int                                 processQuantity;
+    private final Map< InetAddress, Map< Integer, HostConfig< I > > > hostsByAddress;
+    private final Map< Integer, HostConfig< I > >                     hostsByPid;
+    private final int                                                 processQuantity;
 
     /**
      * JSON file Format:
@@ -69,7 +70,7 @@ class Configs< I extends Comparable< I > > {
             }
             processQuantity = hostsInJSON.size();
             hostsByPid = new HashMap<>(processQuantity);
-            hostsByAddress = new HashMap<>(processQuantity);
+            hostsByAddress = new HashMap<>();
 
             int pid = 1;
             for ( final Object hostInJSON : hostsInJSON ) {
@@ -88,9 +89,23 @@ class Configs< I extends Comparable< I > > {
                     toSort.add(value);
                 }
 
-                HostConfig< I > hostConfig = new HostConfig<>(pid, inetAddress, port.intValue(), toSort);
+                final InetAddress hostInetAddress = InetAddress.getByName(inetAddress);
+                HostConfig< I >   hostConfig      = new HostConfig<>(pid, hostInetAddress, port.intValue(), toSort);
+                //mapping from pid to HostConfig.
                 hostsByPid.put(pid, hostConfig);
-                hostsByAddress.put(hostConfig.getInetAddress(), hostConfig);
+
+                //mapping from InetAdress+port to HostConfig.
+                Map< Integer, HostConfig< I > > hostByPort = hostsByAddress.get(hostInetAddress);
+                if ( hostByPort == null ) {
+                    hostByPort = new ConcurrentHashMap<>();
+                    hostsByAddress.put(hostInetAddress, hostByPort);
+                }
+                final HostConfig< I > newHostByPort = hostByPort.get(port.intValue());
+                if ( newHostByPort != null ) {
+                    throw new IllegalArgumentException("there's two hosts with the same adress : InetAddress=" + hostInetAddress + " port=" + port);
+                }
+                hostByPort.put(port.intValue(), hostConfig);
+
                 pid++;
             }
         } catch ( final FileNotFoundException e ) {
@@ -110,8 +125,11 @@ class Configs< I extends Comparable< I > > {
     }
 
     public
-    HostConfig< I > getHostsConfig( final InetAddress address ) {
-        return hostsByAddress.get(address);
+    HostConfig< I > getHostsConfig(
+            final InetAddress address,
+            final int port
+    ) {
+        return hostsByAddress.get(address).get(port);
     }
 
     public

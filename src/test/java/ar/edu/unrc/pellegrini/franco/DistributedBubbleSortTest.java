@@ -61,6 +61,12 @@ class DistributedBubbleSortTest {
 
         @Override
         public
+        String asString() {
+            return array.toString();
+        }
+
+        @Override
+        public
         void barrier() {
 
         }
