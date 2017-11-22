@@ -64,7 +64,7 @@ class ArgumentLoader {
 
     public
     void loadArguments( final String... args ) {
-        for ( final String arg : args ) {
+        for ( String arg : args ) {
             if ( arg.charAt(0) == '-' ) {
                 final String flag = arg.substring(1);
                 if ( !validFlags.contains(flag) ) {
@@ -76,6 +76,9 @@ class ArgumentLoader {
                 }
                 activeFlags.add(flag);
             } else {
+                if ( arg.startsWith("\"") ) {
+                    arg = arg.substring(1, arg.length() - 1);
+                }
                 final int index = arg.indexOf('=');
                 if ( index == -1 ) {
                     if ( exitIfNotValid ) {
@@ -93,7 +96,14 @@ class ArgumentLoader {
                     throw new IllegalArgumentException(
                             "Argument \"" + arg + "\" is not present as a valid argument set" + ". Args = " + Arrays.toString(args));
                 }
-                final String value = arg.substring(index + 1).trim();
+                final String value     = arg.substring(index + 1).trim();
+                boolean      trimFirst = false;
+                if ( value.startsWith("\"") ) {
+                    trimFirst = true;
+                }
+                if ( value.startsWith("\"") ) {
+                    trimFirst = true;
+                }
                 argMap.put(id, value);
             }
         }

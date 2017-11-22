@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 @SuppressWarnings( { "ClassWithoutConstructor", "ClassIndependentOfModule" } )
 class LongPGASTest {
     private static final File TEST_FILE =
-            new File(LongPGASTest.class.getClassLoader().getResource("ar/edu/unrc/pellegrini/franco/utils/configTest.json").getFile());
+            new File(LongPGASTest.class.getClassLoader().getResource("ar/edu/unrc/pellegrini/franco/utils/longConfigTest.json").getFile());
 
     @Test
     final

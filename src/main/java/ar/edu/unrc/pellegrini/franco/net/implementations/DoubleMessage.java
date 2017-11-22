@@ -11,10 +11,10 @@ import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.*;
 public final
 class DoubleMessage
         extends AbstractMessage< Double > {
-    public static final int DOUBLE_MSG_BYTES_LENGTH       = 17;
-    public static final int DOUBLE_PARAMETER_1_BYTE_INDEX = 1;
-    public static final int DOUBLE_PARAMETER_2_BYTE_INDEX = 9;
-    public static final int DOUBLE_TYPE_BYTE_INDEX        = 0;
+    public static final int DOUBLE_INDEX_PARAMETER_BYTE_INDEX = 1;
+    public static final int DOUBLE_MSG_BYTES_LENGTH           = 17;
+    public static final int DOUBLE_TYPE_BYTE_INDEX            = 0;
+    public static final int DOUBLE_VALUE_PARAMETER_BYTE_INDEX = 9;
 
     public
     DoubleMessage(
@@ -42,9 +42,9 @@ class DoubleMessage
         bytes = new byte[DOUBLE_MSG_BYTES_LENGTH];
         bytes[DOUBLE_TYPE_BYTE_INDEX] = type.asByte();
         final byte[] index = longToBytes(indexParameter);
-        System.arraycopy(index, 0, bytes, DOUBLE_PARAMETER_1_BYTE_INDEX, 8);
+        System.arraycopy(index, 0, bytes, DOUBLE_INDEX_PARAMETER_BYTE_INDEX, 8);
         final byte[] value = doubleToBytes(valueParameter);
-        System.arraycopy(value, 0, bytes, DOUBLE_PARAMETER_2_BYTE_INDEX, 8);
+        System.arraycopy(value, 0, bytes, DOUBLE_VALUE_PARAMETER_BYTE_INDEX, 8);
     }
 
     @Override
@@ -54,7 +54,7 @@ class DoubleMessage
             throw new IllegalArgumentException("Wrong bytes.length=" + bytes.length + ", must be " + DOUBLE_MSG_BYTES_LENGTH);
         }
         type = MessageType.valueOf((char) bytes[DOUBLE_TYPE_BYTE_INDEX]);
-        indexParameter = bytesToLong(bytes, DOUBLE_PARAMETER_1_BYTE_INDEX, DOUBLE_PARAMETER_1_BYTE_INDEX + 8);
-        valueParameter = bytesToDouble(bytes, DOUBLE_PARAMETER_2_BYTE_INDEX, DOUBLE_PARAMETER_2_BYTE_INDEX + 8);
+        indexParameter = bytesToLong(bytes, DOUBLE_INDEX_PARAMETER_BYTE_INDEX, DOUBLE_INDEX_PARAMETER_BYTE_INDEX + 8);
+        valueParameter = bytesToDouble(bytes, DOUBLE_VALUE_PARAMETER_BYTE_INDEX, DOUBLE_VALUE_PARAMETER_BYTE_INDEX + 8);
     }
 }

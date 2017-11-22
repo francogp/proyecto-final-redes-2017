@@ -17,7 +17,7 @@ class NetConfigurationTest {
     final
     void generalConfig() {
         final ClassLoader classLoader = getClass().getClassLoader();
-        final File        file        = new File(classLoader.getResource("ar/edu/unrc/pellegrini/franco/utils/configTest.json").getFile());
+        final File        file        = new File(classLoader.getResource("ar/edu/unrc/pellegrini/franco/utils/longConfigTest.json").getFile());
 
         final NetConfiguration< Long > netConfiguration = new NetConfiguration<>(file);
         assertThat(netConfiguration.getProcessQuantity(), is(3));

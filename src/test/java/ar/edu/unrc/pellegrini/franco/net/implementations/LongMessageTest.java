@@ -29,7 +29,7 @@ class LongMessageTest {
         assertThat(msg.getIndexParameter(), is(15L));
 
         final byte[] bytes          = msg.getBytes();
-        final long   indexParameter = bytesToLong(bytes, LongMessage.LONG_PARAMETER_1_BYTE_INDEX, LongMessage.LONG_PARAMETER_1_BYTE_INDEX + 8);
+        final long indexParameter = bytesToLong(bytes, LongMessage.LONG_INDEX_PARAMETER_BYTE_INDEX, LongMessage.LONG_INDEX_PARAMETER_BYTE_INDEX + 8);
         assertThat(msg.getIndexParameter(), is(indexParameter));
     }
 
@@ -39,7 +39,7 @@ class LongMessageTest {
         assertThat(msg.getValueParameter(), is(0L));
 
         final byte[] bytes          = msg.getBytes();
-        final long   valueParameter = bytesToLong(bytes, LongMessage.LONG_PARAMETER_2_BYTE_INDEX, LongMessage.LONG_PARAMETER_2_BYTE_INDEX + 8);
+        final long valueParameter = bytesToLong(bytes, LongMessage.LONG_VALUE_PARAMETER_BYTE_INDEX, LongMessage.LONG_VALUE_PARAMETER_BYTE_INDEX + 8);
         assertThat(msg.getValueParameter(), is(valueParameter));
     }
 

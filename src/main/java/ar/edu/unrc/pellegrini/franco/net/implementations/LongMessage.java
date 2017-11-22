@@ -12,10 +12,10 @@ import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
 public final
 class LongMessage
         extends AbstractMessage< Long > {
-    public static final int LONG_MSG_BYTES_LENGTH       = 17;
-    public static final int LONG_PARAMETER_1_BYTE_INDEX = 1;
-    public static final int LONG_PARAMETER_2_BYTE_INDEX = 9;
-    public static final int LONG_TYPE_BYTE_INDEX        = 0;
+    public static final int LONG_INDEX_PARAMETER_BYTE_INDEX = 1;
+    public static final int LONG_MSG_BYTES_LENGTH           = 17;
+    public static final int LONG_TYPE_BYTE_INDEX            = 0;
+    public static final int LONG_VALUE_PARAMETER_BYTE_INDEX = 9;
 
     public
     LongMessage(
@@ -43,9 +43,9 @@ class LongMessage
         bytes = new byte[LONG_MSG_BYTES_LENGTH];
         bytes[LONG_TYPE_BYTE_INDEX] = type.asByte();
         final byte[] index = longToBytes(indexParameter);
-        System.arraycopy(index, 0, bytes, LONG_PARAMETER_1_BYTE_INDEX, 8);
+        System.arraycopy(index, 0, bytes, LONG_INDEX_PARAMETER_BYTE_INDEX, 8);
         final byte[] value = longToBytes(valueParameter);
-        System.arraycopy(value, 0, bytes, LONG_PARAMETER_2_BYTE_INDEX, 8);
+        System.arraycopy(value, 0, bytes, LONG_VALUE_PARAMETER_BYTE_INDEX, 8);
     }
 
     @Override
@@ -55,7 +55,7 @@ class LongMessage
             throw new IllegalArgumentException("Wrong bytes.length=" + bytes.length + ", must be " + LONG_MSG_BYTES_LENGTH);
         }
         type = MessageType.valueOf((char) bytes[LONG_TYPE_BYTE_INDEX]);
-        indexParameter = bytesToLong(bytes, LONG_PARAMETER_1_BYTE_INDEX, LONG_PARAMETER_1_BYTE_INDEX + 8);
-        valueParameter = bytesToLong(bytes, LONG_PARAMETER_2_BYTE_INDEX, LONG_PARAMETER_2_BYTE_INDEX + 8);
+        indexParameter = bytesToLong(bytes, LONG_INDEX_PARAMETER_BYTE_INDEX, LONG_INDEX_PARAMETER_BYTE_INDEX + 8);
+        valueParameter = bytesToLong(bytes, LONG_VALUE_PARAMETER_BYTE_INDEX, LONG_VALUE_PARAMETER_BYTE_INDEX + 8);
     }
 }
