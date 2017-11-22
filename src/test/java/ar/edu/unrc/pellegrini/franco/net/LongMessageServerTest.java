@@ -22,7 +22,7 @@ class LongMessageServerTest {
     void runTest() {
         try {
             final Queue< Message< Long > > receivedMessages = new ConcurrentLinkedQueue<>();
-            final Server< Long > longMessageServer = new LongMessageServer(9001, receivedMessages::add, msg -> {
+            final Server< Long > longMessageServer = new LongMessageServer(8001, receivedMessages::add, msg -> {
                 if ( msg.isEndMessage() ) {
                     receivedMessages.add(msg);
                     return true;
@@ -35,11 +35,11 @@ class LongMessageServerTest {
             Thread.sleep(100L);
             final String          destAddress = "127.0.0.1";
             final InetAddress     localHost   = InetAddress.getByName(destAddress);
-            final Message< Long > msg1        = new LongMessage(localHost, 9001, READ_MSG, 1000L, 0L);
+            final Message< Long > msg1        = new LongMessage(localHost, 8001, READ_MSG, 1000L, 0L);
             longMessageServer.send(msg1);
-            final Message< Long > msg2 = new LongMessage(localHost, 9001, WRITE_MSG, 9876L, -9998881000L);
+            final Message< Long > msg2 = new LongMessage(localHost, 8001, WRITE_MSG, 9876L, -9998881000L);
             longMessageServer.send(msg2);
-            final Message< Long > msg3 = new LongMessage(localHost, 9001, END_MSG, 0L, 0L);
+            final Message< Long > msg3 = new LongMessage(localHost, 8001, END_MSG, 0L, 0L);
             longMessageServer.send(msg3);
             serverThread.join();
             if ( receivedMessages.isEmpty() ) { throw new AssertionError("server output is empty"); }

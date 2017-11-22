@@ -17,13 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
-class Configs< I extends Comparable< I > > {
+class NetConfiguration< I extends Comparable< I > > {
     public static final String INET_ADDRESS = "inetAddress";
     public static final String PORT         = "port";
     public static final String TO_SORT      = "toSort";
-    private final Map< InetAddress, Map< Integer, HostConfig< I > > > hostsByAddress;
-    private final Map< Integer, HostConfig< I > >                     hostsByPid;
-    private final int                                                 processQuantity;
+    private final Map< InetAddress, Map< Integer, Host< I > > > hostsByAddress;
+    private final Map< Integer, Host< I > >                     hostsByPid;
+    private final int                                           processQuantity;
 
     /**
      * JSON file Format:
@@ -40,7 +40,7 @@ class Configs< I extends Comparable< I > > {
      * @param configFilePath file path to load.
      */
     public
-    Configs( final String configFilePath ) {
+    NetConfiguration( final String configFilePath ) {
         this(new File(configFilePath));
     }
 
@@ -59,7 +59,7 @@ class Configs< I extends Comparable< I > > {
      * @param configFilePath file to load.
      */
     public
-    Configs( final File configFilePath ) {
+    NetConfiguration( final File configFilePath ) {
         try ( InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), Charset.forName("UTF-8")) ) {
             final JSONParser jsonParser = new JSONParser();
             final JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
@@ -89,14 +89,14 @@ class Configs< I extends Comparable< I > > {
                     toSort.add(value);
                 }
 
-                final InetAddress     hostInetAddress = InetAddress.getByName(inetAddress);
-                final HostConfig< I > hostConfig      = new HostConfig<>(pid, hostInetAddress, port.intValue(), toSort);
-                //mapping from pid to HostConfig.
+                final InetAddress hostInetAddress = InetAddress.getByName(inetAddress);
+                final Host< I >   hostConfig      = new Host<>(pid, hostInetAddress, port.intValue(), toSort);
+                //mapping from pid to Host.
                 hostsByPid.put(pid, hostConfig);
 
-                //mapping from InetAddress+port to HostConfig.
-                Map< Integer, HostConfig< I > > hostByPort = hostsByAddress.computeIfAbsent(hostInetAddress, k -> new ConcurrentHashMap<>());
-                final HostConfig< I > newHostByPort = hostByPort.get(port.intValue());
+                //mapping from InetAddress+port to Host.
+                Map< Integer, Host< I > > hostByPort    = hostsByAddress.computeIfAbsent(hostInetAddress, k -> new ConcurrentHashMap<>());
+                final Host< I >           newHostByPort = hostByPort.get(port.intValue());
                 if ( newHostByPort != null ) {
                     throw new IllegalArgumentException("there's two hosts with the same address : InetAddress=" + hostInetAddress + " port=" + port);
                 }
@@ -116,12 +116,12 @@ class Configs< I extends Comparable< I > > {
     }
 
     public
-    HostConfig< I > getHostsConfig( final int pid ) {
+    Host< I > getHostsConfig( final int pid ) {
         return hostsByPid.get(pid);
     }
 
     public
-    HostConfig< I > getHostsConfig(
+    Host< I > getHostsConfig(
             final InetAddress address,
             final int port
     ) {

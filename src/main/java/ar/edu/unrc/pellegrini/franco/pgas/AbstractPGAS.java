@@ -1,8 +1,8 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.utils.Configs;
-import ar.edu.unrc.pellegrini.franco.utils.HostConfig;
+import ar.edu.unrc.pellegrini.franco.utils.Host;
+import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +59,7 @@ class AbstractPGAS< I extends Comparable< I > >
             final File configsFile,
             final boolean startServer
     ) {
-        final Configs< I > configFile = new Configs<>(configsFile);
+        final NetConfiguration< I > configFile = new NetConfiguration<>(configsFile);
         processQuantity = configFile.getProcessQuantity();
         if ( pid <= 0 ) { throw new IllegalArgumentException("pid " + pid + " must be >= 0."); }
         if ( pid > processQuantity ) { throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file."); }
@@ -70,8 +70,8 @@ class AbstractPGAS< I extends Comparable< I > >
         long lowerIndex = 0L;
         long upperIndex = -1L;
         for ( int currentPid = 1; currentPid <= processQuantity; currentPid++ ) {
-            final HostConfig< I > integerHostConfig = configFile.getHostsConfig(currentPid);
-            final List< I >       toSort            = integerHostConfig.getToSort();
+            final Host< I > host   = configFile.getHostsConfig(currentPid);
+            final List< I > toSort = host.getToSort();
             if ( pid == currentPid ) {
                 memory = new ArrayList<>(toSort);
             }
@@ -195,7 +195,7 @@ class AbstractPGAS< I extends Comparable< I > >
     protected abstract
     Middleware< I > newMiddleware(
             final boolean startServer,
-            final Configs< I > configFile
+            final NetConfiguration< I > configFile
     );
 
     public

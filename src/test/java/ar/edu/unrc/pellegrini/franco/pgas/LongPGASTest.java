@@ -1,7 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.pgas.implementations.LongPGAS;
-import ar.edu.unrc.pellegrini.franco.utils.Configs;
+import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -51,8 +51,8 @@ class LongPGASTest {
     final
     void setAndGet() {
         try {
-            final Configs< Long > configs = new Configs<>(FILE);
-            for ( int pid = 1; pid <= configs.getProcessQuantity(); pid++ ) {
+            final NetConfiguration< Long > netConfiguration = new NetConfiguration<>(FILE);
+            for ( int pid = 1; pid <= netConfiguration.getProcessQuantity(); pid++ ) {
                 final AbstractPGAS< Long > longPGAS = new LongPGAS(pid, FILE, false);
                 for ( long i = longPGAS.lowerIndex(); i <= longPGAS.upperIndex(); i++ ) {
                     longPGAS.write(i, i);

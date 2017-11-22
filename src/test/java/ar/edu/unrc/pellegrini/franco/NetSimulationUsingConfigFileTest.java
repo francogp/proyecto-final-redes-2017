@@ -12,8 +12,7 @@ class NetSimulationUsingConfigFileTest {
     @Test
     void main() {
         try {
-            NetSimulationUsingConfigFile simulation = new NetSimulationUsingConfigFile();
-            String result = "[" + simulation.run("configFile=exampleConfig.json") + "]";
+            String result = "[" + NetSimulationUsingConfigFile.run("configFile=exampleConfig.json") + "]";
             String expected = List.of(-784L,
                     -65L,
                     -54L,
@@ -52,7 +51,7 @@ class NetSimulationUsingConfigFileTest {
                     902L,
                     999L).toString();
             assertThat(result, is(expected));
-        } catch ( InterruptedException e ) {
+        } catch ( Exception e ) {
             fail(e);
         }
     }

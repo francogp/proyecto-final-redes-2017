@@ -1,12 +1,13 @@
 package ar.edu.unrc.pellegrini.franco;
 
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
-import ar.edu.unrc.pellegrini.franco.utils.Configs;
+import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import static ar.edu.unrc.pellegrini.franco.DistributedBubbleSort.ARG_CONFIG_FILE;
 
 public final
 class NetSimulationUsingConfigFile {
+    private
     NetSimulationUsingConfigFile() {}
 
     public static
@@ -15,15 +16,15 @@ class NetSimulationUsingConfigFile {
         System.out.println(run(args));
     }
 
-    static
+    public static
     String run( final String... args )
             throws InterruptedException {
         final ArgumentLoader arguments = new ArgumentLoader(true);
         arguments.addValidArg(ARG_CONFIG_FILE);
         arguments.loadArguments(args);
-        final Configs< Long > configFile        = new Configs<>(arguments.parseString(ARG_CONFIG_FILE));
-        Thread                coordinatorThread = null;
-        DistributedBubbleSort coordinator       = null;
+        final NetConfiguration< Long > configFile        = new NetConfiguration<>(arguments.parseString(ARG_CONFIG_FILE));
+        Thread                         coordinatorThread = null;
+        DistributedBubbleSort          coordinator       = null;
         for ( int pid = 1; pid <= configFile.size(); pid++ ) {
             final DistributedBubbleSort distributedBubbleSort = new DistributedBubbleSort(pid, arguments.parseString(ARG_CONFIG_FILE));
             Thread                      thread                = new Thread(distributedBubbleSort);

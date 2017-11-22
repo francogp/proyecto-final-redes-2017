@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
-class HostConfig< I extends Comparable< I > > {
+class Host< I extends Comparable< I > > {
     private final InetAddress                                             inetAddress;
     private final int                                                     pid;
     private final Integer                                                 port;
@@ -19,7 +19,7 @@ class HostConfig< I extends Comparable< I > > {
     private final List< I >                                               toSort;
 
     public
-    HostConfig(
+    Host(
             final int pid,
             final InetAddress inetAddress,
             final Integer port,

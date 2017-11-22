@@ -3,7 +3,7 @@ package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.pgas.AbstractPGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
-import ar.edu.unrc.pellegrini.franco.utils.Configs;
+import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -84,7 +84,7 @@ class LongPGAS
     protected
     Middleware< Long > newMiddleware(
             final boolean startServer,
-            final Configs< Long > configFile
+            final NetConfiguration< Long > configFile
     ) {
         return new LongMiddleware(this, configFile, startServer);
     }

@@ -7,7 +7,7 @@ import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessageServer;
 import ar.edu.unrc.pellegrini.franco.pgas.AbstractPGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
-import ar.edu.unrc.pellegrini.franco.utils.Configs;
+import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -24,18 +24,18 @@ class LongMiddleware
     public
     LongMiddleware(
             final AbstractPGAS< Long > pgas,
-            final Configs< Long > configs
+            final NetConfiguration< Long > netConfiguration
     ) {
-        super(pgas, configs);
+        super(pgas, netConfiguration);
     }
 
     public
     LongMiddleware(
             final AbstractPGAS< Long > pgas,
-            final Configs< Long > configs,
+            final NetConfiguration< Long > netConfiguration,
             final boolean starServer
     ) {
-        super(pgas, configs, starServer);
+        super(pgas, netConfiguration, starServer);
     }
 
     @Override
