@@ -12,10 +12,10 @@ import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
 public final
 class LongMessage
         extends AbstractMessage< Long > {
-    public static final int MSG_BYTES_LENGTH       = 17;
-    public static final int PARAMETER_1_BYTE_INDEX = 1;
-    public static final int PARAMETER_2_BYTE_INDEX = 9;
-    public static final int TYPE_BYTE_INDEX        = 0;
+    public static final int LONG_MSG_BYTES_LENGTH       = 17;
+    public static final int LONG_PARAMETER_1_BYTE_INDEX = 1;
+    public static final int LONG_PARAMETER_2_BYTE_INDEX = 9;
+    public static final int LONG_TYPE_BYTE_INDEX        = 0;
 
     public
     LongMessage(
@@ -31,31 +31,31 @@ class LongMessage
             final InetAddress address,
             final int port,
             final MessageType type,
-            final Long parameter1,
-            final Long parameter2
+            final Long indexParameter,
+            final Long valueParameter
     ) {
-        super(address, port, type, ( parameter1 == null ) ? 0L : parameter1, ( parameter2 == null ) ? 0L : parameter2);
+        super(address, port, type, indexParameter, ( valueParameter == null ) ? 0L : valueParameter);
     }
 
     @Override
     protected
     void initBytes() {
-        bytes = new byte[MSG_BYTES_LENGTH];
-        bytes[TYPE_BYTE_INDEX] = type.asByte();
-        final byte[] param1 = longToBytes(parameter1);
-        System.arraycopy(param1, 0, bytes, PARAMETER_1_BYTE_INDEX, ( PARAMETER_1_BYTE_INDEX + 8 ) - 1);
-        final byte[] param2 = longToBytes(parameter2);
-        System.arraycopy(param2, 0, bytes, PARAMETER_2_BYTE_INDEX, ( PARAMETER_2_BYTE_INDEX + 8 ) - 9);
+        bytes = new byte[LONG_MSG_BYTES_LENGTH];
+        bytes[LONG_TYPE_BYTE_INDEX] = type.asByte();
+        final byte[] index = longToBytes(indexParameter);
+        System.arraycopy(index, 0, bytes, LONG_PARAMETER_1_BYTE_INDEX, 8);
+        final byte[] value = longToBytes(valueParameter);
+        System.arraycopy(value, 0, bytes, LONG_PARAMETER_2_BYTE_INDEX, 8);
     }
 
     @Override
     protected
     void initFromBytes( final byte[] bytes ) {
-        if ( bytes.length != MSG_BYTES_LENGTH ) {
-            throw new IllegalArgumentException("Wrong bytes.length=" + bytes.length + ", must be " + MSG_BYTES_LENGTH);
+        if ( bytes.length != LONG_MSG_BYTES_LENGTH ) {
+            throw new IllegalArgumentException("Wrong bytes.length=" + bytes.length + ", must be " + LONG_MSG_BYTES_LENGTH);
         }
-        type = MessageType.valueOf((char) bytes[TYPE_BYTE_INDEX]);
-        parameter1 = bytesToLong(bytes, PARAMETER_1_BYTE_INDEX, PARAMETER_1_BYTE_INDEX + 8);
-        parameter2 = bytesToLong(bytes, PARAMETER_2_BYTE_INDEX, PARAMETER_2_BYTE_INDEX + 8);
+        type = MessageType.valueOf((char) bytes[LONG_TYPE_BYTE_INDEX]);
+        indexParameter = bytesToLong(bytes, LONG_PARAMETER_1_BYTE_INDEX, LONG_PARAMETER_1_BYTE_INDEX + 8);
+        valueParameter = bytesToLong(bytes, LONG_PARAMETER_2_BYTE_INDEX, LONG_PARAMETER_2_BYTE_INDEX + 8);
     }
 }

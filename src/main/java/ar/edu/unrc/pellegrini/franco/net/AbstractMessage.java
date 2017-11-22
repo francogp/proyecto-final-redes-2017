@@ -12,9 +12,9 @@ class AbstractMessage< I extends Comparable< I > >
     protected final InetAddress address;
     protected final int         port;
     protected       byte[]      bytes;
-    protected       I           parameter1;
-    protected       I           parameter2;
+    protected       Long        indexParameter;
     protected       MessageType type;
+    protected       I           valueParameter;
 
     protected
     AbstractMessage(
@@ -34,17 +34,17 @@ class AbstractMessage< I extends Comparable< I > >
             final InetAddress address,
             final int port,
             final MessageType type,
-            final I parameter1,
-            final I parameter2
+            final Long indexParameter,
+            final I valueParameter
     ) {
         this.address = address;
         this.port = port;
         this.type = type;
-        if ( ( parameter1 == null ) || ( parameter2 == null ) ) {
+        if ( valueParameter == null ) {
             throw new IllegalArgumentException("parameters 1 and 2 cannot be null");
         }
-        this.parameter1 = parameter1;
-        this.parameter2 = parameter2;
+        this.indexParameter = ( indexParameter == null ) ? Long.MIN_VALUE : indexParameter;
+        this.valueParameter = valueParameter;
 
         initBytes();
     }
@@ -60,8 +60,8 @@ class AbstractMessage< I extends Comparable< I > >
         if ( port != that.port ) { return false; }
         if ( !address.equals(that.address) ) { return false; }
         if ( !Arrays.equals(bytes, that.bytes) ) { return false; }
-        if ( ( parameter1 != null ) ? !parameter1.equals(that.parameter1) : ( that.parameter1 != null ) ) { return false; }
-        if ( ( parameter2 != null ) ? !parameter2.equals(that.parameter2) : ( that.parameter2 != null ) ) { return false; }
+        if ( ( indexParameter != null ) ? !indexParameter.equals(that.indexParameter) : ( that.indexParameter != null ) ) { return false; }
+        if ( ( valueParameter != null ) ? !valueParameter.equals(that.valueParameter) : ( that.valueParameter != null ) ) { return false; }
         if ( type != that.type ) { return false; }
 
         return true;
@@ -81,22 +81,12 @@ class AbstractMessage< I extends Comparable< I > >
 
     @Override
     public final
-    I getParameter1() {return parameter1;}
-
-    @Override
-    public final
-    I getParameter2() {return parameter2;}
+    Long getIndexParameter() {return indexParameter;}
 
     @Override
     public final
     int getPort() {
         return port;
-    }
-
-    @Override
-    public final
-    I getResponse() {
-        return parameter1;
     }
 
     @Override
@@ -107,12 +97,16 @@ class AbstractMessage< I extends Comparable< I > >
 
     @Override
     public final
+    I getValueParameter() {return valueParameter;}
+
+    @Override
+    public final
     int hashCode() {
         int result = address.hashCode();
         result = ( 31 * result ) + port;
         result = ( 31 * result ) + Arrays.hashCode(bytes);
-        result = ( 31 * result ) + ( ( parameter1 != null ) ? parameter1.hashCode() : 0 );
-        result = ( 31 * result ) + ( ( parameter2 != null ) ? parameter2.hashCode() : 0 );
+        result = ( 31 * result ) + ( ( indexParameter != null ) ? indexParameter.hashCode() : 0 );
+        result = ( 31 * result ) + ( ( valueParameter != null ) ? valueParameter.hashCode() : 0 );
         result = ( 31 * result ) + type.hashCode();
         return result;
     }
@@ -132,8 +126,8 @@ class AbstractMessage< I extends Comparable< I > >
     @Override
     public final
     String toString() {
-        return "Message{" + "address=" + address + ", parameter1=" + parameter1 + ", parameter2=" + parameter2 + ", port=" + port + ", type=" + type +
-               ", bytes=" + Arrays.toString(bytes) + '}';
+        return "Message{" + "address=" + address + ", indexParameter=" + indexParameter + ", valueParameter=" + valueParameter + ", port=" + port +
+               ", type=" + type + ", bytes=" + Arrays.toString(bytes) + '}';
     }
 
 }

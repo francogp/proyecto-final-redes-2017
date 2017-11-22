@@ -14,33 +14,33 @@ class LongMessageTest {
 
     @Test
     final
-    void getParameter1() {
-        assertThat(msg.getParameter1(), is(15L));
-
-        final byte[] bytes      = msg.getBytes();
-        final long   parameter1 = bytesToLong(bytes, LongMessage.PARAMETER_1_BYTE_INDEX, LongMessage.PARAMETER_1_BYTE_INDEX + 8);
-        assertThat(msg.getParameter1(), is(parameter1));
-    }
-
-    @Test
-    final
-    void getParameter2() {
-        assertThat(msg.getParameter2(), is(0L));
-
-        final byte[] bytes      = msg.getBytes();
-        final long   parameter2 = bytesToLong(bytes, LongMessage.PARAMETER_2_BYTE_INDEX, LongMessage.PARAMETER_2_BYTE_INDEX + 8);
-        assertThat(msg.getParameter2(), is(parameter2));
-    }
-
-    @Test
-    final
     void getType() {
         assertThat(msg.getType(), is(READ_MSG));
 
         final byte[] bytes = msg.getBytes();
-        final char   type  = (char) bytes[LongMessage.TYPE_BYTE_INDEX];
+        final char   type  = (char) bytes[LongMessage.LONG_TYPE_BYTE_INDEX];
         assertThat(msg.getType().asChar(), is(type));
 
+    }
+
+    @Test
+    final
+    void getindexParameter() {
+        assertThat(msg.getIndexParameter(), is(15L));
+
+        final byte[] bytes          = msg.getBytes();
+        final long   indexParameter = bytesToLong(bytes, LongMessage.LONG_PARAMETER_1_BYTE_INDEX, LongMessage.LONG_PARAMETER_1_BYTE_INDEX + 8);
+        assertThat(msg.getIndexParameter(), is(indexParameter));
+    }
+
+    @Test
+    final
+    void getvalueParameter() {
+        assertThat(msg.getValueParameter(), is(0L));
+
+        final byte[] bytes          = msg.getBytes();
+        final long   valueParameter = bytesToLong(bytes, LongMessage.LONG_PARAMETER_2_BYTE_INDEX, LongMessage.LONG_PARAMETER_2_BYTE_INDEX + 8);
+        assertThat(msg.getValueParameter(), is(valueParameter));
     }
 
 }

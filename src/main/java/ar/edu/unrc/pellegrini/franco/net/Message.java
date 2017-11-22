@@ -8,15 +8,13 @@ interface Message< I extends Comparable< I > > {
 
     byte[] getBytes();
 
-    I getParameter1();
-
-    I getParameter2();
+    Long getIndexParameter();
 
     int getPort();
 
-    I getResponse();
-
     MessageType getType();
+
+    I getValueParameter();
 
     boolean isEndMessage();
 }

@@ -14,11 +14,11 @@ import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
-class LongPGAS
-        extends AbstractPGAS< Long > {
+class DoublePGAS
+        extends AbstractPGAS< Double > {
 
     public
-    LongPGAS(
+    DoublePGAS(
             final int pid,
             final String configsFilePath
     ) {
@@ -26,7 +26,7 @@ class LongPGAS
     }
 
     public
-    LongPGAS(
+    DoublePGAS(
             final int pid,
             final String configsFilePath,
             final boolean startServer
@@ -35,7 +35,7 @@ class LongPGAS
     }
 
     public
-    LongPGAS(
+    DoublePGAS(
             final int pid,
             final File configsFile
     ) {
@@ -43,7 +43,7 @@ class LongPGAS
     }
 
     public
-    LongPGAS(
+    DoublePGAS(
             final int pid,
             final File configsFile,
             final boolean startServer
@@ -55,9 +55,9 @@ class LongPGAS
     String asString() {
         return LongStream.range(0L, pgasSize).mapToObj(index -> {
             try {
-                return Long.toString(read(index));
+                return Double.toString(read(index));
             } catch ( Exception e ) {
-                getLogger(LongPGAS.class.getName()).log(Level.SEVERE, null, e);
+                getLogger(DoublePGAS.class.getName()).log(Level.SEVERE, null, e);
                 return "ERROR";
             }
         }).collect(Collectors.joining(", "));
@@ -70,17 +70,17 @@ class LongPGAS
      */
     @Override
     protected
-    Long booleanAsMessageParameter( final boolean value ) {
-        return ( value ) ? 1L : 0L;
+    Double booleanAsMessageParameter( final boolean value ) {
+        return ( value ) ? 1.0d : 0.0d;
     }
 
     @Override
     protected
-    Middleware< Long > newMiddleware(
+    Middleware< Double > newMiddleware(
             final boolean startServer,
-            final NetConfiguration< Long > configFile
+            final NetConfiguration< Double > configFile
     ) {
-        return new LongMiddleware(this, configFile, startServer);
+        return new DoubleMiddleware(this, configFile, startServer);
     }
 
     /**
@@ -90,7 +90,7 @@ class LongPGAS
      */
     @Override
     protected
-    boolean parseResponseAsBoolean( final Message< Long > message ) {
-        return message.getValueParameter() != 0L;
+    boolean parseResponseAsBoolean( final Message< Double > message ) {
+        return message.getValueParameter() != 0.0d;
     }
 }

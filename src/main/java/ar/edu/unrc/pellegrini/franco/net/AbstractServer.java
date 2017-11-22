@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.MSG_BYTES_LENGTH;
+import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.LONG_MSG_BYTES_LENGTH;
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
@@ -83,7 +83,7 @@ class AbstractServer< I extends Comparable< I > >
             final Message< I > msg
     )
             throws IOException {
-        final DatagramPacket packet = new DatagramPacket(msg.getBytes(), MSG_BYTES_LENGTH, msg.getAddress(), msg.getPort());
+        final DatagramPacket packet = new DatagramPacket(msg.getBytes(), LONG_MSG_BYTES_LENGTH, msg.getAddress(), msg.getPort());
         socket.send(packet);
     }
 }

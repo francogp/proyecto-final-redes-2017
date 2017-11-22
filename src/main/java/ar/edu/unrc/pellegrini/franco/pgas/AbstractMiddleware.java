@@ -58,8 +58,8 @@ class AbstractMiddleware< I extends Comparable< I > >
      * @param inetAddress
      * @param port
      * @param messageType
-     * @param parameter1  cannot be null
-     * @param parameter2  cannot be null
+     * @param indexParameter cannot be null
+     * @param valueParameter cannot be null
      *
      * @return
      */
@@ -68,8 +68,8 @@ class AbstractMiddleware< I extends Comparable< I > >
             final InetAddress inetAddress,
             final int port,
             final MessageType messageType,
-            final I parameter1,
-            final I parameter2
+            final Long indexParameter,
+            final I valueParameter
     );
 
     protected abstract
@@ -98,14 +98,14 @@ class AbstractMiddleware< I extends Comparable< I > >
                 break;
             case READ_MSG:
                 //FIXME synchronized causa problemas aca
-                sendTo(targetHost, READ_RESPONSE_MSG, pgas.read((Long) incomingMessage.getParameter1()), null);
+                sendTo(targetHost, READ_RESPONSE_MSG, incomingMessage.getIndexParameter(), pgas.read(incomingMessage.getIndexParameter()));
                 break;
             case READ_RESPONSE_MSG:
                 targetHost.registerMsg(incomingMessage);
                 break;
             case WRITE_MSG:
                 //FIXME synchronized causa problemas aca
-                pgas.write((Long) incomingMessage.getParameter1(), incomingMessage.getParameter2());
+                pgas.write(incomingMessage.getIndexParameter(), incomingMessage.getValueParameter());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Message<I> type = " + incomingMessage.getType());
@@ -116,11 +116,11 @@ class AbstractMiddleware< I extends Comparable< I > >
     void sendTo(
             final Host< I > targetHost,
             final MessageType msgType,
-            final I parameter1,
-            final I parameter2
+            final Long indexParameter,
+            final I valueParameter
     )
             throws IOException {
-        final Message< I > msg = newMessageInstanceFrom(targetHost.getInetAddress(), targetHost.getPort(), msgType, parameter1, parameter2);
+        final Message< I > msg = newMessageInstanceFrom(targetHost.getInetAddress(), targetHost.getPort(), msgType, indexParameter, valueParameter);
         if ( DEBUG_MODE ) {
             System.out.println(new StringBuilder().append("Time ")
                     .append(System.nanoTime())
@@ -130,8 +130,8 @@ class AbstractMiddleware< I extends Comparable< I > >
                     .append(netConfiguration.getHostsConfig(targetHost.getInetAddress(), targetHost.getPort()).getPid())
                     .append("] ")
                     .append(msgType)
-                    .append(( parameter1 != null ) ? " param1=" + parameter1 : "")
-                    .append(( parameter2 != null ) ? " param2=" + parameter2 : "")
+                    .append(( indexParameter != null ) ? " param1=" + indexParameter : "")
+                    .append(( valueParameter != null ) ? " param2=" + valueParameter : "")
                     .toString());
         }
         server.send(msg);
@@ -141,12 +141,12 @@ class AbstractMiddleware< I extends Comparable< I > >
     void sendTo(
             final int targetPid,
             final MessageType msgType,
-            final I parameter1,
-            final I parameter2
+            final Long indexParameter,
+            final I valueParameter
     )
             throws IOException {
         final Host< I >    destHost = netConfiguration.getHostsConfig(targetPid);
-        final Message< I > msg      = newMessageInstanceFrom(destHost.getInetAddress(), destHost.getPort(), msgType, parameter1, parameter2);
+        final Message< I > msg      = newMessageInstanceFrom(destHost.getInetAddress(), destHost.getPort(), msgType, indexParameter, valueParameter);
         if ( DEBUG_MODE ) {
             System.out.println(new StringBuilder().append("Time ")
                     .append(System.nanoTime())
@@ -156,8 +156,8 @@ class AbstractMiddleware< I extends Comparable< I > >
                     .append(targetPid)
                     .append("] ")
                     .append(msgType)
-                    .append(( parameter1 != null ) ? " param1=" + parameter1 : "")
-                    .append(( parameter2 != null ) ? " param2=" + parameter2 : "")
+                    .append(( indexParameter != null ) ? " param1=" + indexParameter : "")
+                    .append(( valueParameter != null ) ? " param2=" + valueParameter : "")
                     .toString());
         }
         server.send(msg);

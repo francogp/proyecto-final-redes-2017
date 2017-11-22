@@ -96,10 +96,10 @@ class AbstractPGAS< I extends Comparable< I > >
                 andReduce = andReduce && parseResponseAsBoolean(msg);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                middleware.sendTo(targetPid, CONTINUE_MSG, booleanAsMessageParameter(andReduce), null);
+                middleware.sendTo(targetPid, CONTINUE_MSG, null, booleanAsMessageParameter(andReduce));
             }
         } else {
-            middleware.sendTo(COORDINATOR_PID, AND_REDUCE_MSG, booleanAsMessageParameter(value), null);
+            middleware.sendTo(COORDINATOR_PID, AND_REDUCE_MSG, null, booleanAsMessageParameter(value));
             final Message< I > msg = middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
             andReduce = parseResponseAsBoolean(msg);
         }
@@ -170,9 +170,6 @@ class AbstractPGAS< I extends Comparable< I > >
         return pid == processQuantity;
     }
 
-    protected abstract
-    I indexAsMessageParameter( final Long index );
-
     @Override
     public final
     boolean isCoordinator() {
@@ -205,9 +202,9 @@ class AbstractPGAS< I extends Comparable< I > >
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
-            middleware.sendTo(targetPid, READ_MSG, indexAsMessageParameter(index), null);
+            middleware.sendTo(targetPid, READ_MSG, index, null);
             final Message< I > response = middleware.waitFor(targetPid, READ_RESPONSE_MSG);
-            return response.getResponse();
+            return response.getValueParameter();
         } else {
             return memory.get(i);
         }
@@ -245,7 +242,7 @@ class AbstractPGAS< I extends Comparable< I > >
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
-            middleware.sendTo(targetPid, WRITE_MSG, indexAsMessageParameter(index), value);
+            middleware.sendTo(targetPid, WRITE_MSG, index, value);
         } else {
             memory.set(i, value);
         }

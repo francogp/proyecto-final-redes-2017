@@ -12,24 +12,24 @@ import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.LONG
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
-class LongMessageServer
-        extends AbstractServer< Long > {
+class DoubleMessageServer
+        extends AbstractServer< Double > {
 
 
     public
-    LongMessageServer(
+    DoubleMessageServer(
             final int port,
-            final Consumer< Message< Long > > messageConsumer
+            final Consumer< Message< Double > > messageConsumer
     )
             throws SocketException {
         super(port, messageConsumer);
     }
 
     public
-    LongMessageServer(
+    DoubleMessageServer(
             final int port,
-            final Consumer< Message< Long > > messageConsumer,
-            final Function< Message< Long >, Boolean > isFinalMsgFunction
+            final Consumer< Message< Double > > messageConsumer,
+            final Function< Message< Double >, Boolean > isFinalMsgFunction
     )
             throws SocketException {
         super(port, messageConsumer, isFinalMsgFunction);
@@ -43,8 +43,8 @@ class LongMessageServer
 
     @Override
     protected
-    Message< Long > newMessage( final DatagramPacket packet ) {
-        return new LongMessage(packet.getAddress(), packet.getPort(), packet.getData());
+    Message< Double > newMessage( final DatagramPacket packet ) {
+        return new DoubleMessage(packet.getAddress(), packet.getPort(), packet.getData());
     }
 
 
