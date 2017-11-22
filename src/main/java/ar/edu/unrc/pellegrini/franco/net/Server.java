@@ -86,7 +86,7 @@ class Server< I extends Comparable< I > >
         }
     }
 
-    public synchronized
+    public
     void send(
             final Message< I > msg
     )

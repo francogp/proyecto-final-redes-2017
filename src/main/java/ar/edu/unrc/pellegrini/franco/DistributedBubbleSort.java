@@ -18,6 +18,7 @@ class DistributedBubbleSort
     public static final String ARG_CONFIG_FILE = "configFile";
     public static final String ARG_PID         = "pid";
     private final AbstractPGAS< Long > longPGAS;
+    private       String               result;
 
     public
     DistributedBubbleSort(
@@ -65,6 +66,11 @@ class DistributedBubbleSort
         bubbleSort.run();
     }
 
+    public
+    String result() {
+        return result;
+    }
+
     @Override
     public
     void run() {
@@ -103,11 +109,11 @@ class DistributedBubbleSort
 
             System.out.println(longPGAS.getPid() + ": flag 6");
             if ( longPGAS.isCoordinator() ) {
-                System.out.println(longPGAS.asString());
-                longPGAS.endService();
+                result = longPGAS.asString();
             }
-            System.out.println(longPGAS.getPid() + ": flag 7");
             longPGAS.barrier();
+            System.out.println(longPGAS.getPid() + ": flag END");
+            longPGAS.endService();
         } catch ( final Exception e ) {
             getLogger(DistributedBubbleSort.class.getName()).log(Level.SEVERE, "Unknown problem", e);
         }

@@ -60,7 +60,7 @@ class LongPGAS
                 getLogger(LongPGAS.class.getName()).log(Level.SEVERE, null, e);
                 return "ERROR";
             }
-        }).collect(Collectors.joining(","));
+        }).collect(Collectors.joining(", "));
     }
 
     /**

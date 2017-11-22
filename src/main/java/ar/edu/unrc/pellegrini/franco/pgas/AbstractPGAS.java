@@ -134,8 +134,11 @@ class AbstractPGAS< I extends Comparable< I > >
     public
     void endService()
             throws IOException {
-        for ( int pid = 1; pid <= processQuantity; pid++ ) {
-            middleware.sendTo(pid, END_MSG, null, null);
+        if ( imCoordinator ) {
+            for ( int pid = 2; pid <= processQuantity; pid++ ) {
+                middleware.sendTo(pid, END_MSG, null, null);
+            }
+            middleware.sendTo(1, END_MSG, null, null);
         }
     }
 
@@ -161,7 +164,7 @@ class AbstractPGAS< I extends Comparable< I > >
         return pid;
     }
 
-    public synchronized
+    public
     int getSize() {
         return memory.size();
     }
@@ -191,13 +194,14 @@ class AbstractPGAS< I extends Comparable< I > >
 
     protected abstract
     Middleware< I > newMiddleware(
-            boolean startServer,
-            Configs< I > configFile
+            final boolean startServer,
+            final Configs< I > configFile
     );
 
-    public synchronized
+    public
     I read( final Long index )
             throws IOException, InterruptedException {
+        //FIXME synchonized?
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
@@ -210,15 +214,15 @@ class AbstractPGAS< I extends Comparable< I > >
     }
 
     protected abstract
-    boolean responseToBooleanRepresentation( Message< I > bool );
+    boolean responseToBooleanRepresentation( final Message< I > bool );
 
-    public synchronized
+    public
     void swap(
             final long index1,
             final long index2
     )
             throws IOException, InterruptedException {
-        //TODO REVISAR LOS SYNCHRONIZED!
+        //FIXME synchonized?
         final I temp = read(index1);
         write(index1, read(index2));
         write(index2, temp);
@@ -234,12 +238,13 @@ class AbstractPGAS< I extends Comparable< I > >
         return currentUpperIndex;
     }
 
-    public synchronized
+    public
     void write(
             final Long index,
             final I value
     )
             throws IOException {
+        //FIXME synchonized?
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
