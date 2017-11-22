@@ -18,9 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class NetConfiguration< I extends Comparable< I > > {
-    public static final String INET_ADDRESS = "inetAddress";
-    public static final String PORT         = "port";
-    public static final String TO_SORT      = "toSort";
+    public static final String JSON_INET_ADDRESS = "inetAddress";
+    public static final String JSON_PORT         = "port";
+    public static final String JSON_TO_SORT      = "toSort";
     private final Map< InetAddress, Map< Integer, Host< I > > > hostsByAddress;
     private final Map< Integer, Host< I > >                     hostsByPid;
     private final int                                           processQuantity;
@@ -70,15 +70,15 @@ class NetConfiguration< I extends Comparable< I > > {
             }
             processQuantity = hostsInJSON.size();
             hostsByPid = new HashMap<>(processQuantity);
-            hostsByAddress = new HashMap<>();
+            hostsByAddress = new HashMap<>(processQuantity);
 
             int pid = 1;
             for ( final Object hostInJSON : hostsInJSON ) {
                 final JSONObject host        = (JSONObject) hostInJSON;
-                final String     inetAddress = (String) host.get(INET_ADDRESS);
-                final Long       port        = (Long) host.get(PORT);
+                final String     inetAddress = (String) host.get(JSON_INET_ADDRESS);
+                final Long       port        = (Long) host.get(JSON_PORT);
 
-                final JSONArray toSortInJSON = (JSONArray) host.get(TO_SORT);
+                final JSONArray toSortInJSON = (JSONArray) host.get(JSON_TO_SORT);
                 if ( toSortInJSON.isEmpty() ) {
                     throw new IllegalArgumentException("wrong toSort quantity in config file \"" + configFilePath + "\".");
                 }
@@ -95,11 +95,11 @@ class NetConfiguration< I extends Comparable< I > > {
                 hostsByPid.put(pid, hostConfig);
 
                 //mapping from InetAddress+port to Host.
-                Map< Integer, Host< I > > hostByPort    = hostsByAddress.computeIfAbsent(hostInetAddress, k -> new ConcurrentHashMap<>());
-                final Host< I >           newHostByPort = hostByPort.get(port.intValue());
-                if ( newHostByPort != null ) {
+                final Map< Integer, Host< I > > hostByPort = hostsByAddress.computeIfAbsent(hostInetAddress, address -> new ConcurrentHashMap<>());
+                if ( hostByPort.get(port.intValue()) != null ) {
                     throw new IllegalArgumentException("there's two hosts with the same address : InetAddress=" + hostInetAddress + " port=" + port);
                 }
+                //FIXME si hay uno solo, es necesario ConcurrentHashMap?
                 hostByPort.put(port.intValue(), hostConfig);
 
                 pid++;

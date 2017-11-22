@@ -9,24 +9,24 @@ class BytesConversion {
 
     public static
     long bytesToLong(
-            final byte[] b,
+            final byte[] bytes,
             final int from,
             final int upTo
     ) {
         long result = 0L;
         for ( int i = from; i < upTo; i++ ) {
             result <<= 8L;
-            result |= ( b[i] & 0xFF );
+            result |= ( bytes[i] & 0xFF );
         }
         return result;
     }
 
     public static
-    long bytesToLong( final byte[] b ) {
+    long bytesToLong( final byte[] bytes ) {
         long result = 0L;
         for ( int i = 0; i < 8; i++ ) {
             result <<= 8L;
-            result |= ( b[i] & 0xFF );
+            result |= ( bytes[i] & 0xFF );
         }
         return result;
     }

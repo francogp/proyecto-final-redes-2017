@@ -1,8 +1,10 @@
-package ar.edu.unrc.pellegrini.franco;
+package ar.edu.unrc.pellegrini.franco.bubblesort.implementations;
 
+import ar.edu.unrc.pellegrini.franco.bubblesort.DistributedBubbleSort;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( "ClassWithoutConstructor" )
-class DistributedBubbleSortTest {
+class DistributedBubbleSortForLongTest {
     @Test
     final
     void bubbleSort() {
@@ -42,7 +44,6 @@ class DistributedBubbleSortTest {
         private final long         lowerIndex;
         private final long         upperIndex;
 
-        public
         TestLongPGAS(
                 final List< Long > array,
                 final long lowerIndex,
@@ -60,9 +61,28 @@ class DistributedBubbleSortTest {
         }
 
         @Override
+        public final
+        String asString() {
+            return array.toString();
+        }
+
+        @Override
         public
         void barrier() {
 
+        }
+
+        @Override
+        public
+        void endService()
+                throws IOException {
+
+        }
+
+        @Override
+        public
+        long getPgasSize() {
+            return array.size();
         }
 
         @Override
@@ -85,8 +105,14 @@ class DistributedBubbleSortTest {
 
         @Override
         public final
+        boolean isCoordinator() {
+            return false;
+        }
+
+        @Override
+        public final
         long lowerIndex( final int pid ) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Not used");
         }
 
         @Override
@@ -124,7 +150,7 @@ class DistributedBubbleSortTest {
         @Override
         public final
         long upperIndex( final int pid ) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Not used");
         }
 
         @Override

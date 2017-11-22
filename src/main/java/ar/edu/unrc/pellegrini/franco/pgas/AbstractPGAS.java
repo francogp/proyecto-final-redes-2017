@@ -16,10 +16,9 @@ public abstract
 class AbstractPGAS< I extends Comparable< I > >
         implements PGAS< I > {
 
-    public static final int COORDINATOR_PID = 1;
+    protected final boolean         coordinator;
     protected final long            currentLowerIndex;
     protected final long            currentUpperIndex;
-    protected final boolean         imCoordinator;
     protected final List< Index >   indexList;
     protected final Middleware< I > middleware;
     protected final long            pgasSize;
@@ -64,7 +63,7 @@ class AbstractPGAS< I extends Comparable< I > >
         if ( pid <= 0 ) { throw new IllegalArgumentException("pid " + pid + " must be >= 0."); }
         if ( pid > processQuantity ) { throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file."); }
         this.pid = pid;
-        imCoordinator = pid == COORDINATOR_PID;
+        coordinator = pid == COORDINATOR_PID;
         // inicializamos los indices lowerIndex y upperIndex
         indexList = new ArrayList<>(processQuantity);
         long lowerIndex = 0L;
@@ -87,14 +86,14 @@ class AbstractPGAS< I extends Comparable< I > >
         middleware = newMiddleware(startServer, configFile);
     }
 
-    public
+    public final
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException {
         boolean andReduce = value;
-        if ( imCoordinator ) {
+        if ( coordinator ) {
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
                 final Message< I > msg = middleware.waitFor(targetPid, AND_REDUCE_MSG);
-                andReduce = andReduce && responseToBooleanRepresentation(msg);
+                andReduce = andReduce && parseResponseAsBoolean(msg);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
                 middleware.sendTo(targetPid, CONTINUE_MSG, booleanAsMessageParameter(andReduce), null);
@@ -102,24 +101,21 @@ class AbstractPGAS< I extends Comparable< I > >
         } else {
             middleware.sendTo(COORDINATOR_PID, AND_REDUCE_MSG, booleanAsMessageParameter(value), null);
             final Message< I > msg = middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
-            andReduce = responseToBooleanRepresentation(msg);
+            andReduce = parseResponseAsBoolean(msg);
         }
         return andReduce;
     }
 
-    public abstract
-    String asString();
-
-    public
+    public final
     void barrier()
             throws IOException, InterruptedException {
-        if ( imCoordinator ) {
+        if ( coordinator ) {
             assert pid == 1;
-            for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                middleware.waitFor(pid, BARRIER_MSG);
+            for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                middleware.waitFor(targetPid, BARRIER_MSG);
             }
-            for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                middleware.sendTo(pid, CONTINUE_MSG, null, null);
+            for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                middleware.sendTo(targetPid, CONTINUE_MSG, null, null);
             }
         } else {
             assert pid >= 1;
@@ -131,12 +127,12 @@ class AbstractPGAS< I extends Comparable< I > >
     protected abstract
     I booleanAsMessageParameter( final boolean value );
 
-    public
+    public final
     void endService()
             throws IOException {
-        if ( imCoordinator ) {
-            for ( int pid = 2; pid <= processQuantity; pid++ ) {
-                middleware.sendTo(pid, END_MSG, null, null);
+        if ( coordinator ) {
+            for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                middleware.sendTo(targetPid, END_MSG, null, null);
             }
             middleware.sendTo(1, END_MSG, null, null);
         }
@@ -145,31 +141,31 @@ class AbstractPGAS< I extends Comparable< I > >
     private
     int findPidForIndex( final long index ) {
         //TODO optimizar
-        for ( int pid = 0; pid < processQuantity; pid++ ) {
-            final Index indexItem = indexList.get(pid);
+        for ( int targetPid = 0; targetPid < processQuantity; targetPid++ ) {
+            final Index indexItem = indexList.get(targetPid);
             if ( ( indexItem.loweIndex <= index ) && ( indexItem.upperIndex >= index ) ) {
-                return pid + 1;
+                return targetPid + 1;
             }
         }
         return -1;
     }
 
-    public
+    public final
     long getPgasSize() {
         return pgasSize;
     }
 
-    public
+    public final
     int getPid() {
         return pid;
     }
 
-    public
+    public final
     int getSize() {
         return memory.size();
     }
 
-    public
+    public final
     boolean imLast() {
         return pid == processQuantity;
     }
@@ -177,17 +173,18 @@ class AbstractPGAS< I extends Comparable< I > >
     protected abstract
     I indexAsMessageParameter( final Long index );
 
-    public
+    @Override
+    public final
     boolean isCoordinator() {
-        return imCoordinator;
+        return coordinator;
     }
 
-    public
+    public final
     long lowerIndex( final int pid ) {
         return indexList.get(pid - 1).getLoweIndex();
     }
 
-    public
+    public final
     long lowerIndex() {
         return currentLowerIndex;
     }
@@ -198,10 +195,13 @@ class AbstractPGAS< I extends Comparable< I > >
             final NetConfiguration< I > configFile
     );
 
-    public
+    protected abstract
+    boolean parseResponseAsBoolean( final Message< I > message );
+
+    public final
     I read( final Long index )
             throws IOException, InterruptedException {
-        //FIXME synchonized?
+        //FIXME synchronized?
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
@@ -213,38 +213,35 @@ class AbstractPGAS< I extends Comparable< I > >
         }
     }
 
-    protected abstract
-    boolean responseToBooleanRepresentation( final Message< I > bool );
-
-    public
+    public final
     void swap(
             final long index1,
             final long index2
     )
             throws IOException, InterruptedException {
-        //FIXME synchonized?
+        //FIXME synchronized?
         final I temp = read(index1);
         write(index1, read(index2));
         write(index2, temp);
     }
 
-    public
+    public final
     long upperIndex( final int pid ) {
         return indexList.get(pid - 1).getUpperIndex();
     }
 
-    public
+    public final
     long upperIndex() {
         return currentUpperIndex;
     }
 
-    public
+    public final
     void write(
             final Long index,
             final I value
     )
             throws IOException {
-        //FIXME synchonized?
+        //FIXME synchronized?
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
@@ -261,7 +258,6 @@ class AbstractPGAS< I extends Comparable< I > >
         final int  size;
         final long upperIndex;
 
-        public
         Index(
                 final long loweIndex,
                 final long upperIndex,
@@ -285,6 +281,12 @@ class AbstractPGAS< I extends Comparable< I > >
         public
         long getUpperIndex() {
             return upperIndex;
+        }
+
+        @Override
+        public
+        String toString() {
+            return "Index{" + "loweIndex=" + loweIndex + ", size=" + size + ", upperIndex=" + upperIndex + '}';
         }
     }
 }

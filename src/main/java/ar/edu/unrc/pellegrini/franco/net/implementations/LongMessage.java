@@ -1,6 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.net.implementations;
 
-import ar.edu.unrc.pellegrini.franco.net.Message;
+import ar.edu.unrc.pellegrini.franco.net.AbstractMessage;
 import ar.edu.unrc.pellegrini.franco.net.MessageType;
 
 import java.net.InetAddress;
@@ -11,7 +11,7 @@ import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class LongMessage
-        extends Message< Long > {
+        extends AbstractMessage< Long > {
     public static final int MSG_BYTES_LENGTH       = 17;
     public static final int PARAMETER_1_BYTE_INDEX = 1;
     public static final int PARAMETER_2_BYTE_INDEX = 9;

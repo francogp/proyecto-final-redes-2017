@@ -1,7 +1,7 @@
-package ar.edu.unrc.pellegrini.franco.net;
+package ar.edu.unrc.pellegrini.franco.net.implementations;
 
-import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
-import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessageServer;
+import ar.edu.unrc.pellegrini.franco.net.Message;
+import ar.edu.unrc.pellegrini.franco.net.Server;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;

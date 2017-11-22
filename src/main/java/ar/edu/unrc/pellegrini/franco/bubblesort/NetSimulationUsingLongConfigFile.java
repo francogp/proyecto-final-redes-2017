@@ -1,36 +1,37 @@
-package ar.edu.unrc.pellegrini.franco;
+package ar.edu.unrc.pellegrini.franco.bubblesort;
 
+import ar.edu.unrc.pellegrini.franco.bubblesort.implementations.DistributedBubbleSortForLong;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
-import static ar.edu.unrc.pellegrini.franco.DistributedBubbleSort.ARG_CONFIG_FILE;
+import static ar.edu.unrc.pellegrini.franco.bubblesort.implementations.DistributedBubbleSortForLong.ARG_CONFIG_FILE;
 
 public final
-class NetSimulationUsingConfigFile {
+class NetSimulationUsingLongConfigFile {
     private
-    NetSimulationUsingConfigFile() {}
+    NetSimulationUsingLongConfigFile() {}
 
     public static
     void main( final String... args )
             throws InterruptedException {
-        System.out.println(run(args));
+        System.out.println(simulate(args));
     }
 
     public static
-    String run( final String... args )
+    String simulate( final String... args )
             throws InterruptedException {
         final ArgumentLoader arguments = new ArgumentLoader(true);
         arguments.addValidArg(ARG_CONFIG_FILE);
         arguments.loadArguments(args);
         final NetConfiguration< Long > configFile        = new NetConfiguration<>(arguments.parseString(ARG_CONFIG_FILE));
         Thread                         coordinatorThread = null;
-        DistributedBubbleSort          coordinator       = null;
+        DistributedBubbleSort< Long >  coordinator       = null;
         for ( int pid = 1; pid <= configFile.size(); pid++ ) {
-            final DistributedBubbleSort distributedBubbleSort = new DistributedBubbleSort(pid, arguments.parseString(ARG_CONFIG_FILE));
-            Thread                      thread                = new Thread(distributedBubbleSort);
+            final DistributedBubbleSort< Long > bubbleSortForLong = new DistributedBubbleSortForLong(pid, arguments.parseString(ARG_CONFIG_FILE));
+            final Thread thread = new Thread(bubbleSortForLong);
             if ( pid == 1 ) {
                 coordinatorThread = thread;
-                coordinator = distributedBubbleSort;
+                coordinator = bubbleSortForLong;
             }
             thread.start();
         }

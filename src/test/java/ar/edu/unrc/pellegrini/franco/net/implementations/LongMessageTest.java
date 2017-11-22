@@ -1,6 +1,6 @@
-package ar.edu.unrc.pellegrini.franco.net;
+package ar.edu.unrc.pellegrini.franco.net.implementations;
 
-import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
+import ar.edu.unrc.pellegrini.franco.net.Message;
 import org.junit.jupiter.api.Test;
 
 import static ar.edu.unrc.pellegrini.franco.net.MessageType.READ_MSG;
@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @SuppressWarnings( "ClassWithoutConstructor" )
-class MessageTest {
+class LongMessageTest {
     private final Message< Long > msg = new LongMessage(null, 0, READ_MSG, 15L, 0L);
 
     @Test
@@ -23,6 +23,7 @@ class MessageTest {
     }
 
     @Test
+    final
     void getParameter2() {
         assertThat(msg.getParameter2(), is(0L));
 
@@ -32,6 +33,7 @@ class MessageTest {
     }
 
     @Test
+    final
     void getType() {
         assertThat(msg.getType(), is(READ_MSG));
 

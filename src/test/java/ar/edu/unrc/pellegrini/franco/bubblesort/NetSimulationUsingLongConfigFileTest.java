@@ -1,4 +1,4 @@
-package ar.edu.unrc.pellegrini.franco;
+package ar.edu.unrc.pellegrini.franco.bubblesort;
 
 import org.junit.jupiter.api.Test;
 
@@ -8,12 +8,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class NetSimulationUsingConfigFileTest {
+class NetSimulationUsingLongConfigFileTest {
     @Test
-    void main() {
+    void mainTest() {
         try {
-            String result = "[" + NetSimulationUsingConfigFile.run("configFile=exampleConfig.json") + "]";
-            String expected = List.of(-784L,
+            final String result = "[" + NetSimulationUsingLongConfigFile.simulate("configFile=exampleConfig.json") + "]";
+            final String expected = List.of(-784L,
                     -65L,
                     -54L,
                     -33L,
@@ -51,7 +51,7 @@ class NetSimulationUsingConfigFileTest {
                     902L,
                     999L).toString();
             assertThat(result, is(expected));
-        } catch ( Exception e ) {
+        } catch ( final Exception e ) {
             fail(e);
         }
     }

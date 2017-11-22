@@ -1,7 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.net.implementations;
 
+import ar.edu.unrc.pellegrini.franco.net.AbstractServer;
 import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.net.Server;
 
 import java.net.DatagramPacket;
 import java.net.SocketException;
@@ -13,7 +13,7 @@ import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.MSG_
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class LongMessageServer
-        extends Server< Long > {
+        extends AbstractServer< Long > {
 
 
     public
@@ -29,10 +29,10 @@ class LongMessageServer
     LongMessageServer(
             final int port,
             final Consumer< Message< Long > > messageConsumer,
-            final Function< Message< Long >, Boolean > isQueueFinalizationMsg
+            final Function< Message< Long >, Boolean > isFinalMsgFunction
     )
             throws SocketException {
-        super(port, messageConsumer, isQueueFinalizationMsg);
+        super(port, messageConsumer, isFinalMsgFunction);
     }
 
     @Override

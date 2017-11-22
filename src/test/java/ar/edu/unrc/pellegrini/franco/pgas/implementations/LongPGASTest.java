@@ -1,6 +1,6 @@
-package ar.edu.unrc.pellegrini.franco.pgas;
+package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
-import ar.edu.unrc.pellegrini.franco.pgas.implementations.LongPGAS;
+import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -12,35 +12,35 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( { "ClassWithoutConstructor", "ClassIndependentOfModule" } )
 class LongPGASTest {
-    private static final File FILE =
+    private static final File TEST_FILE =
             new File(LongPGASTest.class.getClassLoader().getResource("ar/edu/unrc/pellegrini/franco/utils/configTest.json").getFile());
 
     @Test
     final
     void getSize() {
-        AbstractPGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
+        PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE, false);
         assertThat(longPGAS.getSize(), is(3));
 
         //noinspection ReuseOfLocalVariable
-        longPGAS = new LongPGAS(3, FILE, false);
+        longPGAS = new LongPGAS(3, TEST_FILE, false);
         assertThat(longPGAS.getSize(), is(4));
     }
 
     @Test
     final
     void imLast() {
-        AbstractPGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
+        PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE, false);
         assertThat(longPGAS.imLast(), is(false));
 
         //noinspection ReuseOfLocalVariable
-        longPGAS = new LongPGAS(3, FILE);
+        longPGAS = new LongPGAS(3, TEST_FILE);
         assertThat(longPGAS.imLast(), is(true));
     }
 
     @Test
     final
     void lowerIndex() {
-        final AbstractPGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
+        final PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE, false);
 
         assertThat(longPGAS.lowerIndex(1), is(0L));
         assertThat(longPGAS.lowerIndex(2), is(3L));
@@ -51,12 +51,12 @@ class LongPGASTest {
     final
     void setAndGet() {
         try {
-            final NetConfiguration< Long > netConfiguration = new NetConfiguration<>(FILE);
+            final NetConfiguration< Long > netConfiguration = new NetConfiguration<>(TEST_FILE);
             for ( int pid = 1; pid <= netConfiguration.getProcessQuantity(); pid++ ) {
-                final AbstractPGAS< Long > longPGAS = new LongPGAS(pid, FILE, false);
-                for ( long i = longPGAS.lowerIndex(); i <= longPGAS.upperIndex(); i++ ) {
-                    longPGAS.write(i, i);
-                    assertThat(longPGAS.read(i), is(i));
+                final PGAS< Long > longPGAS = new LongPGAS(pid, TEST_FILE, false);
+                for ( long index = longPGAS.lowerIndex(); index <= longPGAS.upperIndex(); index++ ) {
+                    longPGAS.write(index, index);
+                    assertThat(longPGAS.read(index), is(index));
                 }
             }
         } catch ( final Exception e ) {
@@ -69,9 +69,9 @@ class LongPGASTest {
     void swap() {
         try {
             for ( int pid = 1; pid <= 3; pid++ ) {
-                final AbstractPGAS< Long > longPGAS = new LongPGAS(pid, FILE, false);
-                for ( long i = longPGAS.lowerIndex(); i <= longPGAS.upperIndex(); i++ ) {
-                    longPGAS.write(i, i);
+                final PGAS< Long > longPGAS = new LongPGAS(pid, TEST_FILE, false);
+                for ( long index = longPGAS.lowerIndex(); index <= longPGAS.upperIndex(); index++ ) {
+                    longPGAS.write(index, index);
                 }
                 longPGAS.swap(longPGAS.lowerIndex(), longPGAS.upperIndex());
                 assertThat(longPGAS.read(longPGAS.lowerIndex()), is(longPGAS.upperIndex()));
@@ -85,7 +85,7 @@ class LongPGASTest {
     @Test
     final
     void upperIndex() {
-        final AbstractPGAS< Long > longPGAS = new LongPGAS(1, FILE, false);
+        final PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE, false);
 
         assertThat(longPGAS.upperIndex(1), is(2L));
         assertThat(longPGAS.upperIndex(2), is(4L));

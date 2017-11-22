@@ -5,17 +5,28 @@ import java.io.IOException;
 public
 interface PGAS< I > {
 
+    public static final int COORDINATOR_PID = 1;
+
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException;
 
+    String asString();
+
     void barrier()
             throws IOException, InterruptedException;
+
+    void endService()
+            throws IOException;
+
+    long getPgasSize();
 
     int getPid();
 
     int getSize();
 
     boolean imLast();
+
+    boolean isCoordinator();
 
     long lowerIndex();
 

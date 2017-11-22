@@ -6,17 +6,18 @@ import ar.edu.unrc.pellegrini.franco.net.MessageType;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public
+public final
 class Host< I extends Comparable< I > > {
-    private final InetAddress                                             inetAddress;
-    private final int                                                     pid;
-    private final Integer                                                 port;
-    private final Map< MessageType, LinkedBlockingQueue< Message< I > > > queues;
-    private final List< I >                                               toSort;
+    private final InetAddress                                       inetAddress;
+    private final int                                               pid;
+    private final Integer                                           port;
+    private final Map< MessageType, BlockingQueue< Message< I > > > queues;
+    private final List< I >                                         toSort;
 
     public
     Host(
@@ -59,14 +60,14 @@ class Host< I extends Comparable< I > > {
     public
     void registerMsg( final Message< I > message )
             throws InterruptedException {
-        final LinkedBlockingQueue< Message< I > > messages = queues.get(message.getType());
+        final BlockingQueue< Message< I > > messages = queues.get(message.getType());
         messages.put(message);
     }
 
     public
     Message< I > waitFor( final MessageType msgType )
             throws InterruptedException {
-        final LinkedBlockingQueue< Message< I > > messages = queues.get(msgType);
+        final BlockingQueue< Message< I > > messages = queues.get(msgType);
         return messages.take();
     }
 }

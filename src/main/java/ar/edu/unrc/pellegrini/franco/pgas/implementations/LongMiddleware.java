@@ -5,8 +5,8 @@ import ar.edu.unrc.pellegrini.franco.net.MessageType;
 import ar.edu.unrc.pellegrini.franco.net.Server;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessageServer;
-import ar.edu.unrc.pellegrini.franco.pgas.AbstractPGAS;
-import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
+import ar.edu.unrc.pellegrini.franco.pgas.AbstractMiddleware;
+import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import java.net.InetAddress;
@@ -18,12 +18,12 @@ import static java.util.logging.Logger.getLogger;
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class LongMiddleware
-        extends Middleware< Long > {
+        extends AbstractMiddleware< Long > {
 
 
     public
     LongMiddleware(
-            final AbstractPGAS< Long > pgas,
+            final PGAS< Long > pgas,
             final NetConfiguration< Long > netConfiguration
     ) {
         super(pgas, netConfiguration);
@@ -31,7 +31,7 @@ class LongMiddleware
 
     public
     LongMiddleware(
-            final AbstractPGAS< Long > pgas,
+            final PGAS< Long > pgas,
             final NetConfiguration< Long > netConfiguration,
             final boolean starServer
     ) {

@@ -90,13 +90,13 @@ class LongPGAS
     }
 
     /**
-     * @param msg
+     * @param message
      *
      * @return true!=0, false==0
      */
     @Override
     protected
-    boolean responseToBooleanRepresentation( final Message< Long > msg ) {
-        return msg.getResponse() != 0L;
+    boolean parseResponseAsBoolean( final Message< Long > message ) {
+        return message.getResponse() != 0L;
     }
 }
