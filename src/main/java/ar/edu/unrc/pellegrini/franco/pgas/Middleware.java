@@ -78,12 +78,6 @@ class Middleware< I extends Comparable< I > > {
     protected
     void processIncomingMessage( final Message< I > incomingMessage )
             throws IOException, InterruptedException {
-        //        public static final char AND_REDUCE_MSG         = 'A';
-        //        public static final char BARRIER_MSG            = 'B';
-        //        public static final char CONTINUE_MSG           = 'C';
-        //        public static final char END_MSG                = 'E';
-        //        public static final char READ_MSG               = 'R';
-        //        public static final char WRITE_MSG              = 'W';
         //TODO buscar asi el pid o mandar por mensaje?
         final HostConfig< I > targetHost = configs.getHostsConfig(incomingMessage.getAddress(), incomingMessage.getPort());
         switch ( incomingMessage.getType() ) {
@@ -102,12 +96,14 @@ class Middleware< I extends Comparable< I > > {
             case END_MSG:
                 break;
             case READ_MSG:
+                //FIXME synchronized causa problemas aca
                 sendTo(targetHost, READ_RESPONSE_MSG, pgas.read((Long) incomingMessage.getParameter1()), null);
                 break;
             case READ_RESPONSE_MSG:
                 targetHost.registerMsg(incomingMessage);
                 break;
             case WRITE_MSG:
+                //FIXME synchronized causa problemas aca
                 pgas.write((Long) incomingMessage.getParameter1(), incomingMessage.getParameter2());
                 break;
             default:
