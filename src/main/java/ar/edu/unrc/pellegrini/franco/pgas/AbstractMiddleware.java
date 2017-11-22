@@ -122,9 +122,17 @@ class AbstractMiddleware< I extends Comparable< I > >
             throws IOException {
         final Message< I > msg = newMessageInstanceFrom(targetHost.getInetAddress(), targetHost.getPort(), msgType, parameter1, parameter2);
         if ( DEBUG_MODE ) {
-            System.out.println(
-                    pgas.getPid() + " sendTo( pid=" + netConfiguration.getHostsConfig(targetHost.getInetAddress(), targetHost.getPort()).getPid() +
-                    " ) type=" + msgType + " param1=" + parameter1 + " param2=" + parameter2);
+            System.out.println(new StringBuilder().append("Time ")
+                    .append(System.nanoTime())
+                    .append(": pid[")
+                    .append(pgas.getPid())
+                    .append("] -> sendTo pid[")
+                    .append(netConfiguration.getHostsConfig(targetHost.getInetAddress(), targetHost.getPort()).getPid())
+                    .append("] ")
+                    .append(msgType)
+                    .append(( parameter1 != null ) ? " param1=" + parameter1 : "")
+                    .append(( parameter2 != null ) ? " param2=" + parameter2 : "")
+                    .toString());
         }
         server.send(msg);
     }
@@ -140,8 +148,17 @@ class AbstractMiddleware< I extends Comparable< I > >
         final Host< I >    destHost = netConfiguration.getHostsConfig(targetPid);
         final Message< I > msg      = newMessageInstanceFrom(destHost.getInetAddress(), destHost.getPort(), msgType, parameter1, parameter2);
         if ( DEBUG_MODE ) {
-            System.out.println(
-                    pgas.getPid() + " sendTo( pid=" + targetPid + " ) type=" + msgType + " param1=" + parameter1 + " param2=" + parameter2);
+            System.out.println(new StringBuilder().append("Time ")
+                    .append(System.nanoTime())
+                    .append(": pid[")
+                    .append(pgas.getPid())
+                    .append("] -> sendTo pid[")
+                    .append(targetPid)
+                    .append("] ")
+                    .append(msgType)
+                    .append(( parameter1 != null ) ? " param1=" + parameter1 : "")
+                    .append(( parameter2 != null ) ? " param2=" + parameter2 : "")
+                    .toString());
         }
         server.send(msg);
     }
@@ -154,7 +171,15 @@ class AbstractMiddleware< I extends Comparable< I > >
             throws InterruptedException {
         final Host< I > hostsConfig = netConfiguration.getHostsConfig(senderPid);
         if ( DEBUG_MODE ) {
-            System.out.println(pgas.getPid() + " waitFor( pid=" + senderPid + " ) type=" + msgType);
+            System.out.println(new StringBuilder().append("Time ")
+                    .append(System.nanoTime())
+                    .append(": pid[")
+                    .append(pgas.getPid())
+                    .append("] -> waitFor pid[")
+                    .append(senderPid)
+                    .append("] ")
+                    .append(msgType)
+                    .toString());
         }
         return hostsConfig.waitFor(msgType);
     }

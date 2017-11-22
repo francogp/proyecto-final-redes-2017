@@ -14,7 +14,7 @@ class NetSimulationUsingLongConfigFile {
     public static
     void main( final String... args )
             throws InterruptedException {
-        System.out.println(simulate(args));
+        System.out.println("\nSorted final results: " + simulate(args));
     }
 
     public static
@@ -28,7 +28,7 @@ class NetSimulationUsingLongConfigFile {
         DistributedBubbleSort< Long >  coordinator       = null;
         for ( int pid = 1; pid <= configFile.size(); pid++ ) {
             final DistributedBubbleSort< Long > bubbleSortForLong = new DistributedBubbleSortForLong(pid, arguments.parseString(ARG_CONFIG_FILE));
-            final Thread thread = new Thread(bubbleSortForLong);
+            final Thread                        thread            = new Thread(bubbleSortForLong);
             if ( pid == 1 ) {
                 coordinatorThread = thread;
                 coordinator = bubbleSortForLong;
