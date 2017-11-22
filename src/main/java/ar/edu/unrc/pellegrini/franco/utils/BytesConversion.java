@@ -9,12 +9,7 @@ class BytesConversion {
 
     public static
     double bytesToDouble( final byte[] bytes ) {
-        long result = 0L;
-        for ( int i = 0; i < 8; i++ ) {
-            result <<= 8L;
-            result |= ( bytes[i] & 0xFFL );
-        }
-        return Double.longBitsToDouble(result);
+        return Double.longBitsToDouble(bytesToLong(bytes));
     }
 
     public static
@@ -23,12 +18,7 @@ class BytesConversion {
             final int from,
             final int upTo
     ) {
-        long result = 0L;
-        for ( int i = from; i < upTo; i++ ) {
-            result <<= 8L;
-            result |= ( bytes[i] & 0xFFL );
-        }
-        return Double.longBitsToDouble(result);
+        return Double.longBitsToDouble(bytesToLong(bytes, from, upTo));
     }
 
     public static
@@ -57,12 +47,7 @@ class BytesConversion {
 
     public static
     byte[] doubleToBytes( final double d ) {
-        final byte[] output = new byte[8];
-        final long   lng    = Double.doubleToLongBits(d);
-        for ( int i = 0; i < 8; i++ ) {
-            output[i] = (byte) ( ( lng >> ( ( 7 - i ) << 3 ) ) & 0xff );
-        }
-        return output;
+        return longToBytes(Double.doubleToLongBits(d));
     }
 
     @SuppressWarnings( "AssignmentToMethodParameter" )
