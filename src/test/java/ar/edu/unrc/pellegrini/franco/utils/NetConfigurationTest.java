@@ -1,5 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.utils;
 
+import ar.edu.unrc.pellegrini.franco.net.Host;
+import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

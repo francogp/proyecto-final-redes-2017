@@ -1,4 +1,4 @@
-package ar.edu.unrc.pellegrini.franco.utils;
+package ar.edu.unrc.pellegrini.franco.net;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

@@ -1,7 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.bubblesort;
 
+import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
-import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import java.util.logging.Level;
 

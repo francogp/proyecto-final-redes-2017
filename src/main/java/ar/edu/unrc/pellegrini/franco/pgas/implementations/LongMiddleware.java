@@ -2,12 +2,12 @@ package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.net.MessageType;
+import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 import ar.edu.unrc.pellegrini.franco.net.Server;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessageServer;
 import ar.edu.unrc.pellegrini.franco.pgas.AbstractMiddleware;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
-import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import java.net.InetAddress;
 import java.net.SocketException;

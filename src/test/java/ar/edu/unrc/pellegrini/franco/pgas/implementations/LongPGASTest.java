@@ -1,7 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
+import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
-import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

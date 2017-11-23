@@ -1,8 +1,8 @@
 package ar.edu.unrc.pellegrini.franco.bubblesort;
 
 import ar.edu.unrc.pellegrini.franco.bubblesort.implementations.DistributedBubbleSortForDouble;
+import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
-import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import static ar.edu.unrc.pellegrini.franco.bubblesort.DistributedBubbleSort.ARG_DEBUG_MODE;
 import static ar.edu.unrc.pellegrini.franco.bubblesort.implementations.DistributedBubbleSortForLong.ARG_CONFIG_FILE;

@@ -1,10 +1,10 @@
 package ar.edu.unrc.pellegrini.franco.bubblesort.implementations;
 
 import ar.edu.unrc.pellegrini.franco.bubblesort.AbstractDistributedBubbleSort;
+import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.implementations.DoublePGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
-import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final

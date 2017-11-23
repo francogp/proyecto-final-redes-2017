@@ -1,8 +1,8 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
+import ar.edu.unrc.pellegrini.franco.net.Host;
 import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.utils.Host;
-import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
+import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 
 import java.io.File;
 import java.io.IOException;

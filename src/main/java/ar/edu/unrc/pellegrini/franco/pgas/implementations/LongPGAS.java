@@ -1,9 +1,9 @@
 package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
+import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 import ar.edu.unrc.pellegrini.franco.pgas.AbstractPGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
-import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import java.io.File;
 import java.util.logging.Level;

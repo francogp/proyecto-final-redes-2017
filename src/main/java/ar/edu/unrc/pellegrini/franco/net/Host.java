@@ -1,7 +1,4 @@
-package ar.edu.unrc.pellegrini.franco.utils;
-
-import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.net.MessageType;
+package ar.edu.unrc.pellegrini.franco.net;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
