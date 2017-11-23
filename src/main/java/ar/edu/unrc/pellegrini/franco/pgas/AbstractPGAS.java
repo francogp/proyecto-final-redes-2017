@@ -16,6 +16,7 @@ public abstract
 class AbstractPGAS< I extends Comparable< I > >
         implements PGAS< I > {
 
+    protected static boolean debugMode = false;
     protected final boolean         coordinator;
     protected final long            currentLowerIndex;
     protected final long            currentUpperIndex;
@@ -26,7 +27,6 @@ class AbstractPGAS< I extends Comparable< I > >
     protected final int             processQuantity;
     private List< I > memory = null;
 
-
     protected
     AbstractPGAS(
             final int pid,
@@ -34,6 +34,7 @@ class AbstractPGAS< I extends Comparable< I > >
     ) {
         this(pid, new File(configsFilePath), true);
     }
+
 
     protected
     AbstractPGAS(
@@ -208,6 +209,13 @@ class AbstractPGAS< I extends Comparable< I > >
         } else {
             return memory.get(i);
         }
+    }
+
+    @Override
+    public
+    void setDebugMode( final boolean mode ) {
+        debugMode = mode;
+        middleware.setDebugMode(mode);
     }
 
     public final

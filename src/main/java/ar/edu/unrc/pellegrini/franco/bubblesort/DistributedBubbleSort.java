@@ -9,6 +9,7 @@ interface DistributedBubbleSort< I extends Comparable< I > >
         extends Runnable {
 
     public static final String ARG_CONFIG_FILE = "configFile";
+    public static final String ARG_DEBUG_MODE  = "debug";
     public static final String ARG_PID         = "pid";
 
     /**

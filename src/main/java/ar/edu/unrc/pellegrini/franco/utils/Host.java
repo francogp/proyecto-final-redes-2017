@@ -4,6 +4,7 @@ import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.net.MessageType;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -29,7 +30,7 @@ class Host< I extends Comparable< I > > {
         this.pid = pid;
         this.inetAddress = inetAddress;
         this.port = port;
-        this.toSort = toSort;
+        this.toSort = new ArrayList<>(toSort);
         final MessageType[] msgTypeList = MessageType.values();
         queues = new ConcurrentHashMap<>(msgTypeList.length);
         for ( final MessageType type : msgTypeList ) {

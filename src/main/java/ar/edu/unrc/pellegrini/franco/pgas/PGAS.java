@@ -35,6 +35,8 @@ interface PGAS< I > {
     I read( final Long index )
             throws IOException, InterruptedException;
 
+    void setDebugMode( boolean mode );
+
     void swap(
             final long index1,
             final long index2

@@ -13,9 +13,10 @@ class DistributedBubbleSortForDouble
     public
     DistributedBubbleSortForDouble(
             final int pid,
-            final String configFilePath
+            final String configFilePath,
+            final boolean debugMode
     ) {
-        super(pid, configFilePath);
+        super(pid, configFilePath, debugMode);
     }
 
     public static
@@ -23,10 +24,12 @@ class DistributedBubbleSortForDouble
         final ArgumentLoader arguments = new ArgumentLoader(true);
         arguments.addValidArg(ARG_PID);
         arguments.addValidArg(ARG_CONFIG_FILE);
+        arguments.addValidFlag(ARG_DEBUG_MODE);
 
         arguments.loadArguments(args);
         final int      pid        = arguments.parseInteger(ARG_PID);
-        final Runnable bubbleSort = new DistributedBubbleSortForDouble(pid, arguments.parseString(ARG_CONFIG_FILE));
+        final Runnable bubbleSort =
+                new DistributedBubbleSortForDouble(pid, arguments.parseString(ARG_CONFIG_FILE), arguments.existsFlag(ARG_DEBUG_MODE));
         bubbleSort.run();
     }
 
@@ -34,9 +37,12 @@ class DistributedBubbleSortForDouble
     protected
     PGAS< Double > newPGAS(
             final int pid,
-            final String configFilePath
+            final String configFilePath,
+            final boolean debugMode
     ) {
-        return new DoublePGAS(pid, configFilePath);
+        final DoublePGAS doublePGAS = new DoublePGAS(pid, configFilePath);
+        doublePGAS.setDebugMode(debugMode);
+        return doublePGAS;
     }
 
 }

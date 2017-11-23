@@ -17,15 +17,17 @@ class AbstractDistributedBubbleSort< I extends Comparable< I > >
     protected
     AbstractDistributedBubbleSort(
             final int pid,
-            final String configFilePath
+            final String configFilePath,
+            final boolean debugMode
     ) {
-        pgas = newPGAS(pid, configFilePath);
+        pgas = newPGAS(pid, configFilePath, debugMode);
     }
 
     protected abstract
     PGAS< I > newPGAS(
             final int pid,
-            final String configFilePath
+            final String configFilePath,
+            final boolean debugMode
     );
 
     @Override

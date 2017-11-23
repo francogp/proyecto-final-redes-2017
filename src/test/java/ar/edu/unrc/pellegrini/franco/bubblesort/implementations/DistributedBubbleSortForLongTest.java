@@ -131,6 +131,11 @@ class DistributedBubbleSortForLongTest {
         }
 
         @Override
+        public
+        void setDebugMode( boolean mode ) {
+        }
+
+        @Override
         public final
         void swap(
                 final long index1,

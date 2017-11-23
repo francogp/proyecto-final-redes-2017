@@ -8,7 +8,8 @@ import java.io.IOException;
 
 public
 interface Middleware< I extends Comparable< I > > {
-    public static final boolean DEBUG_MODE = true;
+
+    void setDebugMode( boolean mode );
 
     void sendTo(
             final Host< I > targetHost,

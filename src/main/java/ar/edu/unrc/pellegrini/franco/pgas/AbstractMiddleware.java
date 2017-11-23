@@ -17,6 +17,7 @@ public abstract
 class AbstractMiddleware< I extends Comparable< I > >
         implements Middleware< I > {
 
+    protected static boolean debugMode = false;
     private final NetConfiguration< I > netConfiguration;
     private final PGAS< I >             pgas;
     private final Server< I >           server;
@@ -121,7 +122,7 @@ class AbstractMiddleware< I extends Comparable< I > >
     )
             throws IOException {
         final Message< I > msg = newMessageInstanceFrom(targetHost.getInetAddress(), targetHost.getPort(), msgType, indexParameter, valueParameter);
-        if ( DEBUG_MODE ) {
+        if ( debugMode ) {
             System.out.println(new StringBuilder().append("Time ")
                     .append(System.nanoTime())
                     .append(": pid[")
@@ -147,7 +148,7 @@ class AbstractMiddleware< I extends Comparable< I > >
             throws IOException {
         final Host< I >    destHost = netConfiguration.getHostsConfig(targetPid);
         final Message< I > msg      = newMessageInstanceFrom(destHost.getInetAddress(), destHost.getPort(), msgType, indexParameter, valueParameter);
-        if ( DEBUG_MODE ) {
+        if ( debugMode ) {
             System.out.println(new StringBuilder().append("Time ")
                     .append(System.nanoTime())
                     .append(": pid[")
@@ -163,6 +164,12 @@ class AbstractMiddleware< I extends Comparable< I > >
         server.send(msg);
     }
 
+    @Override
+    public
+    void setDebugMode( boolean mode ) {
+        debugMode = mode;
+    }
+
     public final
     Message< I > waitFor(
             final int senderPid,
@@ -170,7 +177,7 @@ class AbstractMiddleware< I extends Comparable< I > >
     )
             throws InterruptedException {
         final Host< I > hostsConfig = netConfiguration.getHostsConfig(senderPid);
-        if ( DEBUG_MODE ) {
+        if ( debugMode ) {
             System.out.println(new StringBuilder().append("Time ")
                     .append(System.nanoTime())
                     .append(": pid[")
