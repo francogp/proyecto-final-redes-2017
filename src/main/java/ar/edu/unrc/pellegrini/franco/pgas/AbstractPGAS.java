@@ -134,7 +134,6 @@ class AbstractPGAS< I extends Comparable< I > >
 
     private
     int findPidForIndex( final long index ) {
-        //TODO optimizar
         for ( int targetPid = 0; targetPid < processQuantity; targetPid++ ) {
             final Index indexItem = indexList.get(targetPid);
             if ( ( indexItem.loweIndex <= index ) && ( indexItem.upperIndex >= index ) ) {
@@ -198,7 +197,6 @@ class AbstractPGAS< I extends Comparable< I > >
     public final
     I read( final Long index )
             throws IOException, InterruptedException {
-        //FIXME synchronized?
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
@@ -232,7 +230,6 @@ class AbstractPGAS< I extends Comparable< I > >
             final long index2
     )
             throws IOException, InterruptedException {
-        //FIXME synchronized?
         final I temp = read(index1);
         write(index1, read(index2));
         write(index2, temp);
@@ -257,7 +254,6 @@ class AbstractPGAS< I extends Comparable< I > >
             final I value
     )
             throws IOException {
-        //FIXME synchronized?
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);

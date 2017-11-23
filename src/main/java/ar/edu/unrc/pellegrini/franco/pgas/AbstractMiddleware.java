@@ -71,14 +71,12 @@ class AbstractMiddleware< I extends Comparable< I > >
             case END_MSG:
                 break;
             case READ_MSG:
-                //FIXME synchronized causa problemas aca
                 sendTo(targetHost, READ_RESPONSE_MSG, incomingMessage.getIndexParameter(), pgas.read(incomingMessage.getIndexParameter()));
                 break;
             case READ_RESPONSE_MSG:
                 targetHost.registerMsg(incomingMessage);
                 break;
             case WRITE_MSG:
-                //FIXME synchronized causa problemas aca
                 pgas.write(incomingMessage.getIndexParameter(), incomingMessage.getValueParameter());
                 break;
             default:
