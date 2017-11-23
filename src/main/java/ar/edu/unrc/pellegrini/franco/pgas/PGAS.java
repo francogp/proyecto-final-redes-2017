@@ -5,7 +5,7 @@ import java.io.IOException;
 public
 interface PGAS< I > {
 
-    public static final int COORDINATOR_PID = 1;
+    int COORDINATOR_PID = 1;
 
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException;

@@ -41,11 +41,10 @@ class AbstractMiddleware< I extends Comparable< I > >
         final int       pid         = pgas.getPid();
         final Host< I > hostsConfig = netConfiguration.getHostsConfig(pid);
         final int       port        = hostsConfig.getPort();
-        final Thread    serverThread;
         if ( starServer ) {
             try {
                 server = newServer(port);
-                serverThread = new Thread(server);
+                final Thread serverThread = new Thread(server);
                 serverThread.start();
             } catch ( final SocketException e ) {
                 throw new IllegalArgumentException("Cannot bind the port " + port + " to localhost pid " + pid, e);
@@ -113,7 +112,7 @@ class AbstractMiddleware< I extends Comparable< I > >
         }
     }
 
-    public final
+    private
     void sendTo(
             final Host< I > targetHost,
             final MessageType msgType,
@@ -131,9 +130,8 @@ class AbstractMiddleware< I extends Comparable< I > >
                     .append(netConfiguration.getHostsConfig(targetHost.getInetAddress(), targetHost.getPort()).getPid())
                     .append("] ")
                     .append(msgType)
-                    .append(( indexParameter != null ) ? " param1=" + indexParameter : "")
-                    .append(( valueParameter != null ) ? " param2=" + valueParameter : "")
-                    .toString());
+                    .append(( indexParameter != null ) ? ( " param1=" + indexParameter ) : "")
+                    .append(( valueParameter != null ) ? ( " param2=" + valueParameter ) : ""));
         }
         server.send(msg);
     }
@@ -146,27 +144,12 @@ class AbstractMiddleware< I extends Comparable< I > >
             final I valueParameter
     )
             throws IOException {
-        final Host< I >    destHost = netConfiguration.getHostsConfig(targetPid);
-        final Message< I > msg      = newMessageInstanceFrom(destHost.getInetAddress(), destHost.getPort(), msgType, indexParameter, valueParameter);
-        if ( debugMode ) {
-            System.out.println(new StringBuilder().append("Time ")
-                    .append(System.nanoTime())
-                    .append(": pid[")
-                    .append(pgas.getPid())
-                    .append("] -> sendTo pid[")
-                    .append(targetPid)
-                    .append("] ")
-                    .append(msgType)
-                    .append(( indexParameter != null ) ? " param1=" + indexParameter : "")
-                    .append(( valueParameter != null ) ? " param2=" + valueParameter : "")
-                    .toString());
-        }
-        server.send(msg);
+        sendTo(netConfiguration.getHostsConfig(targetPid), msgType, indexParameter, valueParameter);
     }
 
     @Override
-    public
-    void setDebugMode( boolean mode ) {
+    public final
+    void setDebugMode( final boolean mode ) {
         debugMode = mode;
     }
 
@@ -184,9 +167,7 @@ class AbstractMiddleware< I extends Comparable< I > >
                     .append(pgas.getPid())
                     .append("] -> waitFor pid[")
                     .append(senderPid)
-                    .append("] ")
-                    .append(msgType)
-                    .toString());
+                    .append("] ").append(msgType));
         }
         return hostsConfig.waitFor(msgType);
     }

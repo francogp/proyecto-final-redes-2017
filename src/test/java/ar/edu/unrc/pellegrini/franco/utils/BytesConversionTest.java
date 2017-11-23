@@ -10,10 +10,10 @@ class BytesConversionTest {
     @Test
     final
     void doubleGeneralTest() {
-        Double expected   = Math.PI;
-        byte[] bytes      = BytesConversion.doubleToBytes(expected);
-        byte[] largeBytes = new byte[16];
-        int    desPos     = 5;
+        Double       expected   = Math.PI;
+        byte[]       bytes      = BytesConversion.doubleToBytes(expected);
+        final byte[] largeBytes = new byte[16];
+        final int    desPos     = 5;
         System.arraycopy(bytes, 0, largeBytes, desPos, 8);
         Double output = BytesConversion.bytesToDouble(bytes);
         assertThat(output, is(expected));
@@ -34,10 +34,10 @@ class BytesConversionTest {
     @Test
     final
     void longGeneralTest() {
-        Long   expected   = 95486100L;
-        byte[] bytes      = BytesConversion.longToBytes(expected);
-        byte[] largeBytes = new byte[16];
-        int    desPos     = 5;
+        Long         expected   = 95486100L;
+        byte[]       bytes      = BytesConversion.longToBytes(expected);
+        final byte[] largeBytes = new byte[16];
+        final int    desPos     = 5;
         System.arraycopy(bytes, 0, largeBytes, desPos, 8);
         Long output = BytesConversion.bytesToLong(bytes);
         assertThat(output, is(expected));

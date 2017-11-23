@@ -49,6 +49,7 @@ class AbstractMessage< I extends Comparable< I > >
         initBytes();
     }
 
+    @SuppressWarnings( "RedundantIfStatement" )
     @Override
     public final
     boolean equals( final Object obj ) {

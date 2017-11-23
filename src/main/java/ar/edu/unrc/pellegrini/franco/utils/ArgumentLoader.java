@@ -16,7 +16,7 @@ import static java.util.logging.Logger.getLogger;
 public final
 class ArgumentLoader {
 
-    public static final String ARRAY_STRING_FORMAT_UNKNOWN = "ArrayString format unknown: ";
+    private static final String ARRAY_STRING_FORMAT_UNKNOWN = "ArrayString format unknown: ";
     private final Set< String >         activeFlags;
     private final Map< String, String > argMap;
     private final boolean               exitIfNotValid;
@@ -76,7 +76,7 @@ class ArgumentLoader {
                 }
                 activeFlags.add(flag);
             } else {
-                if ( arg.startsWith("\"") ) {
+                if ( arg.length() > 0 && arg.charAt(0) == '\"' ) {
                     arg = arg.substring(1, arg.length() - 1);
                 }
                 final int index = arg.indexOf('=');
@@ -97,13 +97,6 @@ class ArgumentLoader {
                             "Argument \"" + arg + "\" is not present as a valid argument set" + ". Args = " + Arrays.toString(args));
                 }
                 final String value     = arg.substring(index + 1).trim();
-                boolean      trimFirst = false;
-                if ( value.startsWith("\"") ) {
-                    trimFirst = true;
-                }
-                if ( value.startsWith("\"") ) {
-                    trimFirst = true;
-                }
                 argMap.put(id, value);
             }
         }

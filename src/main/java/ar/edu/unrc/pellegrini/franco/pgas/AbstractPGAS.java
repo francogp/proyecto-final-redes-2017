@@ -212,7 +212,7 @@ class AbstractPGAS< I extends Comparable< I > >
     }
 
     @Override
-    public
+    public final
     void setDebugMode( final boolean mode ) {
         debugMode = mode;
         middleware.setDebugMode(mode);
