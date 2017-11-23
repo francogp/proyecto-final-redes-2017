@@ -24,12 +24,12 @@ enum MessageType {
         switch ( type ) {
             case 'A':
                 return AND_REDUCE_MSG;
+            case 'V':
+                return CONTINUE_AND_REDUCE_MSG; //TODO es necesario o se puede reusar C?
             case 'B':
                 return BARRIER_MSG;
             case 'C':
                 return CONTINUE_BARRIER_MSG;
-            case 'V':
-                return CONTINUE_AND_REDUCE_MSG; //TODO es necesario o se puede reusar R?
             case 'E':
                 return END_MSG;
             case 'R':

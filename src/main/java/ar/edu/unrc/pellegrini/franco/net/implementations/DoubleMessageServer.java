@@ -8,7 +8,7 @@ import java.net.SocketException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.LONG_MSG_BYTES_LENGTH;
+import static ar.edu.unrc.pellegrini.franco.net.implementations.DoubleMessage.DOUBLE_MSG_BYTES_LENGTH;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
@@ -38,7 +38,7 @@ class DoubleMessageServer
     @Override
     protected
     DatagramPacket newDatagramPacket() {
-        return new DatagramPacket(new byte[LONG_MSG_BYTES_LENGTH], LONG_MSG_BYTES_LENGTH);
+        return new DatagramPacket(new byte[DOUBLE_MSG_BYTES_LENGTH], DOUBLE_MSG_BYTES_LENGTH);
     }
 
     @Override

@@ -41,7 +41,7 @@ class AbstractMessage< I extends Comparable< I > >
         this.port = port;
         this.type = type;
         if ( valueParameter == null ) {
-            throw new IllegalArgumentException("parameters 1 and 2 cannot be null");
+            throw new IllegalArgumentException("valueParameter cannot be null");
         }
         this.indexParameter = indexParameter;
         this.valueParameter = valueParameter;

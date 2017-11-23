@@ -65,7 +65,7 @@ class Host< I extends Comparable< I > > {
     public
     Message< I > waitFor( final MessageType msgType )
             throws InterruptedException {
-        final BlockingQueue< Message< I > > messages = queues.get(msgType);
+        final BlockingQueue< Message< I > > messages = queues.get(msgType); //TODO verificar diseño
         return messages.take();
     }
 }
