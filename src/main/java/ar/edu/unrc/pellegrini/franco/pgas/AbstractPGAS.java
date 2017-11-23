@@ -15,7 +15,7 @@ import static ar.edu.unrc.pellegrini.franco.net.MessageType.*;
 public abstract
 class AbstractPGAS< I extends Comparable< I > >
         implements PGAS< I > {
-
+    //FIXME darray? renombrar bien
     protected static boolean debugMode = false;
     protected final boolean         coordinator;
     protected final long            currentLowerIndex;
@@ -80,6 +80,7 @@ class AbstractPGAS< I extends Comparable< I > >
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException {
         boolean andReduce = value;
+        //FIXME pasar almiddleware
         if ( coordinator ) {
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
                 final Message< I > msg = middleware.waitFor(targetPid, AND_REDUCE_MSG);
@@ -100,6 +101,7 @@ class AbstractPGAS< I extends Comparable< I > >
     public final
     void barrier()
             throws IOException, InterruptedException {
+        //FIXME pasar almiddleware
         if ( coordinator ) {
             assert pid == 1;
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
@@ -204,7 +206,9 @@ class AbstractPGAS< I extends Comparable< I > >
             final Message< I > response = middleware.waitFor(targetPid, READ_RESPONSE_MSG);
             return response.getValueParameter();
         } else {
-            return memory.get(i);
+            synchronized ( memory ) {
+                return memory.get(i);
+            }
         }
     }
 
@@ -247,7 +251,7 @@ class AbstractPGAS< I extends Comparable< I > >
     }
 
     @Override
-    public final
+    public synchronized final
     void write(
             final Long index,
             final I value
@@ -259,7 +263,9 @@ class AbstractPGAS< I extends Comparable< I > >
             final int targetPid = findPidForIndex(index);
             middleware.sendTo(targetPid, WRITE_MSG, index, value);
         } else {
-            memory.set(i, value);
+            synchronized ( memory ) {
+                memory.set(i, value);
+            }
         }
     }
 

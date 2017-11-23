@@ -77,7 +77,7 @@ class AbstractServer< I extends Comparable< I > >
         }
     }
 
-    public final
+    public synchronized final
     void send(
             final Message< I > msg
     )

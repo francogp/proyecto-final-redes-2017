@@ -74,6 +74,7 @@ class NetConfiguration< I extends Comparable< I > > {
 
             int pid = 1;
             for ( final Object hostInJSON : hostsInJSON ) {
+                //TODO enviar la configuracion a cada host, y NO TODO el archivo que puede ser muy grande
                 final JSONObject host        = (JSONObject) hostInJSON;
                 final String     inetAddress = (String) host.get(JSON_INET_ADDRESS);
                 final Long       port        = (Long) host.get(JSON_PORT);

@@ -5,7 +5,7 @@ import java.io.IOException;
 public
 interface Server< I extends Comparable< I > >
         extends Runnable {
-
+    //FIXME listener?
     boolean isRunning();
 
     void send( final Message< I > msg )

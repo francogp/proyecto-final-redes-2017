@@ -56,7 +56,6 @@ class AbstractMiddleware< I extends Comparable< I > >
     protected final
     void processIncomingMessage( final Message< I > incomingMessage )
             throws IOException, InterruptedException {
-        //TODO buscar asi el pid o mandar por mensaje?
         final Host< I > targetHost = netConfiguration.getHostsConfig(incomingMessage.getAddress(), incomingMessage.getPort());
         switch ( incomingMessage.getType() ) {
             case AND_REDUCE_MSG:
@@ -98,6 +97,7 @@ class AbstractMiddleware< I extends Comparable< I > >
         if ( server == null ) {
             throw new IllegalStateException("Server not started. Use startServer()");
         }
+        //FIXME pasar mensje como parametro y no instanciarlo aca
         final Message< I > msg = newMessageInstanceFrom(targetHost.getInetAddress(), targetHost.getPort(), msgType, indexParameter, valueParameter);
         if ( debugMode ) {
             System.out.println(new StringBuilder().append("Time ")
