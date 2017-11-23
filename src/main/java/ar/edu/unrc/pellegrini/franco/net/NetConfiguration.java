@@ -95,12 +95,10 @@ class NetConfiguration< I extends Comparable< I > > {
                 hostsByPid.put(pid, hostConfig);
 
                 //mapping from InetAddress+port to Host.
-                final Map< Integer, Host< I > > hostByPort = hostsByAddress.computeIfAbsent(hostInetAddress, address -> new ConcurrentHashMap<>());
-                if ( hostByPort.get(port.intValue()) != null ) {
+                final Map< Integer, Host< I > > hostByPorts = hostsByAddress.computeIfAbsent(hostInetAddress, address -> new ConcurrentHashMap<>());
+                if ( hostByPorts.put(port.intValue(), hostConfig) != null ) {
                     throw new IllegalArgumentException("there's two hosts with the same address : InetAddress=" + hostInetAddress + " port=" + port);
                 }
-                //FIXME si hay uno solo, es necesario ConcurrentHashMap?
-                hostByPort.put(port.intValue(), hostConfig);
 
                 pid++;
             }

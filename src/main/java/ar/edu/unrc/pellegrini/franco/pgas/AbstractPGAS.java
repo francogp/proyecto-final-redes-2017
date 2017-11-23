@@ -216,7 +216,7 @@ class AbstractPGAS< I extends Comparable< I > >
     }
 
     @Override
-    public
+    public final
     void startServer() {
         middleware.startServer();
     }

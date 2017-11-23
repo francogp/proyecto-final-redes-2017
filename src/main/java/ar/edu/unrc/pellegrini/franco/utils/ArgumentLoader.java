@@ -76,7 +76,7 @@ class ArgumentLoader {
                 }
                 activeFlags.add(flag);
             } else {
-                if ( arg.length() > 0 && arg.charAt(0) == '\"' ) {
+                if ( !arg.isEmpty() && ( arg.charAt(0) == '\"' ) ) {
                     arg = arg.substring(1, arg.length() - 1);
                 }
                 final int index = arg.indexOf('=');

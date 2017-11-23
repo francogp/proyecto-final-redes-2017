@@ -109,8 +109,11 @@ class AbstractMiddleware< I extends Comparable< I > >
                     .append("] -> sendTo pid[")
                     .append(netConfiguration.getHostsConfig(targetHost.getInetAddress(), targetHost.getPort()).getPid())
                     .append("] ")
-                    .append(msgType).append(" param1=" + indexParameter)
-                    .append(( valueParameter != null ) ? ( " param2=" + valueParameter ) : ""));
+                    .append(msgType)
+                    .append(" { index=")
+                    .append(indexParameter)
+                    .append(( valueParameter != null ) ? ( ", value=" + valueParameter ) : "")
+                    .append(" }"));
         }
         server.send(msg);
     }
@@ -134,7 +137,7 @@ class AbstractMiddleware< I extends Comparable< I > >
     }
 
     @Override
-    public
+    public final
     void startServer() {
         try {
             server = newServer(port);

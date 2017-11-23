@@ -20,7 +20,6 @@ enum MessageType {
 
     public static
     MessageType valueOf( final char type ) {
-        //TODO optimize this! search for google
         switch ( type ) {
             case 'A':
                 return AND_REDUCE_MSG;
