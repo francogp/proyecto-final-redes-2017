@@ -15,7 +15,6 @@ class AbstractDistributedBubbleSort< I extends Comparable< I > >
     private final PGAS< I > pgas;
     private       String    result;
 
-
     protected
     AbstractDistributedBubbleSort(
             final int pid,

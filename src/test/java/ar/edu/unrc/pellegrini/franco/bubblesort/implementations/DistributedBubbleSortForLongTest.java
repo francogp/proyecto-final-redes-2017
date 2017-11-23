@@ -69,14 +69,12 @@ class DistributedBubbleSortForLongTest {
         @Override
         public
         void barrier() {
-
         }
 
         @Override
         public
         void endService()
                 throws IOException {
-
         }
 
         @Override
