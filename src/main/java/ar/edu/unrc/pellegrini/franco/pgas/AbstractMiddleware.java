@@ -60,14 +60,12 @@ class AbstractMiddleware< I extends Comparable< I > >
         final Host< I > targetHost = netConfiguration.getHostsConfig(incomingMessage.getAddress(), incomingMessage.getPort());
         switch ( incomingMessage.getType() ) {
             case AND_REDUCE_MSG:
-                assert pgas.isCoordinator();
-                targetHost.registerMsg(incomingMessage);
-                break;
             case BARRIER_MSG:
                 assert pgas.isCoordinator();
                 targetHost.registerMsg(incomingMessage);
                 break;
-            case CONTINUE_MSG:
+            case CONTINUE_BARRIER_MSG:
+            case CONTINUE_AND_REDUCE_MSG:
                 assert !pgas.isCoordinator();
                 targetHost.registerMsg(incomingMessage);
                 break;

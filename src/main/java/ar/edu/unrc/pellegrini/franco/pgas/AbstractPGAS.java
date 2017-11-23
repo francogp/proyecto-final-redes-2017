@@ -86,11 +86,11 @@ class AbstractPGAS< I extends Comparable< I > >
                 andReduce = andReduce && parseResponseAsBoolean(msg);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                middleware.sendTo(targetPid, CONTINUE_MSG, 0L, booleanAsMessageParameter(andReduce));
+                middleware.sendTo(targetPid, CONTINUE_AND_REDUCE_MSG, 0L, booleanAsMessageParameter(andReduce));
             }
         } else {
             middleware.sendTo(COORDINATOR_PID, AND_REDUCE_MSG, 0L, booleanAsMessageParameter(value));
-            final Message< I > msg = middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
+            final Message< I > msg = middleware.waitFor(COORDINATOR_PID, CONTINUE_AND_REDUCE_MSG);
             andReduce = parseResponseAsBoolean(msg);
         }
         return andReduce;
@@ -106,12 +106,12 @@ class AbstractPGAS< I extends Comparable< I > >
                 middleware.waitFor(targetPid, BARRIER_MSG);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                middleware.sendTo(targetPid, CONTINUE_MSG, 0L, null);
+                middleware.sendTo(targetPid, CONTINUE_BARRIER_MSG, 0L, null);
             }
         } else {
             assert pid >= 1;
             middleware.sendTo(COORDINATOR_PID, BARRIER_MSG, 0L, null);
-            middleware.waitFor(COORDINATOR_PID, CONTINUE_MSG);
+            middleware.waitFor(COORDINATOR_PID, CONTINUE_BARRIER_MSG);
         }
     }
 
