@@ -18,18 +18,18 @@ class LongPGASTest {
     @Test
     final
     void getSize() {
-        PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE, false);
+        PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE);
         assertThat(longPGAS.getSize(), is(3));
 
         //noinspection ReuseOfLocalVariable
-        longPGAS = new LongPGAS(3, TEST_FILE, false);
+        longPGAS = new LongPGAS(3, TEST_FILE);
         assertThat(longPGAS.getSize(), is(4));
     }
 
     @Test
     final
     void imLast() {
-        PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE, false);
+        PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE);
         assertThat(longPGAS.imLast(), is(false));
 
         //noinspection ReuseOfLocalVariable
@@ -40,7 +40,7 @@ class LongPGASTest {
     @Test
     final
     void lowerIndex() {
-        final PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE, false);
+        final PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE);
 
         assertThat(longPGAS.lowerIndex(1), is(0L));
         assertThat(longPGAS.lowerIndex(2), is(3L));
@@ -53,7 +53,7 @@ class LongPGASTest {
         try {
             final NetConfiguration< Long > netConfiguration = new NetConfiguration<>(TEST_FILE);
             for ( int pid = 1; pid <= netConfiguration.getProcessQuantity(); pid++ ) {
-                final PGAS< Long > longPGAS = new LongPGAS(pid, TEST_FILE, false);
+                final PGAS< Long > longPGAS = new LongPGAS(pid, netConfiguration);
                 for ( long index = longPGAS.lowerIndex(); index <= longPGAS.upperIndex(); index++ ) {
                     longPGAS.write(index, index);
                     assertThat(longPGAS.read(index), is(index));
@@ -69,7 +69,7 @@ class LongPGASTest {
     void swap() {
         try {
             for ( int pid = 1; pid <= 3; pid++ ) {
-                final PGAS< Long > longPGAS = new LongPGAS(pid, TEST_FILE, false);
+                final PGAS< Long > longPGAS = new LongPGAS(pid, TEST_FILE);
                 for ( long index = longPGAS.lowerIndex(); index <= longPGAS.upperIndex(); index++ ) {
                     longPGAS.write(index, index);
                 }
@@ -85,7 +85,7 @@ class LongPGASTest {
     @Test
     final
     void upperIndex() {
-        final PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE, false);
+        final PGAS< Long > longPGAS = new LongPGAS(1, TEST_FILE);
 
         assertThat(longPGAS.upperIndex(1), is(2L));
         assertThat(longPGAS.upperIndex(2), is(4L));

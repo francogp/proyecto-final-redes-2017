@@ -16,41 +16,31 @@ import static java.util.logging.Logger.getLogger;
 public final
 class LongPGAS
         extends AbstractPGAS< Long > {
-
     public
     LongPGAS(
-            final int pid,
-            final String configsFilePath
+            int pid,
+            String configsFilePath
     ) {
         super(pid, configsFilePath);
     }
 
     public
     LongPGAS(
-            final int pid,
-            final String configsFilePath,
-            final boolean startServer
-    ) {
-        super(pid, configsFilePath, startServer);
-    }
-
-    public
-    LongPGAS(
-            final int pid,
-            final File configsFile
+            int pid,
+            File configsFile
     ) {
         super(pid, configsFile);
     }
 
     public
     LongPGAS(
-            final int pid,
-            final File configsFile,
-            final boolean startServer
+            int pid,
+            NetConfiguration< Long > configFile
     ) {
-        super(pid, configsFile, startServer);
+        super(pid, configFile);
     }
 
+    @Override
     public
     String asString() {
         return LongStream.range(0L, pgasSize).mapToObj(index -> {
@@ -77,10 +67,9 @@ class LongPGAS
     @Override
     protected
     Middleware< Long > newMiddleware(
-            final boolean startServer,
             final NetConfiguration< Long > configFile
     ) {
-        return new LongMiddleware(this, configFile, startServer);
+        return new LongMiddleware(this, configFile);
     }
 
     /**

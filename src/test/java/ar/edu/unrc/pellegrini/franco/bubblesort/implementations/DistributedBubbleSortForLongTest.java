@@ -136,6 +136,12 @@ class DistributedBubbleSortForLongTest {
         }
 
         @Override
+        public
+        void startServer() {
+
+        }
+
+        @Override
         public final
         void swap(
                 final long index1,

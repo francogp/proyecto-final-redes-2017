@@ -19,36 +19,26 @@ class DoublePGAS
 
     public
     DoublePGAS(
-            final int pid,
-            final String configsFilePath
+            int pid,
+            String configsFilePath
     ) {
         super(pid, configsFilePath);
     }
 
     public
     DoublePGAS(
-            final int pid,
-            final String configsFilePath,
-            final boolean startServer
-    ) {
-        super(pid, configsFilePath, startServer);
-    }
-
-    public
-    DoublePGAS(
-            final int pid,
-            final File configsFile
+            int pid,
+            File configsFile
     ) {
         super(pid, configsFile);
     }
 
     public
     DoublePGAS(
-            final int pid,
-            final File configsFile,
-            final boolean startServer
+            int pid,
+            NetConfiguration< Double > configFile
     ) {
-        super(pid, configsFile, startServer);
+        super(pid, configFile);
     }
 
     public
@@ -77,10 +67,9 @@ class DoublePGAS
     @Override
     protected
     Middleware< Double > newMiddleware(
-            final boolean startServer,
             final NetConfiguration< Double > configFile
     ) {
-        return new DoubleMiddleware(this, configFile, startServer);
+        return new DoubleMiddleware(this, configFile);
     }
 
     /**

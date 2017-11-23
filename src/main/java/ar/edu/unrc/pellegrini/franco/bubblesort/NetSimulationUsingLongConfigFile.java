@@ -31,8 +31,8 @@ class NetSimulationUsingLongConfigFile {
         DistributedBubbleSort< Long >  coordinator       = null;
         for ( int pid = 1; pid <= configFile.size(); pid++ ) {
             final DistributedBubbleSort< Long > bubbleSortForLong =
-                    new DistributedBubbleSortForLong(pid, arguments.parseString(ARG_CONFIG_FILE), arguments.existsFlag(ARG_DEBUG_MODE));
-            final Thread                        thread            = new Thread(bubbleSortForLong);
+                    new DistributedBubbleSortForLong(pid, configFile, arguments.existsFlag(ARG_DEBUG_MODE));
+            final Thread thread = new Thread(bubbleSortForLong);
             if ( pid == 1 ) {
                 coordinatorThread = thread;
                 coordinator = bubbleSortForLong;

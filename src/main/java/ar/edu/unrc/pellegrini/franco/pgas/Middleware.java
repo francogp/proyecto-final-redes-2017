@@ -8,8 +8,6 @@ import java.io.IOException;
 public
 interface Middleware< I extends Comparable< I > > {
 
-    void setDebugMode( boolean mode );
-
     void sendTo(
             final int targetPid,
             final MessageType msgType,
@@ -17,6 +15,10 @@ interface Middleware< I extends Comparable< I > > {
             final I valueParameter
     )
             throws IOException;
+
+    void setDebugMode( boolean mode );
+
+    void startServer();
 
     Message< I > waitFor(
             final int senderPid,

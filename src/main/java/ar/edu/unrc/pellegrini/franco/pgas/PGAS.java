@@ -37,6 +37,8 @@ interface PGAS< I > {
 
     void setDebugMode( boolean mode );
 
+    void startServer();
+
     void swap(
             final long index1,
             final long index2

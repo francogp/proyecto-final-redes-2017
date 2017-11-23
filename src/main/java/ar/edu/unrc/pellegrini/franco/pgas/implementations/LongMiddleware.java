@@ -20,22 +20,12 @@ public final
 class LongMiddleware
         extends AbstractMiddleware< Long > {
 
-
     public
     LongMiddleware(
             final PGAS< Long > pgas,
             final NetConfiguration< Long > netConfiguration
     ) {
         super(pgas, netConfiguration);
-    }
-
-    public
-    LongMiddleware(
-            final PGAS< Long > pgas,
-            final NetConfiguration< Long > netConfiguration,
-            final boolean starServer
-    ) {
-        super(pgas, netConfiguration, starServer);
     }
 
     @Override

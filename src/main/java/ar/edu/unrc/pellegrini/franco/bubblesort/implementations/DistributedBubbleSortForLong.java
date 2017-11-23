@@ -4,6 +4,7 @@ import ar.edu.unrc.pellegrini.franco.bubblesort.AbstractDistributedBubbleSort;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.implementations.LongPGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
+import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
@@ -19,6 +20,15 @@ class DistributedBubbleSortForLong
         super(pid, configFilePath, debugMode);
     }
 
+    public
+    DistributedBubbleSortForLong(
+            final int pid,
+            final NetConfiguration< Long > configFilePath,
+            final boolean debugMode
+    ) {
+        super(pid, configFilePath, debugMode);
+    }
+
     public static
     void main( final String... args ) {
         final ArgumentLoader arguments = new ArgumentLoader(true);
@@ -27,10 +37,23 @@ class DistributedBubbleSortForLong
         arguments.addValidFlag(ARG_DEBUG_MODE);
 
         arguments.loadArguments(args);
-        final int      pid        = arguments.parseInteger(ARG_PID);
+        final int pid = arguments.parseInteger(ARG_PID);
         final Runnable bubbleSort =
                 new DistributedBubbleSortForLong(pid, arguments.parseString(ARG_CONFIG_FILE), arguments.existsFlag(ARG_DEBUG_MODE));
         bubbleSort.run();
+    }
+
+    @Override
+    protected
+    PGAS< Long > newPGAS(
+            final int pid,
+            final NetConfiguration< Long > configFilePath,
+            final boolean debugMode
+    ) {
+        final LongPGAS longPGAS = new LongPGAS(pid, configFilePath);
+        longPGAS.setDebugMode(debugMode);
+        longPGAS.startServer();
+        return longPGAS;
     }
 
     @Override
@@ -42,6 +65,7 @@ class DistributedBubbleSortForLong
     ) {
         final LongPGAS longPGAS = new LongPGAS(pid, configFilePath);
         longPGAS.setDebugMode(debugMode);
+        longPGAS.startServer();
         return longPGAS;
     }
 

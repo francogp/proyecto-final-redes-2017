@@ -1,6 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.bubblesort;
 
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
+import ar.edu.unrc.pellegrini.franco.utils.NetConfiguration;
 
 import java.util.logging.Level;
 
@@ -14,6 +15,7 @@ class AbstractDistributedBubbleSort< I extends Comparable< I > >
     private final PGAS< I > pgas;
     private       String    result;
 
+
     protected
     AbstractDistributedBubbleSort(
             final int pid,
@@ -23,10 +25,26 @@ class AbstractDistributedBubbleSort< I extends Comparable< I > >
         pgas = newPGAS(pid, configFilePath, debugMode);
     }
 
+    protected
+    AbstractDistributedBubbleSort(
+            final int pid,
+            final NetConfiguration< I > configFilePath,
+            final boolean debugMode
+    ) {
+        pgas = newPGAS(pid, configFilePath, debugMode);
+    }
+
     protected abstract
     PGAS< I > newPGAS(
             final int pid,
             final String configFilePath,
+            final boolean debugMode
+    );
+
+    protected abstract
+    PGAS< I > newPGAS(
+            final int pid,
+            final NetConfiguration< I > configFilePath,
             final boolean debugMode
     );
 

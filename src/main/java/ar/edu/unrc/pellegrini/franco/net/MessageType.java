@@ -33,7 +33,7 @@ enum MessageType {
             case 'R':
                 return READ_MSG;
             case 'S':
-                return READ_RESPONSE_MSG;
+                return READ_RESPONSE_MSG; //TODO es necesario o se puede reusar R?
             case 'W':
                 return WRITE_MSG;
             default:

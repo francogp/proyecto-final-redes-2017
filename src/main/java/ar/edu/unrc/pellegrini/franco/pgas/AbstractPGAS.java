@@ -32,17 +32,7 @@ class AbstractPGAS< I extends Comparable< I > >
             final int pid,
             final String configsFilePath
     ) {
-        this(pid, new File(configsFilePath), true);
-    }
-
-
-    protected
-    AbstractPGAS(
-            final int pid,
-            final String configsFilePath,
-            final boolean startServer
-    ) {
-        this(pid, new File(configsFilePath), startServer);
+        this(pid, new File(configsFilePath));
     }
 
     protected
@@ -50,16 +40,14 @@ class AbstractPGAS< I extends Comparable< I > >
             final int pid,
             final File configsFile
     ) {
-        this(pid, configsFile, true);
+        this(pid, new NetConfiguration<>(configsFile));
     }
 
     protected
     AbstractPGAS(
             final int pid,
-            final File configsFile,
-            final boolean startServer
+            final NetConfiguration< I > configFile
     ) {
-        final NetConfiguration< I > configFile = new NetConfiguration<>(configsFile);
         processQuantity = configFile.getProcessQuantity();
         if ( pid <= 0 ) { throw new IllegalArgumentException("pid " + pid + " must be >= 0."); }
         if ( pid > processQuantity ) { throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file."); }
@@ -84,9 +72,10 @@ class AbstractPGAS< I extends Comparable< I > >
         currentUpperIndex = upperIndex(pid);
         pgasSize = upperIndex + 1L;
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        middleware = newMiddleware(startServer, configFile);
+        middleware = newMiddleware(configFile);
     }
 
+    @Override
     public final
     boolean andReduce( final boolean value )
             throws IOException, InterruptedException {
@@ -107,6 +96,7 @@ class AbstractPGAS< I extends Comparable< I > >
         return andReduce;
     }
 
+    @Override
     public final
     void barrier()
             throws IOException, InterruptedException {
@@ -128,6 +118,7 @@ class AbstractPGAS< I extends Comparable< I > >
     protected abstract
     I booleanAsMessageParameter( final boolean value );
 
+    @Override
     public final
     void endService()
             throws IOException {
@@ -151,21 +142,25 @@ class AbstractPGAS< I extends Comparable< I > >
         return -1;
     }
 
+    @Override
     public final
     long getPgasSize() {
         return pgasSize;
     }
 
+    @Override
     public final
     int getPid() {
         return pid;
     }
 
+    @Override
     public final
     int getSize() {
         return memory.size();
     }
 
+    @Override
     public final
     boolean imLast() {
         return pid == processQuantity;
@@ -177,11 +172,13 @@ class AbstractPGAS< I extends Comparable< I > >
         return coordinator;
     }
 
+    @Override
     public final
     long lowerIndex( final int pid ) {
         return indexList.get(pid - 1).getLoweIndex();
     }
 
+    @Override
     public final
     long lowerIndex() {
         return currentLowerIndex;
@@ -189,13 +186,13 @@ class AbstractPGAS< I extends Comparable< I > >
 
     protected abstract
     Middleware< I > newMiddleware(
-            final boolean startServer,
             final NetConfiguration< I > configFile
     );
 
     protected abstract
     boolean parseResponseAsBoolean( final Message< I > message );
 
+    @Override
     public final
     I read( final Long index )
             throws IOException, InterruptedException {
@@ -218,6 +215,13 @@ class AbstractPGAS< I extends Comparable< I > >
         middleware.setDebugMode(mode);
     }
 
+    @Override
+    public
+    void startServer() {
+        middleware.startServer();
+    }
+
+    @Override
     public final
     void swap(
             final long index1,
@@ -230,16 +234,19 @@ class AbstractPGAS< I extends Comparable< I > >
         write(index2, temp);
     }
 
+    @Override
     public final
     long upperIndex( final int pid ) {
         return indexList.get(pid - 1).getUpperIndex();
     }
 
+    @Override
     public final
     long upperIndex() {
         return currentUpperIndex;
     }
 
+    @Override
     public final
     void write(
             final Long index,

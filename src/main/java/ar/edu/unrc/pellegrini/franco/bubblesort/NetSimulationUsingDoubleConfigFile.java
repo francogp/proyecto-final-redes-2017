@@ -31,7 +31,7 @@ class NetSimulationUsingDoubleConfigFile {
         DistributedBubbleSort< Double >  coordinator       = null;
         for ( int pid = 1; pid <= configFile.size(); pid++ ) {
             final DistributedBubbleSort< Double > bubbleSortForLong =
-                    new DistributedBubbleSortForDouble(pid, arguments.parseString(ARG_CONFIG_FILE), arguments.existsFlag(ARG_DEBUG_MODE));
+                    new DistributedBubbleSortForDouble(pid, configFile, arguments.existsFlag(ARG_DEBUG_MODE));
             final Thread thread = new Thread(bubbleSortForLong);
             if ( pid == 1 ) {
                 coordinatorThread = thread;

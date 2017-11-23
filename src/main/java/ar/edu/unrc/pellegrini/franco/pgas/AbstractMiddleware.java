@@ -20,38 +20,19 @@ class AbstractMiddleware< I extends Comparable< I > >
     protected static boolean debugMode = false;
     private final NetConfiguration< I > netConfiguration;
     private final PGAS< I >             pgas;
-    private final Server< I >           server;
+    private final int                   port;
+    private       Server< I >           server;
 
     protected
     AbstractMiddleware(
             final PGAS< I > pgas,
             final NetConfiguration< I > netConfiguration
     ) {
-        this(pgas, netConfiguration, true);
-    }
-
-    protected
-    AbstractMiddleware(
-            final PGAS< I > pgas,
-            final NetConfiguration< I > netConfiguration,
-            final boolean starServer
-    ) {
         this.pgas = pgas;
         this.netConfiguration = netConfiguration;
-        final int       pid         = pgas.getPid();
-        final Host< I > hostsConfig = netConfiguration.getHostsConfig(pid);
-        final int       port        = hostsConfig.getPort();
-        if ( starServer ) {
-            try {
-                server = newServer(port);
-                final Thread serverThread = new Thread(server);
-                serverThread.start();
-            } catch ( final SocketException e ) {
-                throw new IllegalArgumentException("Cannot bind the port " + port + " to localhost pid " + pid, e);
-            }
-        } else {
-            server = null;
-        }
+        final Host< I > hostsConfig = netConfiguration.getHostsConfig(pgas.getPid());
+        port = hostsConfig.getPort();
+        server = null;
     }
 
     /**
@@ -120,6 +101,9 @@ class AbstractMiddleware< I extends Comparable< I > >
             final I valueParameter
     )
             throws IOException {
+        if ( server == null ) {
+            throw new IllegalStateException("Server not started. Use startServer()");
+        }
         final Message< I > msg = newMessageInstanceFrom(targetHost.getInetAddress(), targetHost.getPort(), msgType, indexParameter, valueParameter);
         if ( debugMode ) {
             System.out.println(new StringBuilder().append("Time ")
@@ -136,6 +120,7 @@ class AbstractMiddleware< I extends Comparable< I > >
         server.send(msg);
     }
 
+    @Override
     public final
     void sendTo(
             final int targetPid,
@@ -153,6 +138,19 @@ class AbstractMiddleware< I extends Comparable< I > >
         debugMode = mode;
     }
 
+    @Override
+    public
+    void startServer() {
+        try {
+            server = newServer(port);
+            final Thread serverThread = new Thread(server);
+            serverThread.start();
+        } catch ( final SocketException e ) {
+            throw new IllegalArgumentException("Cannot bind the port " + port + " to localhost pid " + pgas.getPid(), e);
+        }
+    }
+
+    @Override
     public final
     Message< I > waitFor(
             final int senderPid,
@@ -167,7 +165,8 @@ class AbstractMiddleware< I extends Comparable< I > >
                     .append(pgas.getPid())
                     .append("] -> waitFor pid[")
                     .append(senderPid)
-                    .append("] ").append(msgType));
+                    .append("] ")
+                    .append(msgType));
         }
         return hostsConfig.waitFor(msgType);
     }

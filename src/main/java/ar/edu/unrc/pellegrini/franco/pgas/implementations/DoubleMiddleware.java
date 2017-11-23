@@ -20,22 +20,12 @@ public final
 class DoubleMiddleware
         extends AbstractMiddleware< Double > {
 
-
     public
     DoubleMiddleware(
             final PGAS< Double > pgas,
             final NetConfiguration< Double > netConfiguration
     ) {
         super(pgas, netConfiguration);
-    }
-
-    public
-    DoubleMiddleware(
-            final PGAS< Double > pgas,
-            final NetConfiguration< Double > netConfiguration,
-            final boolean starServer
-    ) {
-        super(pgas, netConfiguration, starServer);
     }
 
     @Override
