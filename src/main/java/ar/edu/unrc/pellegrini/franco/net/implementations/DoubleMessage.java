@@ -30,7 +30,7 @@ class DoubleMessage
             final InetAddress address,
             final int port,
             final MessageType type,
-            final Long indexParameter,
+            final long indexParameter,
             final Double valueParameter
     ) {
         super(address, port, type, indexParameter, ( valueParameter == null ) ? 0.0d : valueParameter);

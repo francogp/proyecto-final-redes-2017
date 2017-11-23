@@ -34,7 +34,7 @@ class AbstractMessage< I extends Comparable< I > >
             final InetAddress address,
             final int port,
             final MessageType type,
-            final Long indexParameter,
+            final long indexParameter,
             final I valueParameter
     ) {
         this.address = address;
@@ -43,7 +43,7 @@ class AbstractMessage< I extends Comparable< I > >
         if ( valueParameter == null ) {
             throw new IllegalArgumentException("parameters 1 and 2 cannot be null");
         }
-        this.indexParameter = ( indexParameter == null ) ? Long.MIN_VALUE : indexParameter;
+        this.indexParameter = indexParameter;
         this.valueParameter = valueParameter;
 
         initBytes();

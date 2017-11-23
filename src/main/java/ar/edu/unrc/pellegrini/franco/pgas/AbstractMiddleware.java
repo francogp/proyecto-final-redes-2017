@@ -45,7 +45,7 @@ class AbstractMiddleware< I extends Comparable< I > >
             final InetAddress inetAddress,
             final int port,
             final MessageType messageType,
-            final Long indexParameter,
+            final long indexParameter,
             final I valueParameter
     );
 
@@ -93,7 +93,7 @@ class AbstractMiddleware< I extends Comparable< I > >
     void sendTo(
             final Host< I > targetHost,
             final MessageType msgType,
-            final Long indexParameter,
+            final long indexParameter,
             final I valueParameter
     )
             throws IOException {
@@ -109,8 +109,7 @@ class AbstractMiddleware< I extends Comparable< I > >
                     .append("] -> sendTo pid[")
                     .append(netConfiguration.getHostsConfig(targetHost.getInetAddress(), targetHost.getPort()).getPid())
                     .append("] ")
-                    .append(msgType)
-                    .append(( indexParameter != null ) ? ( " param1=" + indexParameter ) : "")
+                    .append(msgType).append(" param1=" + indexParameter)
                     .append(( valueParameter != null ) ? ( " param2=" + valueParameter ) : ""));
         }
         server.send(msg);
@@ -121,7 +120,7 @@ class AbstractMiddleware< I extends Comparable< I > >
     void sendTo(
             final int targetPid,
             final MessageType msgType,
-            final Long indexParameter,
+            final long indexParameter,
             final I valueParameter
     )
             throws IOException {

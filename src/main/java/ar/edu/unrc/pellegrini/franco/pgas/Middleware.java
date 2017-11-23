@@ -11,7 +11,7 @@ interface Middleware< I extends Comparable< I > > {
     void sendTo(
             final int targetPid,
             final MessageType msgType,
-            final Long indexParameter,
+            final long indexParameter,
             final I valueParameter
     )
             throws IOException;

@@ -34,7 +34,7 @@ class LongMiddleware
             final InetAddress inetAddress,
             final int port,
             final MessageType messageType,
-            final Long indexParameter,
+            final long indexParameter,
             final Long valueParameter
     ) {
         return new LongMessage(inetAddress, port, messageType, indexParameter, valueParameter);

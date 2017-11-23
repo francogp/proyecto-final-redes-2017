@@ -34,7 +34,7 @@ class DoubleMiddleware
             final InetAddress inetAddress,
             final int port,
             final MessageType messageType,
-            final Long indexParameter,
+            final long indexParameter,
             final Double valueParameter
     ) {
         return new DoubleMessage(inetAddress, port, messageType, indexParameter, valueParameter);
