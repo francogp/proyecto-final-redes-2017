@@ -23,28 +23,28 @@ class NetConfigurationTest {
         assertThat(netConfiguration.getProcessQuantity(), is(3));
         assertThat(netConfiguration.size(), is(netConfiguration.getProcessQuantity()));
 
-        Host< Long > host        = netConfiguration.getHostsConfig(1);
-        InetAddress  inetAddress = null;
+        Process< Long > process     = netConfiguration.getProcessConfig(1);
+        InetAddress     inetAddress = null;
         try {
             inetAddress = InetAddress.getByName("localhost");
         } catch ( final UnknownHostException e ) {
             fail(e);
         }
-        assertThat(host.getInetAddress(), is(inetAddress));
+        assertThat(process.getInetAddress(), is(inetAddress));
         Integer port = 8001;
-        assertThat(host.getPort(), is(port));
-        assertThat(host.getToSort(), is(List.of(9L, 1L, 2L)));
+        assertThat(process.getPort(), is(port));
+        assertThat(process.getToSort(), is(List.of(9L, 1L, 2L)));
 
-        host = netConfiguration.getHostsConfig(2);
+        process = netConfiguration.getProcessConfig(2);
         port = 8002;
-        assertThat(host.getInetAddress(), is(inetAddress));
-        assertThat(host.getPort(), is(port));
-        assertThat(host.getToSort(), is(List.of(7L, 8L)));
+        assertThat(process.getInetAddress(), is(inetAddress));
+        assertThat(process.getPort(), is(port));
+        assertThat(process.getToSort(), is(List.of(7L, 8L)));
 
-        host = netConfiguration.getHostsConfig(3);
+        process = netConfiguration.getProcessConfig(3);
         port = 8003;
-        assertThat(host.getInetAddress(), is(inetAddress));
-        assertThat(host.getPort(), is(port));
-        assertThat(host.getToSort(), is(List.of(11L, 2L, 22L, 75L)));
+        assertThat(process.getInetAddress(), is(inetAddress));
+        assertThat(process.getPort(), is(port));
+        assertThat(process.getToSort(), is(List.of(11L, 2L, 22L, 75L)));
     }
 }

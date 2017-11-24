@@ -1,16 +1,16 @@
 package ar.edu.unrc.pellegrini.franco.bubblesort;
 
-import ar.edu.unrc.pellegrini.franco.bubblesort.implementations.DistributedBubbleSortForLong;
 import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
+import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 
+import static ar.edu.unrc.pellegrini.franco.bubblesort.DistributedBubbleSort.ARG_CONFIG_FILE;
 import static ar.edu.unrc.pellegrini.franco.bubblesort.DistributedBubbleSort.ARG_DEBUG_MODE;
-import static ar.edu.unrc.pellegrini.franco.bubblesort.implementations.DistributedBubbleSortForLong.ARG_CONFIG_FILE;
 
 public final
-class NetSimulationUsingLongConfigFile {
+class NetSimulationUsingConfigFile {
     private
-    NetSimulationUsingLongConfigFile() {}
+    NetSimulationUsingConfigFile() {}
 
     public static
     void main( final String... args )
@@ -26,12 +26,15 @@ class NetSimulationUsingLongConfigFile {
         arguments.addValidFlag(ARG_DEBUG_MODE);
 
         arguments.loadArguments(args);
-        final NetConfiguration< Long > configFile        = new NetConfiguration<>(arguments.parseString(ARG_CONFIG_FILE));
-        Thread                         coordinatorThread = null;
-        DistributedBubbleSort< Long >  coordinator       = null;
+        final NetConfiguration< Double > configFile        = new NetConfiguration<>(arguments.parseString(ARG_CONFIG_FILE));
+        Thread                           coordinatorThread = null;
+        DistributedBubbleSort< Double >  coordinator       = null;
         for ( int pid = 1; pid <= configFile.size(); pid++ ) {
-            final DistributedBubbleSort< Long > bubbleSortForLong =
-                    new DistributedBubbleSortForLong(pid, configFile, arguments.existsFlag(ARG_DEBUG_MODE));
+            final DistributedBubbleSort< Double > bubbleSortForLong = new DistributedBubbleSort(pid,
+                    configFile,
+                    () -> LongMessage.getInstance(),
+                    8,
+                    arguments.existsFlag(ARG_DEBUG_MODE)); //TODO parametrizar y soportar double
             final Thread thread = new Thread(bubbleSortForLong);
             if ( pid == 1 ) {
                 coordinatorThread = thread;

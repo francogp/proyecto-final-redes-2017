@@ -20,7 +20,7 @@ class NetSimulationUsingDoubleConfigFileTest {
     final
     void mainTest() {
         try {
-            final String result   = '[' + NetSimulationUsingDoubleConfigFile.simulate("\"configFile=" + TEST_FILE.getPath() + '"') + ']';
+            final String result   = '[' + NetSimulationUsingConfigFile.simulate("\"configFile=" + TEST_FILE.getPath() + '"') + ']';
             final String expected = List.of(1.1d, 2.2d, 2.7d, 7.7d, 8.8d, 9.5d, 11.1d, 22.1d, 75.9d).toString();
             assertThat(result, is(expected));
         } catch ( final Exception e ) {

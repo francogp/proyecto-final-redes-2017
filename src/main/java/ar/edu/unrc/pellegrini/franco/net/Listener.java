@@ -8,37 +8,36 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
+import static ar.edu.unrc.pellegrini.franco.net.AbstractMessage.PAYLOAD_PREFIX_LENGTH;
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public abstract
-class AbstractServer< I extends Comparable< I > >
-        implements Server< I > {
+public
+class Listener< I extends Comparable< I > >
+        implements Runnable {
 
     private final MsgQueue< Message< I > > msgQueue;
     private final Thread                   msgQueueThread;
+    private final Supplier< Message< I > > newMessageSupplier;
+    private final int                      payloadLength;
     private final DatagramSocket           socket;
     private boolean running = false;
 
-    protected
-    AbstractServer(
-            final int port,
-            final Consumer< Message< I > > messageConsumer
-    )
-            throws SocketException {
-        this(port, messageConsumer, Message::isEndMessage);
-    }
-
-    protected
-    AbstractServer(
+    public
+    Listener(
             final int port,
             final Consumer< Message< I > > messageConsumer,
-            final Function< Message< I >, Boolean > isFinalMsgFunction
+            final Function< Message< I >, Boolean > isFinalMsgFunction,
+            final int valueByteBufferSize,
+            final Supplier< Message< I > > newMessageSupplier
     )
             throws SocketException {
         socket = new DatagramSocket(port);
+        this.payloadLength = PAYLOAD_PREFIX_LENGTH + valueByteBufferSize;
+        this.newMessageSupplier = newMessageSupplier;
         msgQueue = new MsgQueue<>(messageConsumer, isFinalMsgFunction);
         msgQueueThread = new Thread(msgQueue);
     }
@@ -48,21 +47,17 @@ class AbstractServer< I extends Comparable< I > >
         return running;
     }
 
-    protected abstract
-    DatagramPacket newDatagramPacket();
-
-    protected abstract
-    Message< I > newMessage( DatagramPacket packet );
-
     public final
     void run() {
         try {
             msgQueueThread.start();
             running = true;
             while ( running ) {
-                final DatagramPacket packet = newDatagramPacket();
+
+                final DatagramPacket packet = new DatagramPacket(new byte[payloadLength], payloadLength);
                 socket.receive(packet);
-                final Message< I > received = newMessage(packet);
+                final Message< I > received = newMessageSupplier.get();
+                received.initUsing(packet);
                 msgQueue.enqueue(received);
                 if ( received.isEndMessage() ) {
                     running = false;
@@ -73,7 +68,7 @@ class AbstractServer< I extends Comparable< I > >
         } catch ( final InterruptedException ignored ) {
             //ignored
         } catch ( final Exception e ) {
-            getLogger(AbstractServer.class.getName()).log(Level.SEVERE, null, e);
+            getLogger(Listener.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 

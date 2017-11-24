@@ -1,7 +1,6 @@
-package ar.edu.unrc.pellegrini.franco.net.implementations;
+package ar.edu.unrc.pellegrini.franco.net;
 
-import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.net.Server;
+import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
@@ -15,31 +14,34 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( { "ClassWithoutConstructor", "ClassIndependentOfModule" } )
-class LongMessageServerTest {
+class ListenerTest {
     @SuppressWarnings( "OverlyLongLambda" )
     @Test
     final
     void runTest() {
         try {
             final Queue< Message< Long > > receivedMessages = new ConcurrentLinkedQueue<>();
-            final Server< Long > longMessageServer = new LongMessageServer(8001, receivedMessages::add, msg -> {
+            final Listener< Long > longMessageServer = new Listener<>(8001, receivedMessages::add, msg -> {
                 if ( msg.isEndMessage() ) {
                     receivedMessages.add(msg);
                     return true;
                 } else {
                     return false;
                 }
-            });
+            }, 8, () -> LongMessage.getInstance());
             final Thread serverThread = new Thread(longMessageServer);
             serverThread.start();
             Thread.sleep(100L);
             final String          destAddress = "127.0.0.1";
             final InetAddress     localHost   = InetAddress.getByName(destAddress);
-            final Message< Long > msg1        = new LongMessage(localHost, 8001, READ_MSG, 1000L, 0L);
+            final Message< Long > msg1        = LongMessage.getInstance();
+            msg1.initUsing(10, localHost, 8001, READ_MSG, 1000L, 0L);
             longMessageServer.send(msg1);
-            final Message< Long > msg2 = new LongMessage(localHost, 8001, WRITE_MSG, 9876L, -9998881000L);
+            final Message< Long > msg2 = LongMessage.getInstance();
+            msg2.initUsing(10, localHost, 8001, WRITE_MSG, 9876L, -9998881000L);
             longMessageServer.send(msg2);
-            final Message< Long > msg3 = new LongMessage(localHost, 8001, END_MSG, 0L, 0L);
+            final Message< Long > msg3 = LongMessage.getInstance();
+            msg3.initUsing(10, localHost, 8001, END_MSG, 0L, 0L);
             longMessageServer.send(msg3);
             serverThread.join();
             if ( receivedMessages.isEmpty() ) { throw new AssertionError("server output is empty"); }

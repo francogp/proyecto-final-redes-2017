@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
-class Host< I extends Comparable< I > > {
+class Process< I extends Comparable< I > > {
     private final InetAddress                                       inetAddress;
     private final int                                               pid;
     private final Integer                                           port;
@@ -18,7 +18,7 @@ class Host< I extends Comparable< I > > {
     private final List< I >                                         toSort;
 
     public
-    Host(
+    Process(
             final int pid,
             final InetAddress inetAddress,
             final Integer port,
@@ -65,7 +65,7 @@ class Host< I extends Comparable< I > > {
     public
     Message< I > waitFor( final MessageType msgType )
             throws InterruptedException {
-        final BlockingQueue< Message< I > > messages = queues.get(msgType); //TODO verificar diseño
+        final BlockingQueue< Message< I > > messages = queues.get(msgType);
         return messages.take();
     }
 }

@@ -20,7 +20,7 @@ class NetSimulationUsingLongConfigFileTest {
     final
     void mainTest() {
         try {
-            final String result   = '[' + NetSimulationUsingLongConfigFile.simulate("\"configFile=" + TEST_FILE.getPath() + '"') + ']';
+            final String result   = '[' + NetSimulationUsingConfigFile.simulate("\"configFile=" + TEST_FILE.getPath() + '"') + ']';
             final String expected = List.of(1L, 2L, 2L, 7L, 8L, 9L, 11L, 22L, 75L).toString();
             assertThat(result, is(expected));
         } catch ( final Exception e ) {

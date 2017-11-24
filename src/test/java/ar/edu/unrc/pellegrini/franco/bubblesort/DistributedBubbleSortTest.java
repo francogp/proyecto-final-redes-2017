@@ -1,10 +1,8 @@
-package ar.edu.unrc.pellegrini.franco.bubblesort.implementations;
+package ar.edu.unrc.pellegrini.franco.bubblesort;
 
-import ar.edu.unrc.pellegrini.franco.bubblesort.DistributedBubbleSort;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( "ClassWithoutConstructor" )
-class DistributedBubbleSortForLongTest {
+class DistributedBubbleSortTest {
     @Test
     final
     void bubbleSort() {
@@ -56,55 +54,26 @@ class DistributedBubbleSortForLongTest {
 
         @Override
         public final
-        boolean andReduce( final boolean value ) {
-            return false;
-        }
-
-        @Override
-        public final
         String asString() {
             return array.toString();
         }
 
         @Override
         public
-        void barrier() {
+        int getName() {
+            return 0;
         }
 
         @Override
         public
-        void endService()
-                throws IOException {
-        }
-
-        @Override
-        public final
         long getPgasSize() {
             return array.size();
         }
 
         @Override
         public final
-        int getPid() {
-            return 1;
-        }
-
-        @Override
-        public final
         int getSize() {
             return array.size();
-        }
-
-        @Override
-        public final
-        boolean imLast() {
-            return true;
-        }
-
-        @Override
-        public final
-        boolean isCoordinator() {
-            return false;
         }
 
         @Override
@@ -131,12 +100,6 @@ class DistributedBubbleSortForLongTest {
         @Override
         public
         void setDebugMode( final boolean mode ) {
-        }
-
-        @Override
-        public
-        void startServer() {
-
         }
 
         @Override

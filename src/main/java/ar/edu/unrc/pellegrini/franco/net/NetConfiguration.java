@@ -21,9 +21,9 @@ class NetConfiguration< I extends Comparable< I > > {
     public static final String JSON_INET_ADDRESS = "inetAddress";
     public static final String JSON_PORT         = "port";
     public static final String JSON_TO_SORT      = "toSort";
-    private final Map< InetAddress, Map< Integer, Host< I > > > hostsByAddress;
-    private final Map< Integer, Host< I > >                     hostsByPid;
-    private final int                                           processQuantity;
+    private final Map< InetAddress, Map< Integer, Process< I > > > processByAddress;
+    private final Map< Integer, Process< I > >                     processByPid;
+    private final int                                              processQuantity;
 
     /**
      * JSON file Format:
@@ -69,8 +69,8 @@ class NetConfiguration< I extends Comparable< I > > {
                 throw new IllegalArgumentException("wrong hosts quantity in config file \"" + configFilePath + "\".");
             }
             processQuantity = hostsInJSON.size();
-            hostsByPid = new HashMap<>(processQuantity);
-            hostsByAddress = new HashMap<>(processQuantity);
+            processByPid = new HashMap<>(processQuantity);
+            processByAddress = new HashMap<>(processQuantity);
 
             int pid = 1;
             for ( final Object hostInJSON : hostsInJSON ) {
@@ -90,14 +90,15 @@ class NetConfiguration< I extends Comparable< I > > {
                     toSort.add(value);
                 }
 
-                final InetAddress hostInetAddress = InetAddress.getByName(inetAddress);
-                final Host< I >   hostConfig      = new Host<>(pid, hostInetAddress, port.intValue(), toSort);
-                //mapping from pid to Host.
-                hostsByPid.put(pid, hostConfig);
+                final InetAddress  hostInetAddress = InetAddress.getByName(inetAddress);
+                final Process< I > processConfig   = new Process<>(pid, hostInetAddress, port.intValue(), toSort);
+                //mapping from pid to Process.
+                processByPid.put(pid, processConfig);
 
-                //mapping from InetAddress+port to Host.
-                final Map< Integer, Host< I > > hostByPorts = hostsByAddress.computeIfAbsent(hostInetAddress, address -> new ConcurrentHashMap<>());
-                if ( hostByPorts.put(port.intValue(), hostConfig) != null ) {
+                //mapping from InetAddress+port to Process.
+                final Map< Integer, Process< I > > hostByPorts =
+                        processByAddress.computeIfAbsent(hostInetAddress, address -> new ConcurrentHashMap<>());
+                if ( hostByPorts.put(port.intValue(), processConfig) != null ) {
                     throw new IllegalArgumentException("there's two hosts with the same address : InetAddress=" + hostInetAddress + " port=" + port);
                 }
 
@@ -115,16 +116,16 @@ class NetConfiguration< I extends Comparable< I > > {
     }
 
     public
-    Host< I > getHostsConfig( final int pid ) {
-        return hostsByPid.get(pid);
+    Process< I > getProcessConfig( final int pid ) {
+        return processByPid.get(pid);
     }
 
     public
-    Host< I > getHostsConfig(
+    Process< I > getProcessConfig(
             final InetAddress address,
             final int port
     ) {
-        return hostsByAddress.get(address).get(port);
+        return processByAddress.get(address).get(port);
     }
 
     public
@@ -134,6 +135,6 @@ class NetConfiguration< I extends Comparable< I > > {
 
     public
     int size() {
-        return hostsByPid.size();
+        return processByPid.size();
     }
 }

@@ -33,6 +33,30 @@ class BytesConversionTest {
 
     @Test
     final
+    void integerGeneralTest() {
+        int          expected   = 95486100;
+        byte[]       bytes      = BytesConversion.integerToBytes(expected);
+        final byte[] largeBytes = new byte[16];
+        final int    desPos     = 5;
+        System.arraycopy(bytes, 0, largeBytes, desPos, 4);
+        int output = BytesConversion.bytesToInteger(bytes);
+        assertThat(output, is(expected));
+        output = BytesConversion.bytesToInteger(largeBytes, 5, desPos + 4);
+        assertThat(output, is(expected));
+
+        expected = Integer.MAX_VALUE;
+        bytes = BytesConversion.integerToBytes(expected);
+        output = BytesConversion.bytesToInteger(bytes);
+        assertThat(output, is(expected));
+
+        expected = Integer.MIN_VALUE;
+        bytes = BytesConversion.integerToBytes(expected);
+        output = BytesConversion.bytesToInteger(bytes);
+        assertThat(output, is(expected));
+    }
+
+    @Test
+    final
     void longGeneralTest() {
         Long         expected   = 95486100L;
         byte[]       bytes      = BytesConversion.longToBytes(expected);
@@ -53,7 +77,5 @@ class BytesConversionTest {
         bytes = BytesConversion.longToBytes(expected);
         output = BytesConversion.bytesToLong(bytes);
         assertThat(output, is(expected));
-
-
     }
 }

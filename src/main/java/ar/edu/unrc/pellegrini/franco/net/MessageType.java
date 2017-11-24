@@ -25,7 +25,7 @@ enum MessageType {
             case 'A':
                 return AND_REDUCE_MSG;
             case 'V':
-                return CONTINUE_AND_REDUCE_MSG; //TODO es necesario o se puede reusar C?
+                return CONTINUE_AND_REDUCE_MSG;
             case 'B':
                 return BARRIER_MSG;
             case 'C':
@@ -35,7 +35,7 @@ enum MessageType {
             case 'R':
                 return READ_MSG;
             case 'S':
-                return READ_RESPONSE_MSG; //TODO es necesario o se puede reusar R?
+                return READ_RESPONSE_MSG;
             case 'W':
                 return WRITE_MSG;
             default:
