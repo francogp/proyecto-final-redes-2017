@@ -1,7 +1,5 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
-import java.io.IOException;
-
 public
 interface PGAS< I > {
 
@@ -17,8 +15,8 @@ interface PGAS< I > {
 
     long lowerIndex( final int pid );
 
-    I read( final Long index )
-            throws IOException, InterruptedException;
+    I read( final long index )
+            throws Exception;
 
     void setDebugMode( boolean mode );
 
@@ -26,15 +24,15 @@ interface PGAS< I > {
             final long index1,
             final long index2
     )
-            throws IOException, InterruptedException;
+            throws Exception;
 
     long upperIndex();
 
     long upperIndex( final int pid );
 
     void write(
-            final Long index,
+            final long index,
             final I value
     )
-            throws IOException;
+            throws Exception;
 }

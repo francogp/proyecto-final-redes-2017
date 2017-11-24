@@ -58,7 +58,7 @@ class AbstractMessage< I extends Comparable< I > >
 
     @Override
     public final
-    byte[] getBytes() {
+    byte[] getAsBytes() {
         return bytes;
     }
 
@@ -109,7 +109,8 @@ class AbstractMessage< I extends Comparable< I > >
             final MessageType type,
             final long indexParameter,
             final I valueParameter
-    ) {
+    )
+            throws InvalidValueParameterException {
         this.pgasName = pgasName;
         this.address = address;
         this.port = port;
@@ -130,7 +131,8 @@ class AbstractMessage< I extends Comparable< I > >
 
     @Override
     public
-    void initUsing( final DatagramPacket packet ) {
+    void initUsing( final DatagramPacket packet )
+            throws InvalidValueParameterException {
         this.address = packet.getAddress();
         this.port = packet.getPort();
         this.bytes = packet.getData();
@@ -145,10 +147,12 @@ class AbstractMessage< I extends Comparable< I > >
     }
 
     protected abstract
-    void initValueFromBytes( final byte[] bytes );
+    void initValueFromBytes( final byte[] bytes )
+            throws InvalidValueParameterException;
 
     protected abstract
-    void initValueInBytes();
+    void initValueInBytes()
+            throws InvalidValueParameterException;
 
     @Override
     public final

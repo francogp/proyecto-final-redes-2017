@@ -3,7 +3,6 @@ package ar.edu.unrc.pellegrini.franco.pgas;
 import ar.edu.unrc.pellegrini.franco.net.*;
 import ar.edu.unrc.pellegrini.franco.net.Process;
 
-import java.io.IOException;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +50,7 @@ class Middleware< I extends Comparable< I > > {
 
     public final
     boolean andReduce( final boolean value )
-            throws IOException, InterruptedException {
+            throws Exception {
         boolean andReduce = value;
         if ( coordinator ) {
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
@@ -71,7 +70,7 @@ class Middleware< I extends Comparable< I > > {
 
     public final
     void barrier()
-            throws IOException, InterruptedException {
+            throws Exception {
         if ( coordinator ) {
             assert pid == 1;
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
@@ -89,7 +88,7 @@ class Middleware< I extends Comparable< I > > {
 
     public final
     void endService()
-            throws IOException {
+            throws Exception {
         if ( coordinator ) {
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
                 sendTo(0, targetPid, END_MSG, 0L, null);
@@ -180,7 +179,7 @@ class Middleware< I extends Comparable< I > > {
             final long indexParameter,
             final I valueParameter
     )
-            throws IOException {
+            throws Exception {
         if ( listener == null ) {
             throw new IllegalStateException("Listener not started. Use startServer()");
         }
@@ -213,7 +212,7 @@ class Middleware< I extends Comparable< I > > {
             final long indexParameter,
             final I valueParameter
     )
-            throws IOException {
+            throws Exception {
         sendTo(pgasName, netConfiguration.getProcessConfig(targetPid), msgType, indexParameter, valueParameter);
     }
 

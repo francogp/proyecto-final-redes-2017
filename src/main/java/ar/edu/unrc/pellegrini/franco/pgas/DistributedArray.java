@@ -5,7 +5,6 @@ import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 import ar.edu.unrc.pellegrini.franco.net.Process;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -134,8 +133,8 @@ class DistributedArray< I extends Comparable< I > >
 
     @Override
     public final
-    I read( final Long index )
-            throws IOException, InterruptedException {
+    I read( final long index )
+            throws Exception {
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);
@@ -162,7 +161,7 @@ class DistributedArray< I extends Comparable< I > >
             final long index1,
             final long index2
     )
-            throws IOException, InterruptedException {
+            throws Exception {
         final I temp = read(index1);
         write(index1, read(index2));
         write(index2, temp);
@@ -183,10 +182,10 @@ class DistributedArray< I extends Comparable< I > >
     @Override
     public synchronized final
     void write(
-            final Long index,
+            final long index,
             final I value
     )
-            throws IOException {
+            throws Exception {
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= memory.size() ) ) {
             final int targetPid = findPidForIndex(index);

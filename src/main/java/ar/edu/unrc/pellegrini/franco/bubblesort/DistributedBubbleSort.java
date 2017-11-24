@@ -8,10 +8,10 @@ import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 
-import java.io.IOException;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
+import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.LONG_VALUE_PARAMETER_BYTE_SIZE;
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
@@ -64,7 +64,7 @@ class DistributedBubbleSort< I extends Comparable< I > >
             final long lowerIndex,
             final long upperIndex
     )
-            throws IOException, InterruptedException {
+            throws Exception {
         boolean swapped = true;
         for ( long i = upperIndex; swapped && ( i >= lowerIndex ); i-- ) {
             swapped = false;
@@ -87,8 +87,11 @@ class DistributedBubbleSort< I extends Comparable< I > >
 
         arguments.loadArguments(args);
         final int pid = arguments.parseInteger(ARG_PID);
-        final Runnable bubbleSort =
-                new DistributedBubbleSort(pid, arguments.parseString(ARG_CONFIG_FILE), () -> LongMessage.getInstance(), 8, //TODO parametrizar
+        final Runnable bubbleSort = new DistributedBubbleSort(pid,
+                arguments.parseString(ARG_CONFIG_FILE),
+                () -> LongMessage.getInstance(),
+                LONG_VALUE_PARAMETER_BYTE_SIZE,
+                //TODO parametrizar
                         arguments.existsFlag(ARG_DEBUG_MODE));
         bubbleSort.run();
     }

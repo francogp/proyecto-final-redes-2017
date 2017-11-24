@@ -6,6 +6,7 @@ import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 
 import static ar.edu.unrc.pellegrini.franco.bubblesort.DistributedBubbleSort.ARG_CONFIG_FILE;
 import static ar.edu.unrc.pellegrini.franco.bubblesort.DistributedBubbleSort.ARG_DEBUG_MODE;
+import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.LONG_VALUE_PARAMETER_BYTE_SIZE;
 
 public final
 class NetSimulationUsingConfigFile {
@@ -32,8 +33,7 @@ class NetSimulationUsingConfigFile {
         for ( int pid = 1; pid <= configFile.size(); pid++ ) {
             final DistributedBubbleSort< Double > bubbleSortForLong = new DistributedBubbleSort(pid,
                     configFile,
-                    () -> LongMessage.getInstance(),
-                    8,
+                    () -> LongMessage.getInstance(), LONG_VALUE_PARAMETER_BYTE_SIZE,
                     arguments.existsFlag(ARG_DEBUG_MODE)); //TODO parametrizar y soportar double
             final Thread thread = new Thread(bubbleSortForLong);
             if ( pid == 1 ) {

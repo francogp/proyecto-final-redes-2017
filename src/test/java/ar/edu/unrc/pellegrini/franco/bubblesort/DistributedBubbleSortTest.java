@@ -90,11 +90,11 @@ class DistributedBubbleSortTest {
 
         @Override
         public final
-        Long read( final Long index ) {
+        Long read( final long index ) {
             if ( ( index < lowerIndex ) || ( index > upperIndex ) ) {
                 throw new IllegalArgumentException("index " + index + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
-            return array.get(index.intValue());
+            return array.get(Long.valueOf(index).intValue());
         }
 
         @Override
@@ -134,13 +134,13 @@ class DistributedBubbleSortTest {
         @Override
         public final
         void write(
-                final Long index,
+                final long index,
                 final Long value
         ) {
             if ( ( index < lowerIndex ) || ( index > upperIndex ) ) {
                 throw new IllegalArgumentException("index " + index + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
-            array.set(index.intValue(), value);
+            array.set(Long.valueOf(index).intValue(), value);
         }
     }
 }

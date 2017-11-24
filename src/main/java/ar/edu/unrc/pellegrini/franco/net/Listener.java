@@ -77,7 +77,7 @@ class Listener< I extends Comparable< I > >
             final Message< I > msg
     )
             throws IOException {
-        final DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, msg.getAddress(), msg.getPort());
+        final DatagramPacket packet = new DatagramPacket(msg.getAsBytes(), msg.getAsBytes().length, msg.getAddress(), msg.getPort());
         socket.send(packet);
     }
 }

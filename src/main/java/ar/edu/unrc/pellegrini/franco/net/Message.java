@@ -5,9 +5,10 @@ import java.net.InetAddress;
 
 public
 interface Message< I extends Comparable< I > > {
+
     InetAddress getAddress();
 
-    byte[] getBytes();
+    byte[] getAsBytes();
 
     Long getIndexParameter();
 
@@ -21,7 +22,8 @@ interface Message< I extends Comparable< I > > {
 
     I getValueParameter();
 
-    void initUsing( final DatagramPacket packet );
+    void initUsing( final DatagramPacket packet )
+            throws InvalidValueParameterException;
 
     void initUsing(
             final int pgasName,
@@ -30,7 +32,8 @@ interface Message< I extends Comparable< I > > {
             final MessageType type,
             final long indexParameter,
             final I valueParameter
-    );
+    )
+            throws InvalidValueParameterException;
 
     boolean isEndMessage();
 }
