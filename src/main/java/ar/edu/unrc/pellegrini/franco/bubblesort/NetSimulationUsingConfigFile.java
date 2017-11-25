@@ -39,22 +39,20 @@ class NetSimulationUsingConfigFile {
         for ( int pid = 1; pid <= processesConfigurations.getProcessQuantity(); pid++ ) {
             final Runnable bubbleSort;
             switch ( processesConfigurations.getPgasDataType() ) {
-                case "Long": {
+                case "Long":
                     bubbleSort = new DistributedBubbleSort< Long >(pid,
                             (ProcessesConfigurations< Long >) processesConfigurations,
-                            () -> LongMessage.getInstance(),
+                            LongMessage::getInstance,
                             LONG_VALUE_PARAMETER_BYTE_SIZE,
                             arguments.existsFlag(ARG_DEBUG_MODE));
                     break;
-                }
-                case "Double": {
+                case "Double":
                     bubbleSort = new DistributedBubbleSort< Double >(pid,
                             (ProcessesConfigurations< Double >) processesConfigurations,
-                            () -> DoubleMessage.getInstance(),
+                            DoubleMessage::getInstance,
                             DOUBLE_VALUE_PARAMETER_BYTE_SIZE,
                             arguments.existsFlag(ARG_DEBUG_MODE));
                     break;
-                }
                 default:
                     throw new IllegalArgumentException("unknown datatype implementation");
             }

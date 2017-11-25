@@ -3,10 +3,7 @@ package ar.edu.unrc.pellegrini.franco.bubblesort;
 import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.net.implementations.DoubleMessage;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
-import ar.edu.unrc.pellegrini.franco.pgas.DistributedArray;
-import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
-import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
-import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
+import ar.edu.unrc.pellegrini.franco.pgas.*;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 import ar.edu.unrc.pellegrini.franco.utils.ProcessesConfigurationParser;
 
@@ -25,6 +22,7 @@ class DistributedBubbleSort< I extends Comparable< I > >
     public static final String ARG_CONFIG_FILE = "configFile";
     public static final String ARG_DEBUG_MODE  = "debug";
     public static final String ARG_PID         = "pid";
+    public static final int    PGAS_NAME       = 99;
     private final PGAS< I >       distributedArray;
     private final Middleware< I > middleware;
     private       String          result;
@@ -38,9 +36,9 @@ class DistributedBubbleSort< I extends Comparable< I > >
             final boolean debugMode
     ) {
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        middleware = new Middleware<>(pid, processesConfigurations, newMessageSupplier, valueByteBufferSize);
+        middleware = new BasicMiddleware<>(pid, processesConfigurations, newMessageSupplier, valueByteBufferSize);
         middleware.startServer();
-        distributedArray = new DistributedArray< I >(1, middleware);
+        distributedArray = new DistributedArray<>(PGAS_NAME, middleware);
         distributedArray.setDebugMode(debugMode);
     }
 
@@ -84,22 +82,20 @@ class DistributedBubbleSort< I extends Comparable< I > >
         final ProcessesConfigurations< ? > processesConfigurations = ProcessesConfigurationParser.parseConfigFile(configFile);
 
         switch ( processesConfigurations.getPgasDataType() ) {
-            case "Long": {
+            case "Long":
                 bubbleSort = new DistributedBubbleSort< Long >(pid,
                         (ProcessesConfigurations< Long >) processesConfigurations,
-                        () -> LongMessage.getInstance(),
+                        LongMessage::getInstance,
                         LONG_VALUE_PARAMETER_BYTE_SIZE,
                         arguments.existsFlag(ARG_DEBUG_MODE));
                 break;
-            }
-            case "Double": {
+            case "Double":
                 bubbleSort = new DistributedBubbleSort< Double >(pid,
                         (ProcessesConfigurations< Double >) processesConfigurations,
-                        () -> DoubleMessage.getInstance(),
+                        DoubleMessage::getInstance,
                         DOUBLE_VALUE_PARAMETER_BYTE_SIZE,
                         arguments.existsFlag(ARG_DEBUG_MODE));
                 break;
-            }
             default:
                 throw new IllegalArgumentException("unknown datatype implementation");
         }
@@ -128,7 +124,7 @@ class DistributedBubbleSort< I extends Comparable< I > >
                 middleware.barrier();
 
                 if ( !middleware.imLast() ) {
-                    final long lowerIndexRight = distributedArray.lowerIndex(middleware.getPid() + 1);
+                    final long lowerIndexRight = distributedArray.lowerIndex(middleware.getWhoAmI() + 1);
                     if ( distributedArray.read(upperIndex).compareTo(distributedArray.read(lowerIndexRight)) > 0 ) {
                         distributedArray.swap(upperIndex, lowerIndexRight);
                         finish = false;  // update local copy

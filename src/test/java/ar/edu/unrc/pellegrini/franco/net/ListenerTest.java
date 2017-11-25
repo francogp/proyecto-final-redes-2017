@@ -25,7 +25,7 @@ class ListenerTest {
     void runTest() {
         try {
             final int                      port             = 10001;
-            DatagramSocket                 datagramSocket   = new DatagramSocket(port);
+            final DatagramSocket           datagramSocket   = new DatagramSocket(port);
             final Queue< Message< Long > > receivedMessages = new ConcurrentLinkedQueue<>();
             final Listener< Long > longMessageServer = new Listener<>(datagramSocket, receivedMessages::add, msg -> {
                 if ( msg.isEndMessage() ) {
@@ -34,7 +34,7 @@ class ListenerTest {
                 } else {
                     return false;
                 }
-            }, 8, () -> LongMessage.getInstance());
+            }, 8, LongMessage::getInstance);
             final Thread serverThread = new Thread(longMessageServer);
             serverThread.start();
             Thread.sleep(100L);
@@ -59,7 +59,7 @@ class ListenerTest {
         }
     }
 
-    public synchronized final
+    public final synchronized
     void sendMessage(
             final Message< Long > msg,
             final DatagramSocket datagramSocket

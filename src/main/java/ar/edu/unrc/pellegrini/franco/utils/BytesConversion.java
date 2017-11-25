@@ -25,7 +25,7 @@ class BytesConversion {
     int bytesToInteger( final byte[] bytes ) {
         int result = 0;
         for ( int i = 0; i < 4; i++ ) {
-            result <<= 8L;
+            result <<= 8;
             result |= ( bytes[i] & 0xFF );
         }
         return result;
@@ -39,7 +39,7 @@ class BytesConversion {
     ) {
         int result = 0;
         for ( int i = from; i < upTo; i++ ) {
-            result <<= 8L;
+            result <<= 8;
             result |= ( bytes[i] & 0xFF );
         }
         return result;
@@ -80,7 +80,7 @@ class BytesConversion {
         final byte[] result = new byte[4];
         for ( int i = 3; i >= 0; i-- ) {
             result[i] = (byte) ( value & 0xFF );
-            value >>= 8L;
+            value >>= 8;
         }
         return result;
     }

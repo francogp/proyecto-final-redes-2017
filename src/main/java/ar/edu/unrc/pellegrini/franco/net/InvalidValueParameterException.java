@@ -5,33 +5,32 @@ class InvalidValueParameterException
         extends Exception {
     public
     InvalidValueParameterException() {
-        super();
     }
 
     public
-    InvalidValueParameterException( String message ) {
+    InvalidValueParameterException( final String message ) {
         super(message);
     }
 
     public
     InvalidValueParameterException(
-            String message,
-            Throwable cause
+            final String message,
+            final Throwable cause
     ) {
         super(message, cause);
     }
 
     public
-    InvalidValueParameterException( Throwable cause ) {
+    InvalidValueParameterException( final Throwable cause ) {
         super(cause);
     }
 
     protected
     InvalidValueParameterException(
-            String message,
-            Throwable cause,
-            boolean enableSuppression,
-            boolean writableStackTrace
+            final String message,
+            final Throwable cause,
+            final boolean enableSuppression,
+            final boolean writableStackTrace
     ) {
         super(message, cause, enableSuppression, writableStackTrace);
     }

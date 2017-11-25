@@ -6,12 +6,7 @@
       "port": 8001,
       "distributedArrays": [
         {
-          "name": 99,
-          "toSort": [
-            9,
-            1,
-            2
-          ]
+          "name": 99
         }
       ]
     },
@@ -33,13 +28,7 @@
       "port": 8003,
       "distributedArrays": [
         {
-          "name": 99,
-          "toSort": [
-            11,
-            2,
-            22,
-            75
-          ]
+          "name": 99
         }
       ]
     }

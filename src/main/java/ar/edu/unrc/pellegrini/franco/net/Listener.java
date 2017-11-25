@@ -4,7 +4,6 @@ import ar.edu.unrc.pellegrini.franco.utils.MsgQueue;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -32,10 +31,9 @@ class Listener< I extends Comparable< I > >
             final Function< Message< I >, Boolean > isFinalMsgFunction,
             final int valueByteBufferSize,
             final Supplier< Message< I > > newMessageSupplier
-    )
-            throws SocketException {
+    ) {
         this.socket = socket;
-        this.payloadLength = PAYLOAD_PREFIX_LENGTH + valueByteBufferSize;
+        payloadLength = PAYLOAD_PREFIX_LENGTH + valueByteBufferSize;
         this.newMessageSupplier = newMessageSupplier;
         msgQueue = new MsgQueue<>(messageConsumer, isFinalMsgFunction);
         msgQueueThread = new Thread(msgQueue);

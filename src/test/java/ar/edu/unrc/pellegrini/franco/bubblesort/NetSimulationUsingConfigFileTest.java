@@ -16,7 +16,7 @@ class NetSimulationUsingConfigFileTest {
     final
     void doubleNetSimulationTest() {
         try {
-            File testFile = new File(NetSimulationUsingConfigFileTest.class.getClassLoader()
+            final File testFile = new File(NetSimulationUsingConfigFileTest.class.getClassLoader()
                     .getResource("ar/edu/unrc/pellegrini/franco/bubblesort/doubleConfigTest.json")
                     .getFile());
             final String result   = '[' + NetSimulationUsingConfigFile.simulate("\"configFile=" + testFile.getPath() + '"') + ']';
@@ -31,7 +31,7 @@ class NetSimulationUsingConfigFileTest {
     final
     void longNetSimulationTest() {
         try {
-            File testFile = new File(NetSimulationUsingConfigFileTest.class.getClassLoader()
+            final File testFile = new File(NetSimulationUsingConfigFileTest.class.getClassLoader()
                     .getResource("ar/edu/unrc/pellegrini/franco/bubblesort/longConfigTest.json")
                     .getFile());
             final String result   = '[' + NetSimulationUsingConfigFile.simulate("\"configFile=" + testFile.getPath() + '"') + ']';

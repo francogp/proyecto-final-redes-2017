@@ -4,28 +4,43 @@
     {
       "inetAddress": "localhost",
       "port": 6001,
-      "toSort": [
-        9.5,
-        1.1,
-        2.2
+      "distributedArrays": [
+        {
+          "name": 99,
+          "toSort": [
+            9.5,
+            1.1,
+            2.2
+          ]
+        }
       ]
     },
     {
       "inetAddress": "localhost",
       "port": 6002,
-      "toSort": [
-        7.7,
-        8.8
+      "distributedArrays": [
+        {
+          "name": 99,
+          "toSort": [
+            7.7,
+            8.8
+          ]
+        }
       ]
     },
     {
       "inetAddress": "localhost",
       "port": 6003,
-      "toSort": [
-        11.1,
-        2.7,
-        22.1,
-        75.9
+      "distributedArrays": [
+        {
+          "name": 99,
+          "toSort": [
+            11.1,
+            2.7,
+            22.1,
+            75.9
+          ]
+        }
       ]
     }
   ]

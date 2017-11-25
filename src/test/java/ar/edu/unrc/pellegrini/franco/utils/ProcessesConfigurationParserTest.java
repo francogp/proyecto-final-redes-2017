@@ -1,6 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.utils;
 
-import ar.edu.unrc.pellegrini.franco.net.Process;
+import ar.edu.unrc.pellegrini.franco.pgas.Process;
 import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class ProcessesConfigurationParserTest {
     void generalConfig() {
         final ClassLoader classLoader = getClass().getClassLoader();
         final File        file        =
-                new File(classLoader.getResource("ar/edu/unrc/pellegrini/franco/net/processSpecificDoubleConfigTest.json").getFile());
+                new File(classLoader.getResource("ar/edu/unrc/pellegrini/franco/net/processSpecificLongConfigTest.json").getFile());
 
         final ProcessesConfigurations< Long > processesConfigurations = ProcessesConfigurationParser.parseConfigFile(file);
 
@@ -37,18 +37,19 @@ class ProcessesConfigurationParserTest {
         assertThat(process.getInetAddress(), is(inetAddress));
         Integer port = 8001;
         assertThat(process.getPort(), is(port));
-        assertThat(process.getToSort() == null, is(true));
+        final int pgasName = 99;
+        assertThat(process.getValues(pgasName).isEmpty(), is(true));
 
         process = processesConfigurations.getProcessConfig(2);
         port = 8002;
         assertThat(process.getInetAddress(), is(inetAddress));
         assertThat(process.getPort(), is(port));
-        assertThat(process.getToSort(), is(List.of(7L, 8L)));
+        assertThat(process.getValues(pgasName), is(List.of(7L, 8L)));
 
         process = processesConfigurations.getProcessConfig(3);
         port = 8003;
         assertThat(process.getInetAddress(), is(inetAddress));
         assertThat(process.getPort(), is(port));
-        assertThat(process.getToSort() == null, is(true));
+        assertThat(process.getValues(pgasName).isEmpty(), is(true));
     }
 }

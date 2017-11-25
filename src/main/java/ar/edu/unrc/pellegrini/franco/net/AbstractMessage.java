@@ -20,32 +20,29 @@ class AbstractMessage< I extends Comparable< I > >
     public static final int PAYLOAD_PREFIX_LENGTH       = PGAS_NAME_BYTE_LENGTH + TYPE_BYTE_LENGTH + INDEX_PARAMETER_BYTE_LENGTH;
     public static final int VALUE_PARAMETER_BYTE_INDEX  = 13;
     protected InetAddress address;
-    protected byte[]      bytes;
+    protected byte[]      asBytes;
     protected long        indexParameter;
     protected int         pgasName;
     protected int         port;
     protected MessageType type;
     protected I           valueParameter;
 
-    public
-    AbstractMessage() {
-    }
-
+    @SuppressWarnings( "RedundantIfStatement" )
     @Override
     public
-    boolean equals( Object o ) {
+    boolean equals( final Object o ) {
         if ( this == o ) { return true; }
         if ( !( o instanceof AbstractMessage ) ) { return false; }
 
-        AbstractMessage< ? > that = (AbstractMessage< ? >) o;
+        final AbstractMessage< ? > that = (AbstractMessage< ? >) o;
 
         if ( indexParameter != that.indexParameter ) { return false; }
         if ( pgasName != that.pgasName ) { return false; }
         if ( port != that.port ) { return false; }
         if ( !address.equals(that.address) ) { return false; }
-        if ( !Arrays.equals(bytes, that.bytes) ) { return false; }
+        if ( !Arrays.equals(asBytes, that.asBytes) ) { return false; }
         if ( type != that.type ) { return false; }
-        if ( valueParameter != null ? !valueParameter.equals(that.valueParameter) : that.valueParameter != null ) { return false; }
+        if ( ( valueParameter != null ) ? !valueParameter.equals(that.valueParameter) : ( that.valueParameter != null ) ) { return false; }
 
         return true;
     }
@@ -59,7 +56,7 @@ class AbstractMessage< I extends Comparable< I > >
     @Override
     public final
     byte[] getAsBytes() {
-        return bytes;
+        return asBytes;
     }
 
     @Override
@@ -92,12 +89,12 @@ class AbstractMessage< I extends Comparable< I > >
     public
     int hashCode() {
         int result = address.hashCode();
-        result = 31 * result + Arrays.hashCode(bytes);
-        result = 31 * result + (int) ( indexParameter ^ ( indexParameter >>> 32 ) );
-        result = 31 * result + pgasName;
-        result = 31 * result + port;
-        result = 31 * result + type.hashCode();
-        result = 31 * result + ( valueParameter != null ? valueParameter.hashCode() : 0 );
+        result = ( 31 * result ) + Arrays.hashCode(asBytes);
+        result = ( 31 * result ) + (int) ( indexParameter ^ ( indexParameter >>> 32 ) );
+        result = ( 31 * result ) + pgasName;
+        result = ( 31 * result ) + port;
+        result = ( 31 * result ) + type.hashCode();
+        result = ( 31 * result ) + ( ( valueParameter != null ) ? valueParameter.hashCode() : 0 );
         return result;
     }
 
@@ -118,14 +115,14 @@ class AbstractMessage< I extends Comparable< I > >
         this.indexParameter = indexParameter;
         this.valueParameter = valueParameter;
 
-        bytes = new byte[PAYLOAD_PREFIX_LENGTH + getValueByteLength()];
+        asBytes = new byte[PAYLOAD_PREFIX_LENGTH + getValueByteLength()];
         final byte[] pgasNameBytes = integerToBytes(pgasName);
         assert pgasNameBytes.length == PGAS_NAME_BYTE_LENGTH;
-        System.arraycopy(pgasNameBytes, 0, bytes, PGAS_NAME_BYTE_INDEX, PGAS_NAME_BYTE_LENGTH);
-        bytes[TYPE_BYTE_INDEX] = type.asByte();
+        System.arraycopy(pgasNameBytes, 0, asBytes, PGAS_NAME_BYTE_INDEX, PGAS_NAME_BYTE_LENGTH);
+        asBytes[TYPE_BYTE_INDEX] = type.asByte();
         final byte[] parameterBytes = longToBytes(indexParameter);
         assert parameterBytes.length == INDEX_PARAMETER_BYTE_LENGTH;
-        System.arraycopy(parameterBytes, 0, bytes, INDEX_PARAMETER_BYTE_INDEX, INDEX_PARAMETER_BYTE_LENGTH);
+        System.arraycopy(parameterBytes, 0, asBytes, INDEX_PARAMETER_BYTE_INDEX, INDEX_PARAMETER_BYTE_LENGTH);
         initValueInBytes();
     }
 
@@ -133,17 +130,17 @@ class AbstractMessage< I extends Comparable< I > >
     public
     void initUsing( final DatagramPacket packet )
             throws InvalidValueParameterException {
-        this.address = packet.getAddress();
-        this.port = packet.getPort();
-        this.bytes = packet.getData();
+        address = packet.getAddress();
+        port = packet.getPort();
+        asBytes = packet.getData();
         final int preferedLength = PAYLOAD_PREFIX_LENGTH + getValueByteLength();
-        if ( bytes.length != preferedLength ) {
-            throw new IllegalArgumentException("Wrong bytes.length=" + bytes.length + ", must be " + preferedLength);
+        if ( asBytes.length != preferedLength ) {
+            throw new IllegalArgumentException("Wrong asBytes.length=" + asBytes.length + ", must be " + preferedLength);
         }
-        pgasName = bytesToInteger(bytes, PGAS_NAME_BYTE_INDEX, PGAS_NAME_BYTE_INDEX + PGAS_NAME_BYTE_LENGTH);
-        type = MessageType.valueOf((char) bytes[TYPE_BYTE_INDEX]);
-        indexParameter = bytesToLong(bytes, INDEX_PARAMETER_BYTE_INDEX, INDEX_PARAMETER_BYTE_INDEX + INDEX_PARAMETER_BYTE_LENGTH);
-        initValueFromBytes(bytes);
+        pgasName = bytesToInteger(asBytes, PGAS_NAME_BYTE_INDEX, PGAS_NAME_BYTE_INDEX + PGAS_NAME_BYTE_LENGTH);
+        type = MessageType.valueOf((char) asBytes[TYPE_BYTE_INDEX]);
+        indexParameter = bytesToLong(asBytes, INDEX_PARAMETER_BYTE_INDEX, INDEX_PARAMETER_BYTE_INDEX + INDEX_PARAMETER_BYTE_LENGTH);
+        initValueFromBytes(asBytes);
     }
 
     protected abstract
@@ -164,7 +161,7 @@ class AbstractMessage< I extends Comparable< I > >
     public final
     String toString() {
         return "Message{" + "address=" + address + ", indexParameter=" + indexParameter + ", valueParameter=" + valueParameter + ", port=" + port +
-               ", type=" + type + ", bytes=" + Arrays.toString(bytes) + '}';
+               ", type=" + type + ", asBytes=" + Arrays.toString(asBytes) + '}';
     }
 
 }

@@ -14,11 +14,6 @@ class LongMessage
         extends AbstractMessage< Long > {
     public static final int LONG_VALUE_PARAMETER_BYTE_SIZE = 8;
 
-    public
-    LongMessage() {
-        super();
-    }
-
     public static
     LongMessage getInstance() {
         return new LongMessage();
@@ -36,7 +31,7 @@ class LongMessage
             throws InvalidValueParameterException {
         try {
             valueParameter = bytesToLong(bytes, VALUE_PARAMETER_BYTE_INDEX, VALUE_PARAMETER_BYTE_INDEX + LONG_VALUE_PARAMETER_BYTE_SIZE);
-        } catch ( Exception e ) {
+        } catch ( final Exception e ) {
             throw new InvalidValueParameterException("Invalid bytesToLong conversion of " + Arrays.toString(bytes), e);
         }
     }
@@ -52,6 +47,6 @@ class LongMessage
             throw new InvalidValueParameterException("valueParameter must be a Long value");
         }
         final byte[] value = longToBytes(valueParameter);
-        System.arraycopy(value, 0, bytes, VALUE_PARAMETER_BYTE_INDEX, LONG_VALUE_PARAMETER_BYTE_SIZE);
+        System.arraycopy(value, 0, asBytes, VALUE_PARAMETER_BYTE_INDEX, LONG_VALUE_PARAMETER_BYTE_SIZE);
     }
 }

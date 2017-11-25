@@ -14,11 +14,6 @@ class DoubleMessage
         extends AbstractMessage< Double > {
     public static final int DOUBLE_VALUE_PARAMETER_BYTE_SIZE = 8;
 
-    public
-    DoubleMessage() {
-        super();
-    }
-
     public static
     DoubleMessage getInstance() {
         return new DoubleMessage();
@@ -36,7 +31,7 @@ class DoubleMessage
             throws InvalidValueParameterException {
         try {
             valueParameter = bytesToDouble(bytes, VALUE_PARAMETER_BYTE_INDEX, VALUE_PARAMETER_BYTE_INDEX + DOUBLE_VALUE_PARAMETER_BYTE_SIZE);
-        } catch ( Exception e ) {
+        } catch ( final Exception e ) {
             throw new InvalidValueParameterException("Invalid bytesToLong conversion of " + Arrays.toString(bytes), e);
         }
     }
@@ -52,6 +47,6 @@ class DoubleMessage
             throw new InvalidValueParameterException("valueParameter must be a Long value");
         }
         final byte[] value = doubleToBytes(valueParameter);
-        System.arraycopy(value, 0, bytes, VALUE_PARAMETER_BYTE_INDEX, DOUBLE_VALUE_PARAMETER_BYTE_SIZE);
+        System.arraycopy(value, 0, asBytes, VALUE_PARAMETER_BYTE_INDEX, DOUBLE_VALUE_PARAMETER_BYTE_SIZE);
     }
 }

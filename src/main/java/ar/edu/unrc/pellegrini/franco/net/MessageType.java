@@ -1,5 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.net;
 
+import java.util.Set;
+
 public
 enum MessageType {
     AND_REDUCE_MSG('A'),
@@ -10,6 +12,10 @@ enum MessageType {
     READ_MSG('R'),
     READ_RESPONSE_MSG('S'),
     WRITE_MSG('W');
+
+    public static final Set< MessageType > MIDDLEWARE_MESSAGES =
+            Set.of(AND_REDUCE_MSG, BARRIER_MSG, CONTINUE_BARRIER_MSG, CONTINUE_AND_REDUCE_MSG, END_MSG);
+    public static final Set< MessageType > PROCESS_MESSAGES    = Set.of(READ_MSG, READ_RESPONSE_MSG, WRITE_MSG);
 
     private final char charType;
 
@@ -51,5 +57,10 @@ enum MessageType {
     public
     char asChar() {
         return charType;
+    }
+
+    public
+    boolean isMiddlewareMessageType() {
+        return MIDDLEWARE_MESSAGES.contains(this);
     }
 }

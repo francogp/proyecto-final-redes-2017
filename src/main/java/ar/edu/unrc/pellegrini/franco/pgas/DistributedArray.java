@@ -1,7 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.net.Process;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ class DistributedArray< I extends Comparable< I > >
     protected final Middleware< I > middleware;
     protected final long            pgasSize;
     private List< I > distArray = null;
-    private int name;
+    private final int name;
 
     public
     DistributedArray(
@@ -32,20 +31,20 @@ class DistributedArray< I extends Comparable< I > >
     ) {
         this.middleware = middleware;
         this.name = name;
-        int pid = middleware.getPid();
+        final int pid = middleware.getWhoAmI();
 
         // inicializamos los indices lowerIndex y upperIndex
         indexList = new ArrayList<>(middleware.getProcessQuantity());
         long lowerIndex = 0L;
         long upperIndex = -1L;
         for ( int currentPid = 1; currentPid <= middleware.getProcessQuantity(); currentPid++ ) {
-            final Process< I > process = middleware.getProcessConfig(currentPid);
-            final List< I >    toSort  = process.getToSort();
+            final Process< I > process       = middleware.getProcessConfigugation(currentPid);
+            final List< I >    processValues = process.getValues(name);
             if ( pid == currentPid ) {
-                distArray = new ArrayList<>(toSort);
+                distArray = new ArrayList<>(processValues);
             }
-            upperIndex = ( lowerIndex + ( toSort.size() ) ) - 1L;
-            indexList.add(new Index(lowerIndex, upperIndex, toSort.size()));
+            upperIndex = ( lowerIndex + ( processValues.size() ) ) - 1L;
+            indexList.add(new Index(lowerIndex, upperIndex, processValues.size()));
             lowerIndex = upperIndex + 1L;
         }
         // inicializamos lowerIndex y upperIndex del proceso actual (a modo de cache)
@@ -159,7 +158,7 @@ class DistributedArray< I extends Comparable< I > >
     }
 
     @Override
-    public synchronized final
+    public final synchronized
     void write(
             final long index,
             final I value

@@ -1,7 +1,5 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
-import ar.edu.unrc.pellegrini.franco.net.Process;
-
 import java.net.InetAddress;
 import java.util.Map;
 
@@ -18,7 +16,7 @@ class ProcessesConfigurations< I extends Comparable< I > > {
     }
 
     public
-    void setPgasDataType( String pgasDataType ) {
+    void setPgasDataType( final String pgasDataType ) {
         this.pgasDataType = pgasDataType;
     }
 
@@ -28,7 +26,7 @@ class ProcessesConfigurations< I extends Comparable< I > > {
     }
 
     public
-    void setProcessByAddress( Map< InetAddress, Map< Integer, Process< I > > > processByAddress ) {
+    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process< I > > > processByAddress ) {
         this.processByAddress = processByAddress;
     }
 
@@ -38,7 +36,7 @@ class ProcessesConfigurations< I extends Comparable< I > > {
     }
 
     public
-    void setProcessByPid( Map< Integer, Process< I > > processByPid ) {
+    void setProcessByPid( final Map< Integer, Process< I > > processByPid ) {
         this.processByPid = processByPid;
     }
 
@@ -61,7 +59,7 @@ class ProcessesConfigurations< I extends Comparable< I > > {
     }
 
     public
-    void setProcessQuantity( int processQuantity ) {
+    void setProcessQuantity( final int processQuantity ) {
         this.processQuantity = processQuantity;
     }
 
