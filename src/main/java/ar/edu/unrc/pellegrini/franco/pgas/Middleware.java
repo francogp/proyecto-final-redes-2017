@@ -52,6 +52,11 @@ class Middleware< I extends Comparable< I > > {
         listener = null;
     }
 
+    private static
+    long parseBooleanAsResponse( final boolean value ) {
+        return ( value ) ? 1L : 0L;
+    }
+
     public final
     boolean andReduce( final boolean value )
             throws Exception {
@@ -63,10 +68,10 @@ class Middleware< I extends Comparable< I > > {
                 andReduce = andReduce && parseResponseAsBoolean(msg);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                sendTo(IGNORED_PGAS_NAME, targetPid, CONTINUE_AND_REDUCE_MSG, ( andReduce ) ? 1L : 0L, null);
+                sendTo(IGNORED_PGAS_NAME, targetPid, CONTINUE_AND_REDUCE_MSG, parseBooleanAsResponse(andReduce), null);
             }
         } else {
-            sendTo(IGNORED_PGAS_NAME, COORDINATOR_PID, AND_REDUCE_MSG, ( value ) ? 1L : 0L, null);
+            sendTo(IGNORED_PGAS_NAME, COORDINATOR_PID, AND_REDUCE_MSG, parseBooleanAsResponse(value), null);
             final Message< I > msg = waitFor(IGNORED_PGAS_NAME, COORDINATOR_PID, CONTINUE_AND_REDUCE_MSG);
             andReduce = parseResponseAsBoolean(msg);
         }
@@ -180,7 +185,9 @@ class Middleware< I extends Comparable< I > > {
 
     public
     void registerPGAS( final PGAS< I > pgas ) {
-        pgasRegistryNameToPGAS.put(pgas.getName(), pgas);
+        if ( pgasRegistryNameToPGAS.put(pgas.getName(), pgas) != null ) {
+            throw new IllegalArgumentException("PGAS already registered with name: " + pgas.getName());
+        }
     }
 
     private
@@ -254,7 +261,12 @@ class Middleware< I extends Comparable< I > > {
         final Process< I > hostsConfig = processesConfigurations.getProcessConfig(senderPid);
         if ( debugMode ) {
             System.out.println(new StringBuilder().append("Time ")
-                    .append(System.nanoTime()).append(": pid[").append(pid).append("] name(").append(pgasName).append(") -> waitFor pid[")
+                    .append(System.nanoTime())
+                    .append(": pid[")
+                    .append(pid)
+                    .append("] name(")
+                    .append(pgasName)
+                    .append(") -> waitFor pid[")
                     .append(senderPid)
                     .append("] ")
                     .append(msgType));
