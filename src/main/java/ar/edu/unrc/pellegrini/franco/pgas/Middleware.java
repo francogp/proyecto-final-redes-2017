@@ -5,6 +5,9 @@ import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.net.MessageType;
 import ar.edu.unrc.pellegrini.franco.net.Process;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +31,7 @@ class Middleware< I extends Comparable< I > > {
     private final int                          port;
     private final ProcessesConfigurations< I > processesConfigurations;
     private final int                          valueByteBufferSize;
+    private       DatagramSocket               datagramSocket;
     private       Listener< I >                listener;
 
     public
@@ -50,6 +54,7 @@ class Middleware< I extends Comparable< I > > {
         this.valueByteBufferSize = valueByteBufferSize;
         this.port = processesConfigurations.getProcessConfig(pid).getPort();
         listener = null;
+        datagramSocket = null;
     }
 
     private static
@@ -190,6 +195,15 @@ class Middleware< I extends Comparable< I > > {
         }
     }
 
+    public synchronized final
+    void sendMessage(
+            final Message< I > msg
+    )
+            throws IOException {
+        final DatagramPacket packet = new DatagramPacket(msg.getAsBytes(), msg.getAsBytes().length, msg.getAddress(), msg.getPort());
+        datagramSocket.send(packet);
+    }
+
     private
     void sendTo(
             final int pgasName,
@@ -220,7 +234,7 @@ class Middleware< I extends Comparable< I > > {
                     .append(( valueParameter != null ) ? ( ", value=" + valueParameter ) : "")
                     .append(" }"));
         }
-        listener.send(msg);
+        sendMessage(msg);
     }
 
     public final
@@ -243,7 +257,9 @@ class Middleware< I extends Comparable< I > > {
     public final
     void startServer() {
         try {
-            listener = new Listener< I >(port, this::processIncomingMessage, Message::isEndMessage, valueByteBufferSize, newMessageSupplier);
+            datagramSocket = new DatagramSocket(port);
+            listener =
+                    new Listener< I >(datagramSocket, this::processIncomingMessage, Message::isEndMessage, valueByteBufferSize, newMessageSupplier);
             final Thread serverThread = new Thread(listener);
             serverThread.start();
         } catch ( final SocketException e ) {

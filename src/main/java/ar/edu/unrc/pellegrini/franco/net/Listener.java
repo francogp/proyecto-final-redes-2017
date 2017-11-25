@@ -2,7 +2,6 @@ package ar.edu.unrc.pellegrini.franco.net;
 
 import ar.edu.unrc.pellegrini.franco.utils.MsgQueue;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -28,14 +27,14 @@ class Listener< I extends Comparable< I > >
 
     public
     Listener(
-            final int port,
+            final DatagramSocket socket,
             final Consumer< Message< I > > messageConsumer,
             final Function< Message< I >, Boolean > isFinalMsgFunction,
             final int valueByteBufferSize,
             final Supplier< Message< I > > newMessageSupplier
     )
             throws SocketException {
-        socket = new DatagramSocket(port);
+        this.socket = socket;
         this.payloadLength = PAYLOAD_PREFIX_LENGTH + valueByteBufferSize;
         this.newMessageSupplier = newMessageSupplier;
         msgQueue = new MsgQueue<>(messageConsumer, isFinalMsgFunction);
@@ -72,12 +71,4 @@ class Listener< I extends Comparable< I > >
         }
     }
 
-    public synchronized final
-    void send(
-            final Message< I > msg
-    )
-            throws IOException {
-        final DatagramPacket packet = new DatagramPacket(msg.getAsBytes(), msg.getAsBytes().length, msg.getAddress(), msg.getPort());
-        socket.send(packet);
-    }
 }
