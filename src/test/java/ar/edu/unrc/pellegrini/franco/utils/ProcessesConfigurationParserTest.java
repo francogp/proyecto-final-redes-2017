@@ -1,5 +1,7 @@
-package ar.edu.unrc.pellegrini.franco.net;
+package ar.edu.unrc.pellegrini.franco.utils;
 
+import ar.edu.unrc.pellegrini.franco.net.Process;
+import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -12,18 +14,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( { "ReuseOfLocalVariable", "ClassWithoutConstructor", "ClassIndependentOfModule" } )
-class NetConfigurationTest {
+class ProcessesConfigurationParserTest {
     @Test
     final
     void generalConfig() {
         final ClassLoader classLoader = getClass().getClassLoader();
-        final File        file        = new File(classLoader.getResource("ar/edu/unrc/pellegrini/franco/utils/longConfigTest.json").getFile());
+        final File        file        =
+                new File(classLoader.getResource("ar/edu/unrc/pellegrini/franco/net/processSpecificDoubleConfigTest.json").getFile());
 
-        final NetConfiguration< Long > netConfiguration = new NetConfiguration<>(file);
-        assertThat(netConfiguration.getProcessQuantity(), is(3));
-        assertThat(netConfiguration.size(), is(netConfiguration.getProcessQuantity()));
+        final ProcessesConfigurations< Long > processesConfigurations = ProcessesConfigurationParser.parseConfigFile(file);
 
-        Process< Long > process     = netConfiguration.getProcessConfig(1);
+        assertThat(processesConfigurations.getProcessQuantity(), is(3));
+        assertThat(processesConfigurations.getProcessQuantity(), is(processesConfigurations.getProcessQuantity()));
+
+        Process< Long > process     = processesConfigurations.getProcessConfig(1);
         InetAddress     inetAddress = null;
         try {
             inetAddress = InetAddress.getByName("localhost");
@@ -33,18 +37,18 @@ class NetConfigurationTest {
         assertThat(process.getInetAddress(), is(inetAddress));
         Integer port = 8001;
         assertThat(process.getPort(), is(port));
-        assertThat(process.getToSort(), is(List.of(9L, 1L, 2L)));
+        assertThat(process.getToSort() == null, is(true));
 
-        process = netConfiguration.getProcessConfig(2);
+        process = processesConfigurations.getProcessConfig(2);
         port = 8002;
         assertThat(process.getInetAddress(), is(inetAddress));
         assertThat(process.getPort(), is(port));
         assertThat(process.getToSort(), is(List.of(7L, 8L)));
 
-        process = netConfiguration.getProcessConfig(3);
+        process = processesConfigurations.getProcessConfig(3);
         port = 8003;
         assertThat(process.getInetAddress(), is(inetAddress));
         assertThat(process.getPort(), is(port));
-        assertThat(process.getToSort(), is(List.of(11L, 2L, 22L, 75L)));
+        assertThat(process.getToSort() == null, is(true));
     }
 }

@@ -3,12 +3,7 @@
   "processes": [
     {
       "inetAddress": "localhost",
-      "port": 8001,
-      "toSort": [
-        9,
-        1,
-        2
-      ]
+      "port": 8001
     },
     {
       "inetAddress": "localhost",
@@ -20,13 +15,7 @@
     },
     {
       "inetAddress": "localhost",
-      "port": 8003,
-      "toSort": [
-        11,
-        2,
-        22,
-        75
-      ]
+      "port": 8003
     }
   ]
 }

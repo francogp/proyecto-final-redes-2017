@@ -1,16 +1,20 @@
 package ar.edu.unrc.pellegrini.franco.bubblesort;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
+import ar.edu.unrc.pellegrini.franco.net.implementations.DoubleMessage;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import ar.edu.unrc.pellegrini.franco.pgas.DistributedArray;
 import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
+import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
+import ar.edu.unrc.pellegrini.franco.utils.ProcessesConfigurationParser;
 
+import java.io.File;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
+import static ar.edu.unrc.pellegrini.franco.net.implementations.DoubleMessage.DOUBLE_VALUE_PARAMETER_BYTE_SIZE;
 import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.LONG_VALUE_PARAMETER_BYTE_SIZE;
 import static java.util.logging.Logger.getLogger;
 
@@ -21,34 +25,23 @@ class DistributedBubbleSort< I extends Comparable< I > >
     public static final String ARG_CONFIG_FILE = "configFile";
     public static final String ARG_DEBUG_MODE  = "debug";
     public static final String ARG_PID         = "pid";
+    private final PGAS< I >       distributedArray;
     private final Middleware< I > middleware;
-    private final PGAS< I >       pgas;
     private       String          result;
 
     protected
     DistributedBubbleSort(
             final int pid,
-            final String configFilePath,
-            final Supplier< Message< I > > newMessageSupplier,
-            final int valueByteBufferSize,
-            final boolean debugMode
-    ) {
-        this(pid, new NetConfiguration< I >(configFilePath), newMessageSupplier, valueByteBufferSize, debugMode);
-    }
-
-    protected
-    DistributedBubbleSort(
-            final int pid,
-            final NetConfiguration< I > configFile,
+            final ProcessesConfigurations< I > processesConfigurations,
             final Supplier< Message< I > > newMessageSupplier,
             final int valueByteBufferSize,
             final boolean debugMode
     ) {
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        middleware = new Middleware<>(pid, configFile, newMessageSupplier, valueByteBufferSize);
+        middleware = new Middleware<>(pid, processesConfigurations, newMessageSupplier, valueByteBufferSize);
         middleware.startServer();
-        pgas = new DistributedArray< I >(1, configFile, middleware);
-        pgas.setDebugMode(debugMode);
+        distributedArray = new DistributedArray< I >(1, middleware);
+        distributedArray.setDebugMode(debugMode);
     }
 
     /**
@@ -81,18 +74,35 @@ class DistributedBubbleSort< I extends Comparable< I > >
     void main( final String... args ) {
         final ArgumentLoader arguments = new ArgumentLoader(true);
         arguments.addValidArg(ARG_PID);
-        //        arguments.addValidArg();
         arguments.addValidArg(ARG_CONFIG_FILE);
         arguments.addValidFlag(ARG_DEBUG_MODE);
 
         arguments.loadArguments(args);
-        final int pid = arguments.parseInteger(ARG_PID);
-        final Runnable bubbleSort = new DistributedBubbleSort(pid,
-                arguments.parseString(ARG_CONFIG_FILE),
-                () -> LongMessage.getInstance(),
-                LONG_VALUE_PARAMETER_BYTE_SIZE,
-                //TODO parametrizar
+        final int                          pid                     = arguments.parseInteger(ARG_PID);
+        final Runnable                     bubbleSort;
+        final File                         configFile              = new File(arguments.parseString(ARG_CONFIG_FILE));
+        final ProcessesConfigurations< ? > processesConfigurations = ProcessesConfigurationParser.parseConfigFile(configFile);
+
+        switch ( processesConfigurations.getPgasDataType() ) {
+            case "Long": {
+                bubbleSort = new DistributedBubbleSort< Long >(pid,
+                        (ProcessesConfigurations< Long >) processesConfigurations,
+                        () -> LongMessage.getInstance(),
+                        LONG_VALUE_PARAMETER_BYTE_SIZE,
                         arguments.existsFlag(ARG_DEBUG_MODE));
+                break;
+            }
+            case "Double": {
+                bubbleSort = new DistributedBubbleSort< Double >(pid,
+                        (ProcessesConfigurations< Double >) processesConfigurations,
+                        () -> DoubleMessage.getInstance(),
+                        DOUBLE_VALUE_PARAMETER_BYTE_SIZE,
+                        arguments.existsFlag(ARG_DEBUG_MODE));
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("unknown datatype implementation");
+        }
         bubbleSort.run();
     }
 
@@ -109,18 +119,18 @@ class DistributedBubbleSort< I extends Comparable< I > >
 
             while ( !finish ) {
                 finish = true;
-                final long upperIndex = pgas.upperIndex();
-                final long lowerIndex = pgas.lowerIndex();
+                final long upperIndex = distributedArray.upperIndex();
+                final long lowerIndex = distributedArray.lowerIndex();
 
                 // sort local block
-                bubbleSort(pgas, lowerIndex, upperIndex);
+                bubbleSort(distributedArray, lowerIndex, upperIndex);
 
                 middleware.barrier();
 
                 if ( !middleware.imLast() ) {
-                    final long lowerIndexRight = pgas.lowerIndex(middleware.getPid() + 1);
-                    if ( pgas.read(upperIndex).compareTo(pgas.read(lowerIndexRight)) > 0 ) {
-                        pgas.swap(upperIndex, lowerIndexRight);
+                    final long lowerIndexRight = distributedArray.lowerIndex(middleware.getPid() + 1);
+                    if ( distributedArray.read(upperIndex).compareTo(distributedArray.read(lowerIndexRight)) > 0 ) {
+                        distributedArray.swap(upperIndex, lowerIndexRight);
                         finish = false;  // update local copy
                     }
                 }
@@ -129,7 +139,7 @@ class DistributedBubbleSort< I extends Comparable< I > >
             }
 
             if ( middleware.isCoordinator() ) {
-                result = pgas.asString();
+                result = distributedArray.asString();
             }
 
             middleware.endService();

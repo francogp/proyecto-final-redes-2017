@@ -1,6 +1,8 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
-import ar.edu.unrc.pellegrini.franco.net.*;
+import ar.edu.unrc.pellegrini.franco.net.Listener;
+import ar.edu.unrc.pellegrini.franco.net.Message;
+import ar.edu.unrc.pellegrini.franco.net.MessageType;
 import ar.edu.unrc.pellegrini.franco.net.Process;
 
 import java.net.SocketException;
@@ -15,36 +17,38 @@ import static java.util.logging.Logger.getLogger;
 public
 class Middleware< I extends Comparable< I > > {
 
-    public static final int     COORDINATOR_PID = 1;
-    private static      boolean debugMode       = false;
-    private final boolean                   coordinator;
-    private final NetConfiguration< I >     netConfiguration;
-    private final Supplier< Message< I > >  newMessageSupplier;
-    private final Map< Integer, PGAS< I > > pgasRegistryNameToPGAS;
-    private final int                       pid;
-    private final int                       port;
-    private final int                       processQuantity;
-    private final int                       valueByteBufferSize;
-    private       Listener< I >             listener;
-
+    public static final int     COORDINATOR_PID   = 1;
+    public static final long    IGNORED_INDEX     = 0;
+    public static final int     IGNORED_PGAS_NAME = 0;
+    private static      boolean debugMode         = false;
+    private final boolean                      coordinator;
+    private final Supplier< Message< I > >     newMessageSupplier;
+    private final Map< Integer, PGAS< I > >    pgasRegistryNameToPGAS;
+    private final int                          pid;
+    private final int                          port;
+    private final ProcessesConfigurations< I > processesConfigurations;
+    private final int                          valueByteBufferSize;
+    private       Listener< I >                listener;
 
     public
     Middleware(
             final int pid,
-            final NetConfiguration< I > netConfiguration,
+            final ProcessesConfigurations< I > processesConfigurations,
             final Supplier< Message< I > > newMessageSupplier,
             final int valueByteBufferSize
     ) {
-        processQuantity = netConfiguration.getProcessQuantity();
+        this.processesConfigurations = processesConfigurations;
         if ( pid <= 0 ) { throw new IllegalArgumentException("pid " + pid + " must be >= 0."); }
-        if ( pid > processQuantity ) { throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file."); }
+        if ( pid > processesConfigurations.getProcessQuantity() ) {
+            throw new IllegalArgumentException("pid " + pid + " is greater than defined in config file.");
+        }
         this.pid = pid;
         coordinator = pid == COORDINATOR_PID;
         this.pgasRegistryNameToPGAS = new HashMap<>();
-        this.netConfiguration = netConfiguration;
+
         this.newMessageSupplier = newMessageSupplier;
         this.valueByteBufferSize = valueByteBufferSize;
-        this.port = netConfiguration.getProcessConfig(pid).getPort();
+        this.port = processesConfigurations.getProcessConfig(pid).getPort();
         listener = null;
     }
 
@@ -53,16 +57,17 @@ class Middleware< I extends Comparable< I > > {
             throws Exception {
         boolean andReduce = value;
         if ( coordinator ) {
+            final int processQuantity = processesConfigurations.getProcessQuantity();
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                final Message< I > msg = waitFor(0, targetPid, AND_REDUCE_MSG);
+                final Message< I > msg = waitFor(IGNORED_PGAS_NAME, targetPid, AND_REDUCE_MSG);
                 andReduce = andReduce && parseResponseAsBoolean(msg);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                sendTo(0, targetPid, CONTINUE_AND_REDUCE_MSG, ( andReduce ) ? 1L : 0L, null);
+                sendTo(IGNORED_PGAS_NAME, targetPid, CONTINUE_AND_REDUCE_MSG, ( andReduce ) ? 1L : 0L, null);
             }
         } else {
-            sendTo(0, COORDINATOR_PID, AND_REDUCE_MSG, ( value ) ? 1L : 0L, null);
-            final Message< I > msg = waitFor(0, COORDINATOR_PID, CONTINUE_AND_REDUCE_MSG);
+            sendTo(IGNORED_PGAS_NAME, COORDINATOR_PID, AND_REDUCE_MSG, ( value ) ? 1L : 0L, null);
+            final Message< I > msg = waitFor(IGNORED_PGAS_NAME, COORDINATOR_PID, CONTINUE_AND_REDUCE_MSG);
             andReduce = parseResponseAsBoolean(msg);
         }
         return andReduce;
@@ -73,16 +78,17 @@ class Middleware< I extends Comparable< I > > {
             throws Exception {
         if ( coordinator ) {
             assert pid == 1;
+            int processQuantity = processesConfigurations.getProcessQuantity();
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                waitFor(0, targetPid, BARRIER_MSG);
+                waitFor(IGNORED_PGAS_NAME, targetPid, BARRIER_MSG);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                sendTo(0, targetPid, CONTINUE_BARRIER_MSG, 0L, null);
+                sendTo(IGNORED_PGAS_NAME, targetPid, CONTINUE_BARRIER_MSG, IGNORED_INDEX, null);
             }
         } else {
             assert pid >= 1;
-            sendTo(0, COORDINATOR_PID, BARRIER_MSG, 0L, null);
-            waitFor(0, COORDINATOR_PID, CONTINUE_BARRIER_MSG);
+            sendTo(IGNORED_PGAS_NAME, COORDINATOR_PID, BARRIER_MSG, IGNORED_INDEX, null);
+            waitFor(IGNORED_PGAS_NAME, COORDINATOR_PID, CONTINUE_BARRIER_MSG);
         }
     }
 
@@ -90,10 +96,11 @@ class Middleware< I extends Comparable< I > > {
     void endService()
             throws Exception {
         if ( coordinator ) {
+            int processQuantity = processesConfigurations.getProcessQuantity();
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                sendTo(0, targetPid, END_MSG, 0L, null);
+                sendTo(IGNORED_PGAS_NAME, targetPid, END_MSG, IGNORED_INDEX, null);
             }
-            sendTo(0, 1, END_MSG, 0L, null);
+            sendTo(IGNORED_PGAS_NAME, 1, END_MSG, IGNORED_INDEX, null);
         }
     }
 
@@ -108,13 +115,18 @@ class Middleware< I extends Comparable< I > > {
     }
 
     public
+    Process< I > getProcessConfig( final int pid ) {
+        return processesConfigurations.getProcessConfig(pid);
+    }
+
+    public
     int getProcessQuantity() {
-        return processQuantity;
+        return processesConfigurations.getProcessQuantity();
     }
 
     public final
     boolean imLast() {
-        return pid == processQuantity;
+        return pid == processesConfigurations.getProcessQuantity();
     }
 
     public
@@ -130,7 +142,7 @@ class Middleware< I extends Comparable< I > > {
     protected final
     void processIncomingMessage( final Message< I > incomingMessage ) {
         try {
-            final Process< I > targetProcess = netConfiguration.getProcessConfig(incomingMessage.getAddress(), incomingMessage.getPort());
+            final Process< I > targetProcess = processesConfigurations.getProcessConfig(incomingMessage.getAddress(), incomingMessage.getPort());
             final int          pgasName      = incomingMessage.getPgasName();
             switch ( incomingMessage.getType() ) {
                 case AND_REDUCE_MSG:
@@ -193,7 +205,7 @@ class Middleware< I extends Comparable< I > > {
                     .append("] name(")
                     .append(pgasName)
                     .append(") -> sendTo pid[")
-                    .append(netConfiguration.getProcessConfig(targetProcess.getInetAddress(), targetProcess.getPort()).getPid())
+                    .append(processesConfigurations.getProcessConfig(targetProcess.getInetAddress(), targetProcess.getPort()).getPid())
                     .append("] ")
                     .append(msgType)
                     .append(" { index=")
@@ -213,7 +225,7 @@ class Middleware< I extends Comparable< I > > {
             final I valueParameter
     )
             throws Exception {
-        sendTo(pgasName, netConfiguration.getProcessConfig(targetPid), msgType, indexParameter, valueParameter);
+        sendTo(pgasName, processesConfigurations.getProcessConfig(targetPid), msgType, indexParameter, valueParameter);
     }
 
     public final
@@ -239,11 +251,10 @@ class Middleware< I extends Comparable< I > > {
             final MessageType msgType
     )
             throws InterruptedException {
-        final Process< I > hostsConfig = netConfiguration.getProcessConfig(senderPid);
+        final Process< I > hostsConfig = processesConfigurations.getProcessConfig(senderPid);
         if ( debugMode ) {
             System.out.println(new StringBuilder().append("Time ")
-                    .append(System.nanoTime())
-                    .append(": pid[").append(pid).append("] name(").append(pgasName).append(") -> waitFor pid[")
+                    .append(System.nanoTime()).append(": pid[").append(pid).append("] name(").append(pgasName).append(") -> waitFor pid[")
                     .append(senderPid)
                     .append("] ")
                     .append(msgType));

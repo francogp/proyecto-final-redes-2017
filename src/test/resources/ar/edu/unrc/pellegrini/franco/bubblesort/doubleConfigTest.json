@@ -1,5 +1,6 @@
 {
-  "hosts": [
+  "dataType": "Double",
+  "processes": [
     {
       "inetAddress": "localhost",
       "port": 6001,

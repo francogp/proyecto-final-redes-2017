@@ -27,7 +27,7 @@ class Process< I extends Comparable< I > > {
         this.pid = pid;
         this.inetAddress = inetAddress;
         this.port = port;
-        this.toSort = new ArrayList<>(toSort);
+        this.toSort = toSort != null ? new ArrayList<>(toSort) : null;
         final MessageType[] msgTypeList = MessageType.values();
         queues = new ConcurrentHashMap<>(msgTypeList.length);
         for ( final MessageType type : msgTypeList ) {

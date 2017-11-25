@@ -1,10 +1,8 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.net.NetConfiguration;
 import ar.edu.unrc.pellegrini.franco.net.Process;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,31 +22,12 @@ class DistributedArray< I extends Comparable< I > >
     protected final List< Index >   indexList;
     protected final Middleware< I > middleware;
     protected final long            pgasSize;
-    private List< I > memory = null;
+    private List< I > distArray = null;
     private int name;
-
-    protected
-    DistributedArray(
-            final int name,
-            final String configsFilePath,
-            final Middleware< I > middleware
-    ) {
-        this(name, new File(configsFilePath), middleware);
-    }
-
-    protected
-    DistributedArray(
-            final int name,
-            final File configsFile,
-            final Middleware< I > middleware
-    ) {
-        this(name, new NetConfiguration<>(configsFile), middleware);
-    }
 
     public
     DistributedArray(
             final int name,
-            final NetConfiguration< I > configFile,
             final Middleware< I > middleware
     ) {
         this.middleware = middleware;
@@ -60,10 +39,10 @@ class DistributedArray< I extends Comparable< I > >
         long lowerIndex = 0L;
         long upperIndex = -1L;
         for ( int currentPid = 1; currentPid <= middleware.getProcessQuantity(); currentPid++ ) {
-            final Process< I > process = configFile.getProcessConfig(currentPid);
+            final Process< I > process = middleware.getProcessConfig(currentPid);
             final List< I >    toSort  = process.getToSort();
             if ( pid == currentPid ) {
-                memory = new ArrayList<>(toSort);
+                distArray = new ArrayList<>(toSort);
             }
             upperIndex = ( lowerIndex + ( toSort.size() ) ) - 1L;
             indexList.add(new Index(lowerIndex, upperIndex, toSort.size()));
@@ -116,7 +95,7 @@ class DistributedArray< I extends Comparable< I > >
     @Override
     public final
     int getSize() {
-        return memory.size();
+        return distArray.size();
     }
 
     @Override
@@ -136,14 +115,14 @@ class DistributedArray< I extends Comparable< I > >
     I read( final long index )
             throws Exception {
         final int i = (int) ( index - currentLowerIndex );
-        if ( ( i < 0 ) || ( i >= memory.size() ) ) {
+        if ( ( i < 0 ) || ( i >= distArray.size() ) ) {
             final int targetPid = findPidForIndex(index);
             middleware.sendTo(name, targetPid, READ_MSG, index, null);
             final Message< I > response = middleware.waitFor(name, targetPid, READ_RESPONSE_MSG);
             return response.getValueParameter();
         } else {
-            synchronized ( memory ) {
-                return memory.get(i);
+            synchronized ( distArray ) {
+                return distArray.get(i);
             }
         }
     }
@@ -187,12 +166,12 @@ class DistributedArray< I extends Comparable< I > >
     )
             throws Exception {
         final int i = (int) ( index - currentLowerIndex );
-        if ( ( i < 0 ) || ( i >= memory.size() ) ) {
+        if ( ( i < 0 ) || ( i >= distArray.size() ) ) {
             final int targetPid = findPidForIndex(index);
             middleware.sendTo(name, targetPid, WRITE_MSG, index, value);
         } else {
-            synchronized ( memory ) {
-                memory.set(i, value);
+            synchronized ( distArray ) {
+                distArray.set(i, value);
             }
         }
     }
