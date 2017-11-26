@@ -7,25 +7,24 @@ import java.util.Arrays;
 import static ar.edu.unrc.pellegrini.franco.net.MessageType.END_MSG;
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.*;
 
-@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public abstract
 class AbstractMessage< I >
         implements Message< I > {
-    public static final int INDEX_PARAMETER_BYTE_INDEX  = 5;
-    public static final int INDEX_PARAMETER_BYTE_LENGTH = 8;
-    public static final int PGAS_NAME_BYTE_INDEX        = 0;
-    public static final int PGAS_NAME_BYTE_LENGTH       = 4;
-    public static final int TYPE_BYTE_INDEX             = 4;
-    public static final int TYPE_BYTE_LENGTH            = 1;
-    public static final int PAYLOAD_PREFIX_LENGTH       = PGAS_NAME_BYTE_LENGTH + TYPE_BYTE_LENGTH + INDEX_PARAMETER_BYTE_LENGTH;
-    public static final int VALUE_PARAMETER_BYTE_INDEX  = 13;
-    protected InetAddress address;
-    protected byte[]      asBytes;
-    protected long        indexParameter;
-    protected int         pgasName;
-    protected int         port;
-    protected MessageType type;
-    protected I           valueParameter;
+    public static final int         INDEX_PARAMETER_BYTE_INDEX  = 5;
+    public static final int         INDEX_PARAMETER_BYTE_LENGTH = 8;
+    public static final int         PGAS_NAME_BYTE_INDEX        = 0;
+    public static final int         PGAS_NAME_BYTE_LENGTH       = 4;
+    public static final int         TYPE_BYTE_INDEX             = 4;
+    public static final int         TYPE_BYTE_LENGTH            = 1;
+    public static final int         PAYLOAD_PREFIX_LENGTH       = PGAS_NAME_BYTE_LENGTH + TYPE_BYTE_LENGTH + INDEX_PARAMETER_BYTE_LENGTH;
+    public static final int         VALUE_PARAMETER_BYTE_INDEX  = 13;
+    protected           InetAddress address                     = null;
+    protected           byte[]      asBytes                     = null;
+    protected           long        indexParameter              = 0L;
+    protected           int         pgasName                    = 0;
+    protected           int         port                        = 0;
+    protected           MessageType type                        = null;
+    protected           I           valueParameter              = null;
 
     @SuppressWarnings( "RedundantIfStatement" )
     @Override
@@ -158,10 +157,9 @@ class AbstractMessage< I >
     }
 
     @Override
-    public final
+    public
     String toString() {
-        return "Message{" + "address=" + address + ", indexParameter=" + indexParameter + ", valueParameter=" + valueParameter + ", port=" + port +
-               ", type=" + type + ", asBytes=" + Arrays.toString(asBytes) + '}';
+        return "AbstractMessage{" + "address=" + address + ", indexParameter=" + indexParameter + ", pgasName=" + pgasName + ", port=" + port +
+               ", type=" + type + ", valueParameter=" + valueParameter + ", asBytes=" + Arrays.toString(asBytes) + '}';
     }
-
 }

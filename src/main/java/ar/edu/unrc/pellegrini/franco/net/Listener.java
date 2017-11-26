@@ -1,6 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.net;
 
-import ar.edu.unrc.pellegrini.franco.utils.MsgQueue;
+import ar.edu.unrc.pellegrini.franco.utils.MessagesDispatcher;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -17,11 +17,11 @@ public final
 class Listener< I >
         implements Runnable {
 
-    private final MsgQueue< Message< I > > msgQueue;
-    private final Thread                   msgQueueThread;
-    private final Supplier< Message< I > > newMessageSupplier;
-    private final int                      payloadLength;
-    private final DatagramSocket           socket;
+    private final MessagesDispatcher< Message< I > > messagesDispatcher;
+    private final Thread                             msgQueueThread;
+    private final Supplier< Message< I > >           newMessageSupplier;
+    private final int                                payloadLength;
+    private final DatagramSocket                     socket;
     private boolean running = false;
 
     public
@@ -35,8 +35,8 @@ class Listener< I >
         this.socket = socket;
         payloadLength = PAYLOAD_PREFIX_LENGTH + valueByteBufferSize;
         this.newMessageSupplier = newMessageSupplier;
-        msgQueue = new MsgQueue<>(messageConsumer, isFinalMsgFunction);
-        msgQueueThread = new Thread(msgQueue);
+        messagesDispatcher = new MessagesDispatcher<>(messageConsumer, isFinalMsgFunction);
+        msgQueueThread = new Thread(messagesDispatcher);
     }
 
     public
@@ -54,7 +54,7 @@ class Listener< I >
                 socket.receive(packet);
                 final Message< I > received = newMessageSupplier.get();
                 received.initUsing(packet);
-                msgQueue.enqueue(received);
+                messagesDispatcher.enqueue(received);
                 if ( received.isEndMessage() ) {
                     running = false;
                 }

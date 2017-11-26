@@ -1,7 +1,5 @@
-package ar.edu.unrc.pellegrini.franco.utils;
+package ar.edu.unrc.pellegrini.franco.pgas;
 
-import ar.edu.unrc.pellegrini.franco.pgas.Process;
-import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -14,15 +12,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( { "ReuseOfLocalVariable", "ClassWithoutConstructor", "ClassIndependentOfModule" } )
-class ProcessesConfigurationParserTest {
+class ProcessesConfigurationsTest {
     @Test
     final
     void generalConfig() {
-        final ClassLoader classLoader = getClass().getClassLoader();
-        final File        file        =
+        final ClassLoader                     classLoader             = getClass().getClassLoader();
+        final File                            file                    =
                 new File(classLoader.getResource("ar/edu/unrc/pellegrini/franco/net/processSpecificLongConfigTest.json").getFile());
-
-        final ProcessesConfigurations< Long > processesConfigurations = ProcessesConfigurationParser.parseConfigFile(file);
+        final ProcessesConfigurations< Long > processesConfigurations = SimpleProcessesConfigurations.parseFromFile(file);
 
         assertThat(processesConfigurations.getProcessQuantity(), is(3));
         assertThat(processesConfigurations.getProcessQuantity(), is(processesConfigurations.getProcessQuantity()));

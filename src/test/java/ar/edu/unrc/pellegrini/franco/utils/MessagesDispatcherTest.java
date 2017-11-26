@@ -7,20 +7,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( { "ClassWithoutConstructor", "ClassIndependentOfModule" } )
-class MsgQueueTest {
+class MessagesDispatcherTest {
     @SuppressWarnings( "StringBufferWithoutInitialCapacity" )
     @Test
     final
     void runTest() {
-        final StringBuilder      output         = new StringBuilder();
-        final MsgQueue< String > msgQueue       = new MsgQueue<>(msg -> output.append(msg).append('\n'), "end"::equals);
-        final Thread             msgQueueThread = new Thread(msgQueue);
+        final StringBuilder                output             = new StringBuilder();
+        final MessagesDispatcher< String > messagesDispatcher = new MessagesDispatcher<>(msg -> output.append(msg).append('\n'), "end"::equals);
+        final Thread                       msgQueueThread     = new Thread(messagesDispatcher);
         msgQueueThread.start();
-        msgQueue.enqueue("hola");
-        msgQueue.enqueue("como");
-        msgQueue.enqueue("estas 123");
-        msgQueue.enqueue("end");
-        msgQueue.enqueue("lalalalal error");
+        messagesDispatcher.enqueue("hola");
+        messagesDispatcher.enqueue("como");
+        messagesDispatcher.enqueue("estas 123");
+        messagesDispatcher.enqueue("end");
+        messagesDispatcher.enqueue("lalalalal error");
         try {
             Thread.sleep(10L);
         } catch ( final InterruptedException e ) {

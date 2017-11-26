@@ -12,17 +12,16 @@ import static ar.edu.unrc.pellegrini.franco.net.MessageType.*;
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public
+public final
 class DistributedArray< I >
         implements PGAS< I > {
-    private static boolean debugMode = false;
-    private final long            currentLowerIndex;
-    private final long            currentUpperIndex;
+    private final long currentLowerIndex;
+    private final long currentUpperIndex;
+    private final List< I > distArray = new ArrayList<>();
     private final List< Index >   indexList;
     private final Middleware< I > middleware;
     private final int             name;
     private final long            pgasSize;
-    private List< I > distArray = null;
 
     public
     DistributedArray(
@@ -39,9 +38,9 @@ class DistributedArray< I >
         long lowerIndex = 0L;
         long upperIndex = -1L;
         for ( int currentPid = 1; currentPid <= processQuantity; currentPid++ ) {
-            final List< I > processValues = middleware.getProcessConfigugation(currentPid).getValues(name);
+            final List< I > processValues = middleware.getProcessConfiguration(currentPid).getValues(name);
             if ( pid == currentPid ) {
-                distArray = new ArrayList<>(processValues);
+                distArray.addAll(processValues);
             }
             upperIndex = ( lowerIndex + ( processValues.size() ) ) - 1L;
             indexList.add(new Index(lowerIndex, upperIndex, processValues.size()));
@@ -70,7 +69,8 @@ class DistributedArray< I >
 
     private
     int findPidForIndex( final long index ) {
-        for ( int targetPid = 0; targetPid < middleware.getProcessQuantity(); targetPid++ ) {
+        final int processQuantity = middleware.getProcessQuantity();
+        for ( int targetPid = 0; targetPid < processQuantity; targetPid++ ) {
             final Index indexItem = indexList.get(targetPid);
             if ( ( indexItem.loweIndex <= index ) && ( indexItem.upperIndex >= index ) ) {
                 return targetPid + 1;
@@ -94,7 +94,9 @@ class DistributedArray< I >
     @Override
     public final
     int getSize() {
-        return distArray.size();
+        synchronized ( distArray ) {
+            return distArray.size();
+        }
     }
 
     @Override
@@ -114,7 +116,8 @@ class DistributedArray< I >
     I read( final long index )
             throws Exception {
         final int i = (int) ( index - currentLowerIndex );
-        if ( ( i < 0 ) || ( i >= distArray.size() ) ) {
+        int       arraySize;
+        if ( ( i < 0 ) || ( i >= getSize() ) ) {
             final int targetPid = findPidForIndex(index);
             middleware.sendTo(name, targetPid, READ_MSG, index, null);
             final Message< I > response = middleware.waitFor(name, targetPid, READ_RESPONSE_MSG);
@@ -129,7 +132,6 @@ class DistributedArray< I >
     @Override
     public final
     void setDebugMode( final boolean mode ) {
-        debugMode = mode;
         middleware.setDebugMode(mode);
     }
 
@@ -165,7 +167,7 @@ class DistributedArray< I >
     )
             throws Exception {
         final int i = (int) ( index - currentLowerIndex );
-        if ( ( i < 0 ) || ( i >= distArray.size() ) ) {
+        if ( ( i < 0 ) || ( i >= getSize() ) ) {
             final int targetPid = findPidForIndex(index);
             middleware.sendTo(name, targetPid, WRITE_MSG, index, value);
         } else {

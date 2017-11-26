@@ -10,7 +10,7 @@ import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
-class MsgQueue< M >
+class MessagesDispatcher< M >
         implements Runnable {
 
     private final Function< M, Boolean > isFinalMsgFunction;
@@ -19,7 +19,7 @@ class MsgQueue< M >
     private boolean running = false;
 
     public
-    MsgQueue(
+    MessagesDispatcher(
             final Consumer< M > messageConsumer,
             final Function< M, Boolean > isFinalMsgFunction
     ) {
@@ -54,7 +54,7 @@ class MsgQueue< M >
         } catch ( final InterruptedException ignored ) {
             //ignored
         } catch ( final Exception e ) {
-            getLogger(MsgQueue.class.getName()).log(Level.SEVERE, null, e);
+            getLogger(MessagesDispatcher.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 }

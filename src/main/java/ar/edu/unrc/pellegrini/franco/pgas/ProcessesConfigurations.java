@@ -4,63 +4,28 @@ import java.net.InetAddress;
 import java.util.Map;
 
 public
-class ProcessesConfigurations< I > {
-    private String                                           pgasDataType;
-    private Map< InetAddress, Map< Integer, Process< I > > > processByAddress;
-    private Map< Integer, Process< I > >                     processByPid;
-    private int                                              processQuantity;
+interface ProcessesConfigurations< I > {
 
-    public
-    String getPgasDataType() {
-        return pgasDataType;
-    }
+    String getPgasDataType();
 
-    public
-    void setPgasDataType( final String pgasDataType ) {
-        this.pgasDataType = pgasDataType;
-    }
+    void setPgasDataType( final String pgasDataType );
 
-    public
-    Map< InetAddress, Map< Integer, Process< I > > > getProcessByAddress() {
-        return processByAddress;
-    }
+    Map< InetAddress, Map< Integer, Process< I > > > getProcessByAddress();
 
-    public
-    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process< I > > > processByAddress ) {
-        this.processByAddress = processByAddress;
-    }
+    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process< I > > > processByAddress );
 
-    public
-    Map< Integer, Process< I > > getProcessByPid() {
-        return processByPid;
-    }
+    Map< Integer, Process< I > > getProcessByPid();
 
-    public
-    void setProcessByPid( final Map< Integer, Process< I > > processByPid ) {
-        this.processByPid = processByPid;
-    }
+    void setProcessByPid( final Map< Integer, Process< I > > processByPid );
 
-    public
-    Process< I > getProcessConfig( final int pid ) {
-        return processByPid.get(pid);
-    }
+    Process< I > getProcessConfig( final int pid );
 
-    public
     Process< I > getProcessConfig(
             final InetAddress address,
             final int port
-    ) {
-        return processByAddress.get(address).get(port);
-    }
+    );
 
-    public
-    int getProcessQuantity() {
-        return processQuantity;
-    }
+    int getProcessQuantity();
 
-    public
-    void setProcessQuantity( final int processQuantity ) {
-        this.processQuantity = processQuantity;
-    }
-
+    void setProcessQuantity( final int processQuantity );
 }

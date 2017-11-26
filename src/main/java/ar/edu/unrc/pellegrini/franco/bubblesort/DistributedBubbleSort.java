@@ -5,7 +5,6 @@ import ar.edu.unrc.pellegrini.franco.net.implementations.DoubleMessage;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import ar.edu.unrc.pellegrini.franco.pgas.*;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
-import ar.edu.unrc.pellegrini.franco.utils.ProcessesConfigurationParser;
 
 import java.io.File;
 import java.util.function.Supplier;
@@ -25,7 +24,7 @@ class DistributedBubbleSort< I extends Comparable< I > >
     public static final int    PGAS_NAME       = 99;
     private final PGAS< I >       distributedArray;
     private final Middleware< I > middleware;
-    private       String          result;
+    private String result = null;
 
     protected
     DistributedBubbleSort(
@@ -36,7 +35,7 @@ class DistributedBubbleSort< I extends Comparable< I > >
             final boolean debugMode
     ) {
         // indicamos al middleware quien es el arreglo distribuido a utilizar
-        middleware = new BasicMiddleware<>(pid, processesConfigurations, newMessageSupplier, valueByteBufferSize);
+        middleware = new SimpleMiddleware<>(pid, processesConfigurations, newMessageSupplier, valueByteBufferSize);
         middleware.startServer();
         distributedArray = new DistributedArray<>(PGAS_NAME, middleware);
         distributedArray.setDebugMode(debugMode);
@@ -79,25 +78,25 @@ class DistributedBubbleSort< I extends Comparable< I > >
         final int                          pid                     = arguments.parseInteger(ARG_PID);
         final Runnable                     bubbleSort;
         final File                         configFile              = new File(arguments.parseString(ARG_CONFIG_FILE));
-        final ProcessesConfigurations< ? > processesConfigurations = ProcessesConfigurationParser.parseConfigFile(configFile);
+        final ProcessesConfigurations< ? > processesConfigurations = SimpleProcessesConfigurations.parseFromFile(configFile);
 
         switch ( processesConfigurations.getPgasDataType() ) {
             case "Long":
-                bubbleSort = new DistributedBubbleSort< Long >(pid,
+                bubbleSort = new DistributedBubbleSort<>(pid,
                         (ProcessesConfigurations< Long >) processesConfigurations,
                         LongMessage::getInstance,
                         LONG_VALUE_PARAMETER_BYTE_SIZE,
                         arguments.existsFlag(ARG_DEBUG_MODE));
                 break;
             case "Double":
-                bubbleSort = new DistributedBubbleSort< Double >(pid,
+                bubbleSort = new DistributedBubbleSort<>(pid,
                         (ProcessesConfigurations< Double >) processesConfigurations,
                         DoubleMessage::getInstance,
                         DOUBLE_VALUE_PARAMETER_BYTE_SIZE,
                         arguments.existsFlag(ARG_DEBUG_MODE));
                 break;
             default:
-                throw new IllegalArgumentException("unknown datatype implementation");
+                throw new IllegalArgumentException("unknown dataType implementation");
         }
         bubbleSort.run();
     }

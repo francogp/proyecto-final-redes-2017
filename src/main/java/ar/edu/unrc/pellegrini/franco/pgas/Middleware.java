@@ -17,7 +17,7 @@ interface Middleware< I > {
     void closeListener()
             throws Exception;
 
-    Process< I > getProcessConfigugation( final int pid );
+    Process< I > getProcessConfiguration( final int pid );
 
     int getProcessQuantity();
 

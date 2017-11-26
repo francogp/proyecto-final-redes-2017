@@ -34,7 +34,7 @@ class DistributedBubbleSortTest {
         }
     }
 
-    @SuppressWarnings( "ClassWithoutNoArgConstructor" )
+    @SuppressWarnings( { "ClassWithoutNoArgConstructor", "AssignmentToCollectionOrArrayFieldFromParameter" } )
     private static
     class TestLongPGAS
             implements PGAS< Long > {

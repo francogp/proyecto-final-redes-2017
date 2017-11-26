@@ -21,13 +21,12 @@ import static ar.edu.unrc.pellegrini.franco.net.MessageType.*;
 import static java.util.logging.Logger.getLogger;
 
 public
-class BasicMiddleware< I >
+class SimpleMiddleware< I >
         implements Middleware< I > {
 
-    public static final int     COORDINATOR_PID   = 1;
-    public static final long    IGNORED_INDEX     = 0L;
-    public static final int     IGNORED_PGAS_NAME = 0;
-    private static      boolean debugMode         = false;
+    public static final int  COORDINATOR_PID   = 1;
+    public static final long IGNORED_INDEX     = 0L;
+    public static final int  IGNORED_PGAS_NAME = 0;
     private final Map< MessageType, BlockingQueue< Message< I > > > blockingQueueMap;
     private final boolean                                           coordinator;
     private final Supplier< Message< I > >                          newMessageSupplier;
@@ -37,10 +36,11 @@ class BasicMiddleware< I >
     private final ProcessesConfigurations< I >                      processesConfigurations;
     private final int                                               valueByteBufferSize;
     private       DatagramSocket                                    datagramSocket;
-    private       Listener< I >                                     listener;
+    private boolean debugMode = false;
+    private Listener< I > listener;
 
     public
-    BasicMiddleware(
+    SimpleMiddleware(
             final int pid,
             final ProcessesConfigurations< I > processesConfigurations,
             final Supplier< Message< I > > newMessageSupplier,
@@ -82,12 +82,12 @@ class BasicMiddleware< I >
         if ( coordinator ) {
             final int processQuantity = processesConfigurations.getProcessQuantity();
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                assert COORDINATOR_PID != targetPid;
+                assert targetPid != COORDINATOR_PID;
                 final Message< I > msg = waitFor(IGNORED_PGAS_NAME, targetPid, AND_REDUCE_MSG);
                 andReduce = andReduce && parseResponseAsBoolean(msg);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                assert COORDINATOR_PID != targetPid;
+                assert targetPid != COORDINATOR_PID;
                 sendTo(IGNORED_PGAS_NAME, targetPid, CONTINUE_AND_REDUCE_MSG, parseBooleanAsResponse(andReduce), null);
             }
         } else {
@@ -106,11 +106,11 @@ class BasicMiddleware< I >
             assert pid == 1;
             final int processQuantity = processesConfigurations.getProcessQuantity();
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                assert COORDINATOR_PID != targetPid;
+                assert targetPid != COORDINATOR_PID;
                 waitFor(IGNORED_PGAS_NAME, targetPid, BARRIER_MSG);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                assert COORDINATOR_PID != targetPid;
+                assert targetPid != COORDINATOR_PID;
                 sendTo(IGNORED_PGAS_NAME, targetPid, CONTINUE_BARRIER_MSG, IGNORED_INDEX, null);
             }
         } else {
@@ -127,7 +127,7 @@ class BasicMiddleware< I >
         if ( coordinator ) {
             final int processQuantity = processesConfigurations.getProcessQuantity();
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
-                assert COORDINATOR_PID != targetPid;
+                assert targetPid != COORDINATOR_PID;
                 sendTo(IGNORED_PGAS_NAME, targetPid, END_MSG, IGNORED_INDEX, null);
             }
             sendTo(IGNORED_PGAS_NAME, COORDINATOR_PID, END_MSG, IGNORED_INDEX, null);
@@ -136,7 +136,7 @@ class BasicMiddleware< I >
 
     @Override
     public
-    Process< I > getProcessConfigugation( final int pid ) {
+    Process< I > getProcessConfiguration( final int pid ) {
         return processesConfigurations.getProcessConfig(pid);
     }
 
@@ -212,8 +212,7 @@ class BasicMiddleware< I >
     private
     void registerMsg( final Message< I > message )
             throws InterruptedException {
-        final BlockingQueue< Message< I > > messages = blockingQueueMap.get(message.getType());
-        messages.put(message);
+        blockingQueueMap.get(message.getType()).put(message);
     }
 
     @Override
@@ -230,8 +229,7 @@ class BasicMiddleware< I >
             final Message< I > msg
     )
             throws IOException {
-        final DatagramPacket packet = new DatagramPacket(msg.getAsBytes(), msg.getAsBytes().length, msg.getAddress(), msg.getPort());
-        datagramSocket.send(packet);
+        datagramSocket.send(new DatagramPacket(msg.getAsBytes(), msg.getAsBytes().length, msg.getAddress(), msg.getPort()));
     }
 
     @Override
@@ -288,7 +286,7 @@ class BasicMiddleware< I >
     }
 
     @Override
-    public
+    public synchronized
     void startServer() {
         try {
             datagramSocket = new DatagramSocket(port);

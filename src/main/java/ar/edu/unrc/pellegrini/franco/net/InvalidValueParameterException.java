@@ -3,6 +3,8 @@ package ar.edu.unrc.pellegrini.franco.net;
 public
 class InvalidValueParameterException
         extends Exception {
+    private static final long serialVersionUID = 3720148999557270116L;
+
     public
     InvalidValueParameterException() {
     }

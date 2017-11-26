@@ -1,7 +1,5 @@
-package ar.edu.unrc.pellegrini.franco.utils;
+package ar.edu.unrc.pellegrini.franco.pgas;
 
-import ar.edu.unrc.pellegrini.franco.pgas.Process;
-import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,27 +14,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
-public final
-class ProcessesConfigurationParser {
-    public static final String JSON_DATA_TYPE          = "dataType";
-    public static final String JSON_DISTRIBUTED_ARRAYS = "distributedArrays";
-    public static final String JSON_INET_ADDRESS       = "inetAddress";
-    public static final String JSON_NAME               = "name";
-    public static final String JSON_PORT               = "port";
-    public static final String JSON_PROCESS            = "processes";
-    public static final String JSON_TO_SORT            = "toSort";
-
-    private
-    ProcessesConfigurationParser() {}
+public
+class SimpleProcessesConfigurations< I >
+        implements ProcessesConfigurations< I > {
+    public static final  String                                           JSON_DATA_TYPE          = "dataType";
+    public static final  String                                           JSON_DISTRIBUTED_ARRAYS = "distributedArrays";
+    public static final  String                                           JSON_INET_ADDRESS       = "inetAddress";
+    public static final  String                                           JSON_NAME               = "name";
+    public static final  String                                           JSON_PORT               = "port";
+    public static final  String                                           JSON_PROCESS            = "processes";
+    public static final  String                                           JSON_TO_SORT            = "toSort";
+    private static final Pattern                                          VALID_DATA_TYPE_PATTERN = Pattern.compile("(Long)|(Double)");
+    private              String                                           pgasDataType            = null;
+    private              Map< InetAddress, Map< Integer, Process< I > > > processByAddress        = null;
+    private              Map< Integer, Process< I > >                     processByPid            = null;
+    private              int                                              processQuantity         = 0;
 
     private static
     < I > ProcessesConfigurations< I > newProcessesConfigurations( final String dataTypeToSort ) {
         switch ( dataTypeToSort ) {
             case "Long":
-                return (ProcessesConfigurations< I >) new ProcessesConfigurations< Long >();
+                return (ProcessesConfigurations< I >) new SimpleProcessesConfigurations< Long >();
             case "Double":
-                return (ProcessesConfigurations< I >) new ProcessesConfigurations< Double >();
+                return (ProcessesConfigurations< I >) new SimpleProcessesConfigurations< Double >();
             default:
                 throw new IllegalArgumentException("unknown data type");
         }
@@ -73,7 +75,7 @@ class ProcessesConfigurationParser {
      * @param configFilePath file to load.
      */
     public static
-    < I > ProcessesConfigurations< I > parseConfigFile(
+    < I > ProcessesConfigurations< I > parseFromFile(
             final File configFilePath
     ) {
         try ( InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), Charset.forName("UTF-8")) ) {
@@ -121,7 +123,7 @@ class ProcessesConfigurationParser {
                     }
                 }
                 final InetAddress  processInetAddress = InetAddress.getByName(inetAddress);
-                final Process< I > processConfig      = new Process<>(pid, processInetAddress, port.intValue(), distArraysValues);
+                final Process< I > processConfig      = new DistributedProcess<>(pid, processInetAddress, port.intValue(), distArraysValues);
                 //mapping from pid to Process.
                 processByPid.put(pid, processConfig);
 
@@ -190,10 +192,73 @@ class ProcessesConfigurationParser {
             throw new IllegalArgumentException("data type to sort not found in config file \"" + configFilePath + "\".");
         }
 
-        if ( !dataTypeToSort.matches("(Long)|(Double)") ) { //FIXME use compiled pattern
+        if ( !VALID_DATA_TYPE_PATTERN.matcher(dataTypeToSort).matches() ) {
             throw new IllegalArgumentException(
                     "the only data type supported in this example implementation are Long and Double, and can be setted in the config file \"" +
                     configFilePath + "\".");
         }
+    }
+
+    @Override
+    public
+    String getPgasDataType() {
+        return pgasDataType;
+    }
+
+    @Override
+    public
+    void setPgasDataType( final String pgasDataType ) {
+        this.pgasDataType = pgasDataType;
+    }
+
+    @Override
+    public
+    Map< InetAddress, Map< Integer, Process< I > > > getProcessByAddress() {
+        return processByAddress;
+    }
+
+    @Override
+    public
+    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process< I > > > processByAddress ) {
+        this.processByAddress = processByAddress;
+    }
+
+    @Override
+    public
+    Map< Integer, Process< I > > getProcessByPid() {
+        return processByPid;
+    }
+
+    @Override
+    public
+    void setProcessByPid( final Map< Integer, Process< I > > processByPid ) {
+        this.processByPid = processByPid;
+    }
+
+    @Override
+    public
+    Process< I > getProcessConfig( final int pid ) {
+        return processByPid.get(pid);
+    }
+
+    @Override
+    public
+    Process< I > getProcessConfig(
+            final InetAddress address,
+            final int port
+    ) {
+        return processByAddress.get(address).get(port);
+    }
+
+    @Override
+    public
+    int getProcessQuantity() {
+        return processQuantity;
+    }
+
+    @Override
+    public
+    void setProcessQuantity( final int processQuantity ) {
+        this.processQuantity = processQuantity;
     }
 }

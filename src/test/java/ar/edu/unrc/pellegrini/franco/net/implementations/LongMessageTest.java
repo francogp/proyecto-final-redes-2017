@@ -15,7 +15,6 @@ import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.bytesToLong;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@SuppressWarnings( "ClassWithoutConstructor" )
 class LongMessageTest {
     private final Message< Long > msg;
 

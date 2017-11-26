@@ -2,20 +2,20 @@ package ar.edu.unrc.pellegrini.franco.net.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.AbstractMessage;
 import ar.edu.unrc.pellegrini.franco.net.InvalidValueParameterException;
+import ar.edu.unrc.pellegrini.franco.net.Message;
 
 import java.util.Arrays;
 
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.bytesToLong;
 import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
 
-@SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class LongMessage
         extends AbstractMessage< Long > {
     public static final int LONG_VALUE_PARAMETER_BYTE_SIZE = 8;
 
     public static
-    LongMessage getInstance() {
+    Message< Long > getInstance() {
         return new LongMessage();
     }
 
@@ -26,18 +26,18 @@ class LongMessage
     }
 
     @Override
-    protected
+    public
     void initValueFromBytes( final byte[] bytes )
             throws InvalidValueParameterException {
         try {
             valueParameter = bytesToLong(bytes, VALUE_PARAMETER_BYTE_INDEX, VALUE_PARAMETER_BYTE_INDEX + LONG_VALUE_PARAMETER_BYTE_SIZE);
-        } catch ( final Exception e ) {
+        } catch ( final RuntimeException e ) {
             throw new InvalidValueParameterException("Invalid bytesToLong conversion of " + Arrays.toString(bytes), e);
         }
     }
 
     @Override
-    protected
+    public
     void initValueInBytes()
             throws InvalidValueParameterException {
         if ( valueParameter == null ) {
