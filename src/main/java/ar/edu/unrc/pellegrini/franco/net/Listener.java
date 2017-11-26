@@ -13,8 +13,8 @@ import static ar.edu.unrc.pellegrini.franco.net.AbstractMessage.PAYLOAD_PREFIX_L
 import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public
-class Listener< I extends Comparable< I > >
+public final
+class Listener< I >
         implements Runnable {
 
     private final MsgQueue< Message< I > > msgQueue;
@@ -39,18 +39,17 @@ class Listener< I extends Comparable< I > >
         msgQueueThread = new Thread(msgQueue);
     }
 
-    public final
+    public
     boolean isRunning() {
         return running;
     }
 
-    public final
+    public
     void run() {
         try {
             msgQueueThread.start();
             running = true;
             while ( running ) {
-
                 final DatagramPacket packet = new DatagramPacket(new byte[payloadLength], payloadLength);
                 socket.receive(packet);
                 final Message< I > received = newMessageSupplier.get();

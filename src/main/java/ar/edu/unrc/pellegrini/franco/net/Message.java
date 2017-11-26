@@ -4,7 +4,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 public
-interface Message< I extends Comparable< I > > {
+interface Message< I > {
 
     InetAddress getAddress();
 

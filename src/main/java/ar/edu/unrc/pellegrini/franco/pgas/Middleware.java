@@ -6,7 +6,7 @@ import ar.edu.unrc.pellegrini.franco.net.MessageType;
 import java.io.IOException;
 
 public
-interface Middleware< I extends Comparable< I > > {
+interface Middleware< I > {
 
     boolean andReduce( final boolean value )
             throws Exception;
@@ -14,7 +14,7 @@ interface Middleware< I extends Comparable< I > > {
     void barrier()
             throws Exception;
 
-    void endService()
+    void closeListener()
             throws Exception;
 
     Process< I > getProcessConfigugation( final int pid );

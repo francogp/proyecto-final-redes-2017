@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
-class Process< I extends Comparable< I > > {
+class Process< I > {
     private final Map< Integer, Map< MessageType, BlockingQueue< Message< I > > > > blockingQueueMapByName;
     private final InetAddress                                                       inetAddress;
     private final int                                                               pid;
@@ -36,13 +36,12 @@ class Process< I extends Comparable< I > > {
         }
         values = new ConcurrentHashMap<>(valuesByPgasName);
         final Set< MessageType > msgTypeList = MessageType.PROCESS_MESSAGES;
-        blockingQueueMapByName = new ConcurrentHashMap<>(valuesByPgasName.size()); //msgTypeList.length
+        blockingQueueMapByName = new ConcurrentHashMap<>(valuesByPgasName.size());
         final Set< Entry< Integer, List< I > > > pgasNames = valuesByPgasName.entrySet();
         for ( final Entry< Integer, List< I > > entry : pgasNames ) {
             final Integer                                           pgasName         = entry.getKey();
             final List< I >                                         processValues    = entry.getValue();
-            final Map< MessageType, BlockingQueue< Message< I > > > blockingQueueMap =
-                    new ConcurrentHashMap<>(msgTypeList.size()); //msgTypeList.lengt
+            final Map< MessageType, BlockingQueue< Message< I > > > blockingQueueMap = new ConcurrentHashMap<>(msgTypeList.size());
             for ( final MessageType type : msgTypeList ) {
                 if ( blockingQueueMap.put(type, new LinkedBlockingQueue<>()) != null ) {
                     throw new IllegalStateException("duplicated MessageTypes (" + type + ')');

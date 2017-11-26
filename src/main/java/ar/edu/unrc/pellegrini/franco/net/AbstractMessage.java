@@ -9,7 +9,7 @@ import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.*;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public abstract
-class AbstractMessage< I extends Comparable< I > >
+class AbstractMessage< I >
         implements Message< I > {
     public static final int INDEX_PARAMETER_BYTE_INDEX  = 5;
     public static final int INDEX_PARAMETER_BYTE_LENGTH = 8;

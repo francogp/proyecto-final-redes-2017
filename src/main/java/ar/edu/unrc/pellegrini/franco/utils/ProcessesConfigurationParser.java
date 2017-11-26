@@ -31,7 +31,7 @@ class ProcessesConfigurationParser {
     ProcessesConfigurationParser() {}
 
     private static
-    < I extends Comparable< I > > ProcessesConfigurations< I > newProcessesConfigurations( final String dataTypeToSort ) {
+    < I > ProcessesConfigurations< I > newProcessesConfigurations( final String dataTypeToSort ) {
         switch ( dataTypeToSort ) {
             case "Long":
                 return (ProcessesConfigurations< I >) new ProcessesConfigurations< Long >();
@@ -73,7 +73,7 @@ class ProcessesConfigurationParser {
      * @param configFilePath file to load.
      */
     public static
-    < I extends Comparable< I > > ProcessesConfigurations< I > parseConfigFile(
+    < I > ProcessesConfigurations< I > parseConfigFile(
             final File configFilePath
     ) {
         try ( InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), Charset.forName("UTF-8")) ) {
@@ -148,7 +148,7 @@ class ProcessesConfigurationParser {
     }
 
     private static
-    < I extends Comparable< I > > List< I > parseToSort(
+    < I > List< I > parseToSort(
             final File configFilePath,
             final String dataTypeToSort,
             final JSONArray toSortInJSON

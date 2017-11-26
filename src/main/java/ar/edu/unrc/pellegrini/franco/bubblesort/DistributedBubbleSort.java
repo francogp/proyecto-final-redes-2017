@@ -138,7 +138,7 @@ class DistributedBubbleSort< I extends Comparable< I > >
                 result = distributedArray.asString();
             }
 
-            middleware.endService();
+            middleware.closeListener();
         } catch ( final Exception e ) {
             getLogger(DistributedBubbleSort.class.getName()).log(Level.SEVERE, "Unknown problem", e);
         }

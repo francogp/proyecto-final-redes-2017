@@ -21,7 +21,7 @@ import static ar.edu.unrc.pellegrini.franco.net.MessageType.*;
 import static java.util.logging.Logger.getLogger;
 
 public
-class BasicMiddleware< I extends Comparable< I > >
+class BasicMiddleware< I >
         implements Middleware< I > {
 
     public static final int     COORDINATOR_PID   = 1;
@@ -82,10 +82,12 @@ class BasicMiddleware< I extends Comparable< I > >
         if ( coordinator ) {
             final int processQuantity = processesConfigurations.getProcessQuantity();
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                assert COORDINATOR_PID != targetPid;
                 final Message< I > msg = waitFor(IGNORED_PGAS_NAME, targetPid, AND_REDUCE_MSG);
                 andReduce = andReduce && parseResponseAsBoolean(msg);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                assert COORDINATOR_PID != targetPid;
                 sendTo(IGNORED_PGAS_NAME, targetPid, CONTINUE_AND_REDUCE_MSG, parseBooleanAsResponse(andReduce), null);
             }
         } else {
@@ -104,9 +106,11 @@ class BasicMiddleware< I extends Comparable< I > >
             assert pid == 1;
             final int processQuantity = processesConfigurations.getProcessQuantity();
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                assert COORDINATOR_PID != targetPid;
                 waitFor(IGNORED_PGAS_NAME, targetPid, BARRIER_MSG);
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                assert COORDINATOR_PID != targetPid;
                 sendTo(IGNORED_PGAS_NAME, targetPid, CONTINUE_BARRIER_MSG, IGNORED_INDEX, null);
             }
         } else {
@@ -118,14 +122,15 @@ class BasicMiddleware< I extends Comparable< I > >
 
     @Override
     public
-    void endService()
+    void closeListener()
             throws Exception {
         if ( coordinator ) {
             final int processQuantity = processesConfigurations.getProcessQuantity();
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
+                assert COORDINATOR_PID != targetPid;
                 sendTo(IGNORED_PGAS_NAME, targetPid, END_MSG, IGNORED_INDEX, null);
             }
-            sendTo(IGNORED_PGAS_NAME, 1, END_MSG, IGNORED_INDEX, null);
+            sendTo(IGNORED_PGAS_NAME, COORDINATOR_PID, END_MSG, IGNORED_INDEX, null);
         }
     }
 

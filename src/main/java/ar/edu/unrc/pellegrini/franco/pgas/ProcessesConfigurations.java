@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 public
-class ProcessesConfigurations< I extends Comparable< I > > {
+class ProcessesConfigurations< I > {
     private String                                           pgasDataType;
     private Map< InetAddress, Map< Integer, Process< I > > > processByAddress;
     private Map< Integer, Process< I > >                     processByPid;

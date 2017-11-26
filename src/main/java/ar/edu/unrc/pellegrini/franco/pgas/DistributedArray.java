@@ -13,16 +13,16 @@ import static java.util.logging.Logger.getLogger;
 
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public
-class DistributedArray< I extends Comparable< I > >
+class DistributedArray< I >
         implements PGAS< I > {
-    protected static boolean debugMode = false;
-    protected final long            currentLowerIndex;
-    protected final long            currentUpperIndex;
-    protected final List< Index >   indexList;
-    protected final Middleware< I > middleware;
-    protected final long            pgasSize;
+    private static boolean debugMode = false;
+    private final long            currentLowerIndex;
+    private final long            currentUpperIndex;
+    private final List< Index >   indexList;
+    private final Middleware< I > middleware;
+    private final int             name;
+    private final long            pgasSize;
     private List< I > distArray = null;
-    private final int name;
 
     public
     DistributedArray(
@@ -31,15 +31,15 @@ class DistributedArray< I extends Comparable< I > >
     ) {
         this.middleware = middleware;
         this.name = name;
-        final int pid = middleware.getWhoAmI();
+        final int pid             = middleware.getWhoAmI();
+        final int processQuantity = middleware.getProcessQuantity();
 
         // inicializamos los indices lowerIndex y upperIndex
-        indexList = new ArrayList<>(middleware.getProcessQuantity());
+        indexList = new ArrayList<>(processQuantity);
         long lowerIndex = 0L;
         long upperIndex = -1L;
-        for ( int currentPid = 1; currentPid <= middleware.getProcessQuantity(); currentPid++ ) {
-            final Process< I > process       = middleware.getProcessConfigugation(currentPid);
-            final List< I >    processValues = process.getValues(name);
+        for ( int currentPid = 1; currentPid <= processQuantity; currentPid++ ) {
+            final List< I > processValues = middleware.getProcessConfigugation(currentPid).getValues(name);
             if ( pid == currentPid ) {
                 distArray = new ArrayList<>(processValues);
             }
