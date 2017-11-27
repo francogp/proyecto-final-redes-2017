@@ -43,14 +43,16 @@ class SimpleProcessesConfigurations
      * {
      *   "dataType":"<data type used in toSort (Long or Double supported in current implementation)>",
      *   "processes": [
-     *     {"inetAddress":"<process 1 location>", : "port": <port>,
+     *     {"inetAddress":"<process 1 location>",
+     *      "port": <port>,
      *      "distributedArrays": [
      *        {"name": <int name>,
      *         "toSort": toSort": [<data 1>, <data 2>, <data 3>, etc]  //optional
      *        }
      *      ]
      *     },
-     *     {"inetAddress":"<process 2 location>", : "port": <port>,
+     *     {"inetAddress":"<process 2 location>",
+     *      "port": <port>,
      *      "distributedArrays": [
      *        {"name": <int name>,
      *         "toSort": toSort": [<data 4>, <data 5>, <data 6>, etc] //optional

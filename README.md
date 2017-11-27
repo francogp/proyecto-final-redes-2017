@@ -97,32 +97,28 @@ Algorithms and Systems. Cambridge University Press. ISBN-13:
 
 [2] [Partitioned Global Address Space.](https://en.wikipedia.org/wiki/Partitioned_global_address_space)
 
-## 3. Solución
+## 3. Diseño
+Para forzar un arreglo mas grande de lo que normalmente soportaría un arreglo de java 
+(el cual soporta Integer.MAX_VALUE en su capacidad), se decidió utilizar un arreglos 
+distribuidos con capacidad Long.MAX_VALUE. Cada PGAS soportara por proceso un espacio de
+ tamaño Integer.MAX_VALUE como capacidad máxima, y la sumatoria de todos los tamaños 
+ de dichos procesos es igual al tamaño real representado por el arreglo distribuido. 
 
-### Diseño
-Para forzar un arreglo distribuido mas grande de lo que
-normalmente soportaría un arreglo de java (el cual soporta Integer.MAX_VALUE 
-en su capacidad), se decidió utilizar un arreglo distribuido
-con capacidad Long.MAX_VALUE. Cada nodo/host del PGAS solo soportara 
-en su representación interna Integer.MAX_VALUE como capacidad máxima, 
-y la sumatoria de todos los tamaños de dichos nodos es igual al tamaño 
-real representado por el arreglo distribuido. 
+## 4. Compilación
+El proyecto esta construido utilizando Gradle (incorporado en el repositorio).
+Descargando el repositorio es suficiente para compilar el proyecto, ya que todas las 
+herramientas y scripts se encuentran en el.  
 
-Para simplificar la implementación, el PGAS solo soporta Long para 
-sus elementos.
-
-### Compilación
-El proyecto esta construido utilizando Gradle (incorporado en el 
-repositorio). 
-
-##### Requisitos
+### 4.1. Requisitos
 - Java JDK 8 o superior.
 - Tener configurada la variable de entorno ***JAVA_HOME***. 
 
-##### Dependencias
+### 4.2. Dependencias
 - Se resolverán automáticamente al utilizar alguna actividad de Gradle. 
 
-##### Instrucciones Recomendadas
+### 4.3. Instrucciones Recomendadas
+Hay 2 scripts `gradlew`, uno para windows y otro para linux. Los siguientes 
+parámetros son los recomendados para trabajar con el proyecto, con dichos scripts: 
 - `gradlew help`: ayuda sobre las posibles acciones (Tasks) que gradle puede realizar. 
 - `gradlew clean`: limpia los directorios del proyecto.   
 - `gradlew build`: compila el proyecto.
@@ -130,17 +126,44 @@ repositorio).
 - `gradlew junitPlatformTest`:  ejecuta los test de JUnit.
 - `gradlew javadoc`:  compila javadoc.
 
-### Instrucciones de uso
+## 5. Uso del Arreglo Distribuido
 
 1. Crear un archivo de configuración en formato JSON (usando UTF-8) 
 con la siguiente estructura:
-
+```json
+{
+    "dataType":"<data type used in toSort (Long or Double supported in current implementation)>",
+    "processes": [
+        {
+            "inetAddress":"<process 1 location>", // ejemplo 192.168.0.5
+            "port": <port>, // ejemplo 9000
+            "distributedArrays": [
+                 {
+                  "name": <int name>, //ejemplo 98
+                  "toSort": toSort": [<data 1>, <data 2>, <data 3>, etc]  //optional
+                 }
+            ]
+        },
+        {
+            "inetAddress":"<process 2 location>", 
+            "port": <port>,
+            "distributedArrays": [
+                 {
+                  "name": <int name>,
+                  "toSort": toSort": [<data 4>, <data 5>, <data 6>, etc] //optional
+                 }
+            ]
+        },
+        etc
+    ]
+}
+```
 2. Hay dos formas de ejecutar el programa`java -jar ar.edu.unrc......`
 
-##### Ejemplo
-Para ejecutar una simulación utilizar:
+## 6. Uso de las simulaciones de prueba con Arreglo Distribuido
+Para ejecutar una simulación de varios procesos configurados mediante el archivo "exampleConfig.json", ejecutar:
 ```
-java -cp coeus.game2048-1.0.0.jar ar.edu.unrc.game2048.experiments.TestGenerator experimentDirName=NTuple-Timed90 experimentClassNameList=[ConfigNTupleBasicTanH_32768] createLogs=false canCollectStatistics=false repetitions=10 maxTrainingThreads=1 gamesToPlay=1000000 winRateLimit=90.0 gamesToPlayPerThreadForStats=1000 saveEvery=5000 saveBackupEvery=15000 statisticsOnly=false simulationsForStatistics=8 tileToWinForStatistics=2048 runBackupStatistics=true lambdaList=[0.0] eligibilityTraceLength=-1 replacingTraces=true accumulatingTraces=false annealingAlphaList=[400000] alphaList=[0.005] gammaList=[1] concurrentLayerList=[false,false] computeBestPossibleActionConcurrently=false whenStartToExplore=[1.0] fixedExplorationRateList=[0] 
+java -cp build/libs/proyecto-final-redes-2017-1.0.0.jar ar.edu.unrc.pellegrini.franco.bubblesort.NetSimulationUsingConfigFile "configFile=exampleConfig.json" -debug 
 ``` 
 
 ## Licencia

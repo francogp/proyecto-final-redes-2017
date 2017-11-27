@@ -1,5 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.bubblesort;
 
+import ar.edu.unrc.pellegrini.franco.pgas.DistributedArray;
 import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
 import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
@@ -31,15 +32,15 @@ class DistributedBubbleSort< I extends Comparable< I > >
     public static final String ARG_DEBUG_MODE  = "debug";
     public static final String ARG_PID         = "pid";
     public static final int    PGAS_NAME       = 99;
-    private final PGAS< I >  distributedArray;
-    private final Middleware middleware;
+    private final DistributedArray< I > distributedArray;
+    private final Middleware            middleware;
     private String result = null;
 
     /**
      * @param debugMode true to show debug logs.
      */
     DistributedBubbleSort(
-            final PGAS< I > distributedArray,
+            final DistributedArray< I > distributedArray,
             final Middleware middleware,
             final boolean debugMode
     ) {
@@ -85,12 +86,12 @@ class DistributedBubbleSort< I extends Comparable< I > >
         final Middleware middleware = new SimpleMiddleware(pid, processesConfigurations, 8);
         switch ( processesConfigurations.getPgasDataType() ) {
             case "Long": {
-                final PGAS< Long > distributedArray = new LongDistributedArray(PGAS_NAME, middleware);
+                final DistributedArray< Long > distributedArray = new LongDistributedArray(PGAS_NAME, middleware);
                 bubbleSort = new DistributedBubbleSort<>(distributedArray, middleware, debugMode);
                 break;
             }
             case "Double": {
-                final PGAS< Double > distributedArray = new DoubleDistributedArray(PGAS_NAME, middleware);
+                final DistributedArray< Double > distributedArray = new DoubleDistributedArray(PGAS_NAME, middleware);
                 bubbleSort = new DistributedBubbleSort<>(distributedArray, middleware, debugMode);
                 break;
             }
