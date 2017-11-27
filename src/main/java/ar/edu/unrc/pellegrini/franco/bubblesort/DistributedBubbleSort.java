@@ -38,7 +38,6 @@ class DistributedBubbleSort< I extends Comparable< I > >
     /**
      * @param debugMode true to show debug logs.
      */
-    protected
     DistributedBubbleSort(
             final PGAS< I > distributedArray,
             final Middleware middleware,
@@ -78,20 +77,20 @@ class DistributedBubbleSort< I extends Comparable< I > >
 
     public static
     Runnable getRunnableBubbleSort(
-            int pid,
-            ProcessesConfigurations processesConfigurations,
-            boolean debugMode
+            final int pid,
+            final ProcessesConfigurations processesConfigurations,
+            final boolean debugMode
     ) {
-        Runnable   bubbleSort;
-        Middleware middleware = new SimpleMiddleware(pid, processesConfigurations, 8);
+        final Runnable   bubbleSort;
+        final Middleware middleware = new SimpleMiddleware(pid, processesConfigurations, 8);
         switch ( processesConfigurations.getPgasDataType() ) {
             case "Long": {
-                PGAS< Long > distributedArray = new LongDistributedArray(PGAS_NAME, middleware);
+                final PGAS< Long > distributedArray = new LongDistributedArray(PGAS_NAME, middleware);
                 bubbleSort = new DistributedBubbleSort<>(distributedArray, middleware, debugMode);
                 break;
             }
             case "Double": {
-                PGAS< Double > distributedArray = new DoubleDistributedArray(PGAS_NAME, middleware);
+                final PGAS< Double > distributedArray = new DoubleDistributedArray(PGAS_NAME, middleware);
                 bubbleSort = new DistributedBubbleSort<>(distributedArray, middleware, debugMode);
                 break;
             }

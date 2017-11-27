@@ -15,30 +15,30 @@ class DoubleDistributedArray
      */
     public
     DoubleDistributedArray(
-            int name,
-            Middleware middleware
+            final int name,
+            final Middleware middleware
     ) {
         super(name, middleware);
     }
 
     @Override
-    public
+    public final
     int getDataTypeSize() {
         return 8;
     }
 
     @Override
-    public
+    public final
     Double parseBytesToData(
-            byte[] valueAsBytes,
-            int valueBytesSize
+            final byte[] valueAsBytes,
+            final int valueBytesSize
     ) {
         return bytesToDouble(valueAsBytes, 0, valueBytesSize);
     }
 
     @Override
-    public
-    byte[] valueToBytesArray( Double value ) {
+    public final
+    byte[] valueToBytesArray( final Double value ) {
         return doubleToBytes(value);
     }
 }

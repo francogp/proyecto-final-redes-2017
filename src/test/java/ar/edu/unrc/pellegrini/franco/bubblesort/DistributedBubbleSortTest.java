@@ -61,13 +61,13 @@ class DistributedBubbleSortTest {
         }
 
         @Override
-        public
+        public final
         int getDataTypeSize() {
             return 8;
         }
 
         @Override
-        public
+        public final
         int getName() {
             return 0;
         }
@@ -91,10 +91,10 @@ class DistributedBubbleSortTest {
         }
 
         @Override
-        public
+        public final
         Long parseBytesToData(
-                byte[] valueAsBytes,
-                int valueBytesSize
+                final byte[] valueAsBytes,
+                final int valueBytesSize
         ) {
             return bytesToLong(valueAsBytes, 0, valueBytesSize);
         }
@@ -109,8 +109,8 @@ class DistributedBubbleSortTest {
         }
 
         @Override
-        public
-        byte[] readAsBytes( long index )
+        public final
+        byte[] readAsBytes( final long index )
                 throws Exception {
             return longToBytes(array.get((int) index));
         }
@@ -150,8 +150,8 @@ class DistributedBubbleSortTest {
         }
 
         @Override
-        public
-        byte[] valueToBytesArray( Long value ) {
+        public final
+        byte[] valueToBytesArray( final Long value ) {
             return longToBytes(value);
         }
 
@@ -168,10 +168,10 @@ class DistributedBubbleSortTest {
         }
 
         @Override
-        public
+        public final
         void writeAsBytes(
-                long index,
-                byte[] valueAsByte
+                final long index,
+                final byte[] valueAsByte
         )
                 throws Exception {
             array.set((int) index, bytesToLong(valueAsByte, 0, valueAsByte.length));

@@ -69,7 +69,7 @@ class SimpleProcessesConfigurations
      * @return new {@link ProcessesConfigurations} parsed from configFilePath
      */
     public static
-    < I > ProcessesConfigurations parseFromFile(
+    ProcessesConfigurations parseFromFile(
             final File configFilePath
     ) {
         try ( InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), Charset.forName("UTF-8")) ) {
@@ -193,25 +193,25 @@ class SimpleProcessesConfigurations
     }
 
     @Override
-    public
+    public final
     String getPgasDataType() {
         return pgasDataType;
     }
 
     @Override
-    public
+    public final
     void setPgasDataType( final String pgasDataType ) {
         this.pgasDataType = pgasDataType;
     }
 
     @Override
-    public
+    public final
     Process getProcessConfig( final int pid ) {
         return processByPid.get(pid);
     }
 
     @Override
-    public
+    public final
     Process getProcessConfig(
             final InetAddress address,
             final int port
@@ -220,25 +220,25 @@ class SimpleProcessesConfigurations
     }
 
     @Override
-    public
+    public final
     int getProcessQuantity() {
         return processQuantity;
     }
 
     @Override
-    public
+    public final
     void setProcessQuantity( final int processQuantity ) {
         this.processQuantity = processQuantity;
     }
 
     @Override
-    public
+    public final
     void setProcessByAddress( final Map< InetAddress, Map< Integer, Process > > processByAddress ) {
         this.processByAddress = processByAddress;
     }
 
     @Override
-    public
+    public final
     void setProcessByPid( final Map< Integer, Process > processByPid ) {
         this.processByPid = processByPid;
     }

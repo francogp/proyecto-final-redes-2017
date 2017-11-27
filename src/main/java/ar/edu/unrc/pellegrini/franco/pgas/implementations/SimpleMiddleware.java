@@ -56,7 +56,7 @@ class SimpleMiddleware
     /**
      * @param pid                     of the current process.
      * @param processesConfigurations processes configurations.
-     * @param maxValueByteBufferSize     byte size of the value type I.
+     * @param maxValueByteBufferSize  byte size of the value type I.
      */
     public
     SimpleMiddleware(
@@ -96,8 +96,13 @@ class SimpleMiddleware
         return ( value ) ? 1L : 0L;
     }
 
+    private static
+    boolean parseResponseAsBoolean( final Message message ) {
+        return message.getIndex() != 0L;
+    }
+
     @Override
-    public
+    public final
     boolean andReduce( final boolean value )
             throws Exception {
         boolean andReduce = value;
@@ -121,7 +126,7 @@ class SimpleMiddleware
     }
 
     @Override
-    public
+    public final
     void barrier()
             throws Exception {
         if ( coordinator ) {
@@ -143,7 +148,7 @@ class SimpleMiddleware
     }
 
     @Override
-    public
+    public final
     void closeListener()
             throws Exception {
         if ( coordinator ) {
@@ -157,38 +162,33 @@ class SimpleMiddleware
     }
 
     @Override
-    public
+    public final
     Process getProcessConfiguration( final int pid ) {
         return processesConfigurations.getProcessConfig(pid);
     }
 
     @Override
-    public
+    public final
     int getProcessQuantity() {
         return processesConfigurations.getProcessQuantity();
     }
 
     @Override
-    public
+    public final
     int getWhoAmI() {
         return pid;
     }
 
     @Override
-    public
+    public final
     boolean imLast() {
         return pid == processesConfigurations.getProcessQuantity();
     }
 
     @Override
-    public
+    public final
     boolean isCoordinator() {
         return coordinator;
-    }
-
-    private
-    boolean parseResponseAsBoolean( final Message message ) {
-        return message.getIndex() != 0L;
     }
 
     private
@@ -213,8 +213,7 @@ class SimpleMiddleware
                 case READ_MSG:
                     sendTo(pgasName,
                             targetProcess,
-                            READ_RESPONSE_MSG,
-                            incomingMessage.getIndex(), pgas.getDataTypeSize(), pgas.readAsBytes(incomingMessage.getIndex()));
+                            READ_RESPONSE_MSG, incomingMessage.getIndex(), pgas.getDataTypeSize(), pgas.readAsBytes(incomingMessage.getIndex()));
                     break;
                 case READ_RESPONSE_MSG:
                     targetProcess.registerMsg(incomingMessage);
@@ -227,12 +226,12 @@ class SimpleMiddleware
                     //TODO add a panic!
             }
         } catch ( final Exception e ) {
-            getLogger(Listener.class.getName()).log(Level.SEVERE, null, e);
+            getLogger(SimpleMiddleware.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
     @Override
-    public
+    public final
     Message receiveFrom(
             final int pgasName,
             final int senderPid,
@@ -262,7 +261,7 @@ class SimpleMiddleware
     }
 
     @Override
-    public
+    public final
     void registerPGAS( final PGAS< ? > pgas ) {
         if ( pgasRegistryNameToPGAS.put(pgas.getName(), pgas) != null ) {
             throw new IllegalArgumentException("PGAS already registered with name: " + pgas.getName());
@@ -281,7 +280,7 @@ class SimpleMiddleware
     }
 
     @Override
-    public
+    public final
     void sendTo(
             final int pgasName,
             final Process targetProcess,
@@ -307,15 +306,14 @@ class SimpleMiddleware
                     .append(processesConfigurations.getProcessConfig(targetProcess.getInetAddress(), targetProcess.getPort()).getPid())
                     .append("] ")
                     .append(msgType)
-                    .append(" { index=")
-                    .append(index).append(", valueAsBytes=").append(Arrays.toString(valueAsBytes))
+                    .append(" { index=").append(index).append(", valueAsBytes=").append(Arrays.toString(valueAsBytes))
                     .append(" }"));
         }
         sendMessage(msg);
     }
 
     @Override
-    public
+    public final
     void sendTo(
             final int pgasName,
             final int targetPid,
@@ -329,13 +327,13 @@ class SimpleMiddleware
     }
 
     @Override
-    public
+    public final
     void setDebugMode( final boolean enabled ) {
         debugMode = enabled;
     }
 
     @Override
-    public synchronized
+    public final synchronized
     void startServer() {
         try {
             datagramSocket = new DatagramSocket(port);

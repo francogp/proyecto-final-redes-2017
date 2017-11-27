@@ -15,30 +15,30 @@ class LongDistributedArray
      */
     public
     LongDistributedArray(
-            int name,
-            Middleware middleware
+            final int name,
+            final Middleware middleware
     ) {
         super(name, middleware);
     }
 
     @Override
-    public
+    public final
     int getDataTypeSize() {
         return 8;
     }
 
     @Override
-    public
+    public final
     Long parseBytesToData(
-            byte[] valueAsBytes,
-            int valueBytesSize
+            final byte[] valueAsBytes,
+            final int valueBytesSize
     ) {
         return bytesToLong(valueAsBytes, 0, valueBytesSize);
     }
 
     @Override
-    public
-    byte[] valueToBytesArray( Long value ) {
+    public final
+    byte[] valueToBytesArray( final Long value ) {
         return longToBytes(value);
     }
 }

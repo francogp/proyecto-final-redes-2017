@@ -33,7 +33,7 @@ class DistributedArray< I >
      * @param name       PGAS unique name.
      * @param middleware to register this PGAS.
      */
-    public
+    protected
     DistributedArray(
             final int name,
             final Middleware middleware
@@ -65,7 +65,7 @@ class DistributedArray< I >
     }
 
     @Override
-    public
+    public final
     String asString() {
         return middleware.isCoordinator() ? LongStream.range(0L, pgasSize).mapToObj(index -> {
             try {
@@ -134,7 +134,7 @@ class DistributedArray< I >
 
     @Override
     public final
-    byte[] readAsBytes( long index )
+    byte[] readAsBytes( final long index )
             throws Exception {
         return valueToBytesArray(read(index));
     }
@@ -152,7 +152,6 @@ class DistributedArray< I >
             final long index2
     )
             throws Exception {
-        //FIXME synchronized?
         final I temp = read(index1);
         write(index1, read(index2));
         write(index2, temp);
@@ -171,7 +170,7 @@ class DistributedArray< I >
     }
 
     @Override
-    public final synchronized
+    public final
     void write(
             final long index,
             final I value
@@ -191,8 +190,8 @@ class DistributedArray< I >
     @Override
     public final
     void writeAsBytes(
-            long index,
-            byte[] valueAsByte
+            final long index,
+            final byte[] valueAsByte
     )
             throws Exception {
         final I value = parseBytesToData(valueAsByte, getDataTypeSize());

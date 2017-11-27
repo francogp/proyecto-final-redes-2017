@@ -15,7 +15,6 @@ import static java.util.logging.Logger.getLogger;
 /**
  * A listener read UDP packages, parse them into {@link Message} and deliver them to a {@link MessagesDispatcher}.
  *
- * @param <I> value to be carried by the message.
  */
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final

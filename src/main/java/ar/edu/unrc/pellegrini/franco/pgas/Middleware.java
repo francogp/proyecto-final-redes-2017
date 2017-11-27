@@ -96,11 +96,12 @@ interface Middleware {
     /**
      * Send a message to a specific distributed PGAS.
      *
-     * @param pgasName    target pgas name.
-     * @param targetPid   target pid.
-     * @param messageType message type.
-     * @param index       of the PGAS to be used.
-     * @param value       to read or write in the target PGAS.
+     * @param pgasName       target pgas name.
+     * @param targetPid      target pid.
+     * @param messageType    message type.
+     * @param index          of the PGAS to be used.
+     * @param valueBytesSize effective size of valueAsByte
+     * @param valueAsBytes   to read or write in the target PGAS.
      *
      * @throws Exception
      */
@@ -117,11 +118,12 @@ interface Middleware {
     /**
      * Send a message to a specific distributed PGAS.
      *
-     * @param pgasName      target pgas name.
-     * @param targetProcess target process.
-     * @param msgType       message type.
-     * @param index         of the PGAS to be used.
-     * @param value         to read or write in the target PGAS.
+     * @param pgasName       target pgas name.
+     * @param targetProcess  target process.
+     * @param msgType        message type.
+     * @param index          of the PGAS to be used.
+     * @param valueBytesSize effective size of valueAsByte
+     * @param valueAsBytes   to read or write in the target PGAS.
      *
      * @throws Exception
      */
