@@ -16,7 +16,6 @@ class MessagesDispatcher< M >
     private final Function< M, Boolean > isFinalMsgFunction;
     private final Consumer< M >          messageConsumer;
     private final BlockingQueue< M >     queue;
-    private boolean running = false;
 
     /**
      * @param messageConsumer    what to do with a message.
@@ -41,7 +40,7 @@ class MessagesDispatcher< M >
     public
     void run() {
         try {
-            running = true;
+            boolean running = true;
             while ( running ) {
                 final M message = queue.take();
                 if ( isFinalMsgFunction.apply(message) ) {

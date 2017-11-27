@@ -126,13 +126,13 @@ class DistributedBubbleSort< I extends Comparable< I > >
     /**
      * @return results of the sorting method
      */
-    public final
+    public
     String result() {
         return result;
     }
 
     @Override
-    public final
+    public
     void run() {
         try {
             boolean finish = false;

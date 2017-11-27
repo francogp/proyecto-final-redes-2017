@@ -55,8 +55,8 @@ interface PGAS< I > {
     /**
      * Swap to values inside a PGAS. May not be local process indexes.
      *
-     * @param index1
-     * @param index2
+     * @param index1 a PGAS index.
+     * @param index2 a PGAS index.
      *
      * @throws Exception
      */

@@ -80,6 +80,8 @@ class SimpleProcessesConfigurations< I >
      * the field toSort is optional, to allow specific process initialization only
      *
      * @param configFilePath file to load.
+     *
+     * @return new {@link ProcessesConfigurations} parsed from configFilePath
      */
     public static
     < I > ProcessesConfigurations< I > parseFromFile(
@@ -134,7 +136,8 @@ class SimpleProcessesConfigurations< I >
                 processByPid.put(pid, processConfig);
 
                 //mapping from InetAddress+port to Process.
-                final Map< Integer, Process< I > > processByPorts = processByAddress.computeIfAbsent(processInetAddress, address -> new ConcurrentHashMap<>());
+                final Map< Integer, Process< I > > processByPorts =
+                        processByAddress.computeIfAbsent(processInetAddress, address -> new ConcurrentHashMap<>());
                 if ( processByPorts.put(port.intValue(), processConfig) != null ) {
                     throw new IllegalArgumentException(
                             "there's two processes with the same address : InetAddress=" + processInetAddress + " port=" + port);
@@ -199,7 +202,7 @@ class SimpleProcessesConfigurations< I >
 
         if ( !VALID_DATA_TYPE_PATTERN.matcher(dataTypeToSort).matches() ) {
             throw new IllegalArgumentException(
-                    "the only data type supported in this example implementation are Long and Double, and can be setted in the config file \"" +
+                    "the only data type supported in this example implementation are Long and Double, and can be set in the config file \"" +
                     configFilePath + "\".");
         }
     }

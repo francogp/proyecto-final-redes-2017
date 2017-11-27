@@ -5,13 +5,7 @@ import java.util.logging.Level;
 
 import static java.util.logging.Logger.getLogger;
 
-/**
- * Parsea argumentos de un programa (main) en una estructura amigable para su uso. Los argumentos deben tener el estilo:
- * <p>
- * arg1=2 arg44=[0.0,55.8]
- *
- * @author lucia bressan, franco pellegrini, renzo bianchini
- */
+
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class ArgumentLoader {
@@ -48,11 +42,6 @@ class ArgumentLoader {
         return activeFlags.contains(id);
     }
 
-    /**
-     * @param id identificador del argumento.
-     *
-     * @return valor que contiene argumento.
-     */
     private
     String getArg( final String id ) {
         final String value = argMap.get(id);
@@ -96,7 +85,7 @@ class ArgumentLoader {
                     throw new IllegalArgumentException(
                             "Argument \"" + arg + "\" is not present as a valid argument set" + ". Args = " + Arrays.toString(args));
                 }
-                final String value     = arg.substring(index + 1).trim();
+                final String value = arg.substring(index + 1).trim();
                 argMap.put(id, value);
             }
         }
@@ -107,11 +96,6 @@ class ArgumentLoader {
         return Boolean.parseBoolean(getArg(id));
     }
 
-    /**
-     * Parsea arreglos de Boolean. Formato del estilo [true,false,false]
-     *
-     * @return lista de Boolean.
-     */
     public
     boolean[] parseBooleanArray( final String id ) {
         final String arrayString = getArg(id);
@@ -135,11 +119,6 @@ class ArgumentLoader {
         return Double.parseDouble(getArg(id));
     }
 
-    /**
-     * Parsea arreglos de Double. Formato del estilo [0.0,0.1,0.2,5547]
-     *
-     * @return lista de Double.
-     */
     public
     List< Double > parseDoubleArray( final String id ) {
         final String arrayString = getArg(id);
@@ -166,11 +145,6 @@ class ArgumentLoader {
         return Integer.parseInt(getArg(id));
     }
 
-    /**
-     * Parsea arreglos de Integer. Formato del estilo [0,1,2,5547]
-     *
-     * @return lista de Integer.
-     */
     public
     List< Integer > parseIntegerArray( final String id ) {
         final String arrayString = getArg(id);
@@ -197,11 +171,6 @@ class ArgumentLoader {
         return getArg(id);
     }
 
-    /**
-     * Parsea arreglos de Strings. Formato del estilo [clase1,clase-2,clase_3]
-     *
-     * @return lista de Strings.
-     */
     public
     List< String > parseStringArray( final String id ) {
         final String arrayString = getArg(id);

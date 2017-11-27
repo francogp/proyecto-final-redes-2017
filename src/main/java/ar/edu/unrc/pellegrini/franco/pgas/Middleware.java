@@ -73,7 +73,7 @@ interface Middleware< I > {
      * @param senderPid   sender pid.
      * @param messageType message type.
      *
-     * @return
+     * @return message received
      *
      * @throws InterruptedException
      */

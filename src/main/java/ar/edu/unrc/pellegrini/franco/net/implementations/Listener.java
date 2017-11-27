@@ -28,7 +28,6 @@ class Listener< I >
     private final Supplier< Message< I > >           newMessageSupplier;
     private final int                                payloadLength;
     private final DatagramSocket                     socket;
-    private boolean running = false;
 
     /**
      * @param socket              to listen.
@@ -54,7 +53,7 @@ class Listener< I >
     void run() {
         try {
             msgQueueThread.start();
-            running = true;
+            boolean running = true;
             while ( running ) {
                 final DatagramPacket packet = new DatagramPacket(new byte[payloadLength], payloadLength);
                 socket.receive(packet);
@@ -65,7 +64,7 @@ class Listener< I >
                     if ( received.isEndMessage() ) {
                         running = false;
                     }
-                } catch ( InvalidValueParameterException e ) {
+                } catch ( final InvalidValueParameterException e ) {
                     getLogger(Listener.class.getName()).log(Level.SEVERE, "Cannot parse DatagramPacket: " + packet, e);
                 }
             }

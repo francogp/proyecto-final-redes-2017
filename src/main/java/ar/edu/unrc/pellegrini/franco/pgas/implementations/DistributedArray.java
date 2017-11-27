@@ -68,18 +68,14 @@ class DistributedArray< I >
     @Override
     public
     String asString() {
-        if ( middleware.isCoordinator() ) {
-            return LongStream.range(0L, pgasSize).mapToObj(index -> {
-                try {
-                    return read(index).toString();
-                } catch ( Exception e ) {
-                    getLogger(DistributedArray.class.getName()).log(Level.SEVERE, null, e);
-                    return "ERROR";
-                }
-            }).collect(Collectors.joining(", "));
-        } else {
-            return null;
-        }
+        return middleware.isCoordinator() ? LongStream.range(0L, pgasSize).mapToObj(index -> {
+            try {
+                return read(index).toString();
+            } catch ( Exception e ) {
+                getLogger(DistributedArray.class.getName()).log(Level.SEVERE, null, e);
+                return "ERROR";
+            }
+        }).collect(Collectors.joining(", ")) : null;
     }
 
     private
@@ -101,7 +97,7 @@ class DistributedArray< I >
     }
 
     @Override
-    public final
+    public
     int getSize() {
         synchronized ( distArray ) {
             return distArray.size();
@@ -109,19 +105,19 @@ class DistributedArray< I >
     }
 
     @Override
-    public final
+    public
     long lowerIndex( final int pid ) {
         return indexList.get(pid - 1).getLoweIndex();
     }
 
     @Override
-    public final
+    public
     long lowerIndex() {
         return currentLowerIndex;
     }
 
     @Override
-    public final
+    public
     I read( final long index )
             throws Exception {
         final int i = (int) ( index - currentLowerIndex );
@@ -138,13 +134,13 @@ class DistributedArray< I >
     }
 
     @Override
-    public final
+    public
     void setDebugMode( final boolean enable ) {
         middleware.setDebugMode(enable);
     }
 
     @Override
-    public final
+    public
     void swap(
             final long index1,
             final long index2
@@ -157,19 +153,19 @@ class DistributedArray< I >
     }
 
     @Override
-    public final
+    public
     long upperIndex( final int pid ) {
         return indexList.get(pid - 1).getUpperIndex();
     }
 
     @Override
-    public final
+    public
     long upperIndex() {
         return currentUpperIndex;
     }
 
     @Override
-    public final synchronized
+    public synchronized
     void write(
             final long index,
             final I value
