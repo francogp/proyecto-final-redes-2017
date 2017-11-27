@@ -20,37 +20,22 @@ import java.util.regex.Pattern;
 
 /**
  * used to store processes configurations, to distribute between PGAS processes.
- *
- * @param <I> value type carried by the Message.
  */
 public
-class SimpleProcessesConfigurations< I >
-        implements ProcessesConfigurations< I > {
-    public static final  String                                           JSON_DATA_TYPE          = "dataType";
-    public static final  String                                           JSON_DISTRIBUTED_ARRAYS = "distributedArrays";
-    public static final  String                                           JSON_INET_ADDRESS       = "inetAddress";
-    public static final  String                                           JSON_NAME               = "name";
-    public static final  String                                           JSON_PORT               = "port";
-    public static final  String                                           JSON_PROCESS            = "processes";
-    public static final  String                                           JSON_TO_SORT            = "toSort";
-    private static final Pattern                                          VALID_DATA_TYPE_PATTERN = Pattern.compile("(Long)|(Double)");
-    private              String                                           pgasDataType            = null;
-    private              Map< InetAddress, Map< Integer, Process< I > > > processByAddress        = null;
-    private              Map< Integer, Process< I > >                     processByPid            = null;
-    private              int                                              processQuantity         = 0;
-
-    private static
-    < I > ProcessesConfigurations< I > newProcessesConfigurations( final String dataTypeToSort ) {
-        switch ( dataTypeToSort ) {
-            case "Long":
-                return (ProcessesConfigurations< I >) new SimpleProcessesConfigurations< Long >();
-            case "Double":
-                return (ProcessesConfigurations< I >) new SimpleProcessesConfigurations< Double >();
-            default:
-                throw new IllegalArgumentException("unknown data type");
-        }
-
-    }
+class SimpleProcessesConfigurations
+        implements ProcessesConfigurations {
+    public static final  String                                      JSON_DATA_TYPE          = "dataType";
+    public static final  String                                      JSON_DISTRIBUTED_ARRAYS = "distributedArrays";
+    public static final  String                                      JSON_INET_ADDRESS       = "inetAddress";
+    public static final  String                                      JSON_NAME               = "name";
+    public static final  String                                      JSON_PORT               = "port";
+    public static final  String                                      JSON_PROCESS            = "processes";
+    public static final  String                                      JSON_TO_SORT            = "toSort";
+    private static final Pattern                                     VALID_DATA_TYPE_PATTERN = Pattern.compile("(Long)|(Double)");
+    private              String                                      pgasDataType            = null;
+    private              Map< InetAddress, Map< Integer, Process > > processByAddress        = null;
+    private              Map< Integer, Process >                     processByPid            = null;
+    private              int                                         processQuantity         = 0;
 
     /**
      * JSON file Format:
@@ -84,7 +69,7 @@ class SimpleProcessesConfigurations< I >
      * @return new {@link ProcessesConfigurations} parsed from configFilePath
      */
     public static
-    < I > ProcessesConfigurations< I > parseFromFile(
+    < I > ProcessesConfigurations parseFromFile(
             final File configFilePath
     ) {
         try ( InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), Charset.forName("UTF-8")) ) {
@@ -99,12 +84,12 @@ class SimpleProcessesConfigurations< I >
             final String dataTypeToSort = (String) jsonObject.get(JSON_DATA_TYPE);
             validateDataType(configFilePath, dataTypeToSort);
 
-            final ProcessesConfigurations< I > parsedResults = newProcessesConfigurations(dataTypeToSort);
+            final ProcessesConfigurations parsedResults = new SimpleProcessesConfigurations();
             parsedResults.setPgasDataType(dataTypeToSort);
             parsedResults.setProcessQuantity(processesInJSON.size());
-            final Map< InetAddress, Map< Integer, Process< I > > > processByAddress = new HashMap<>(parsedResults.getProcessQuantity());
+            final Map< InetAddress, Map< Integer, Process > > processByAddress = new HashMap<>(parsedResults.getProcessQuantity());
             parsedResults.setProcessByAddress(processByAddress);
-            final Map< Integer, Process< I > > processByPid = new HashMap<>(parsedResults.getProcessQuantity());
+            final Map< Integer, Process > processByPid = new HashMap<>(parsedResults.getProcessQuantity());
             parsedResults.setProcessByPid(processByPid);
 
             int pid = 1;
@@ -113,30 +98,30 @@ class SimpleProcessesConfigurations< I >
                 final String     inetAddress = (String) process.get(JSON_INET_ADDRESS);
                 final Long       port        = (Long) process.get(JSON_PORT);
 
-                final Map< Integer, List< I > > distArraysValues        = new ConcurrentHashMap<>();
-                final JSONArray                 distributedArraysInJSON = (JSONArray) process.get(JSON_DISTRIBUTED_ARRAYS);
+                final Map< Integer, List< Object > > distArraysValues        = new ConcurrentHashMap<>();
+                final JSONArray                      distributedArraysInJSON = (JSONArray) process.get(JSON_DISTRIBUTED_ARRAYS);
                 if ( distributedArraysInJSON != null ) {
                     if ( distributedArraysInJSON.isEmpty() ) {
                         throw new IllegalArgumentException("wrong distributed arrays quantity in config file \"" + configFilePath + "\".");
                     }
                     for ( final Object valueInJSON : distributedArraysInJSON ) {
-                        final JSONObject dArray       = (JSONObject) valueInJSON;
-                        final Long       dArrayName   = (Long) dArray.get(JSON_NAME);
-                        final JSONArray  toSortInJSON = (JSONArray) dArray.get(JSON_TO_SORT);
-                        final List< I >  toSort       = parseToSort(configFilePath, dataTypeToSort, toSortInJSON);
+                        final JSONObject     dArray       = (JSONObject) valueInJSON;
+                        final Long           dArrayName   = (Long) dArray.get(JSON_NAME);
+                        final JSONArray      toSortInJSON = (JSONArray) dArray.get(JSON_TO_SORT);
+                        final List< Object > toSort       = parseToSort(configFilePath, dataTypeToSort, toSortInJSON);
                         if ( distArraysValues.put(dArrayName.intValue(), toSort) != null ) {
                             throw new IllegalStateException(
                                     "duplicated distributed array name: " + dArrayName + " in config file \"" + configFilePath + "\".");
                         }
                     }
                 }
-                final InetAddress  processInetAddress = InetAddress.getByName(inetAddress);
-                final Process< I > processConfig      = new DistributedProcess<>(pid, processInetAddress, port.intValue(), distArraysValues);
+                final InetAddress processInetAddress = InetAddress.getByName(inetAddress);
+                final Process     processConfig      = new DistributedProcess(pid, processInetAddress, port.intValue(), distArraysValues);
                 //mapping from pid to Process.
                 processByPid.put(pid, processConfig);
 
                 //mapping from InetAddress+port to Process.
-                final Map< Integer, Process< I > > processByPorts =
+                final Map< Integer, Process > processByPorts =
                         processByAddress.computeIfAbsent(processInetAddress, address -> new ConcurrentHashMap<>());
                 if ( processByPorts.put(port.intValue(), processConfig) != null ) {
                     throw new IllegalArgumentException(
@@ -221,13 +206,13 @@ class SimpleProcessesConfigurations< I >
 
     @Override
     public
-    Process< I > getProcessConfig( final int pid ) {
+    Process getProcessConfig( final int pid ) {
         return processByPid.get(pid);
     }
 
     @Override
     public
-    Process< I > getProcessConfig(
+    Process getProcessConfig(
             final InetAddress address,
             final int port
     ) {
@@ -248,13 +233,13 @@ class SimpleProcessesConfigurations< I >
 
     @Override
     public
-    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process< I > > > processByAddress ) {
+    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process > > processByAddress ) {
         this.processByAddress = processByAddress;
     }
 
     @Override
     public
-    void setProcessByPid( final Map< Integer, Process< I > > processByPid ) {
+    void setProcessByPid( final Map< Integer, Process > processByPid ) {
         this.processByPid = processByPid;
     }
 }

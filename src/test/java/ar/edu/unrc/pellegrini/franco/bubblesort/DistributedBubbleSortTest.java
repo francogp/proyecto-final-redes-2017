@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.bytesToLong;
+import static ar.edu.unrc.pellegrini.franco.utils.BytesConversion.longToBytes;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -60,6 +62,12 @@ class DistributedBubbleSortTest {
 
         @Override
         public
+        int getDataTypeSize() {
+            return 8;
+        }
+
+        @Override
+        public
         int getName() {
             return 0;
         }
@@ -83,12 +91,28 @@ class DistributedBubbleSortTest {
         }
 
         @Override
+        public
+        Long parseBytesToData(
+                byte[] valueAsBytes,
+                int valueBytesSize
+        ) {
+            return bytesToLong(valueAsBytes, 0, valueBytesSize);
+        }
+
+        @Override
         public final
         Long read( final long index ) {
             if ( ( index < lowerIndex ) || ( index > upperIndex ) ) {
                 throw new IllegalArgumentException("index " + index + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
             return array.get(Long.valueOf(index).intValue());
+        }
+
+        @Override
+        public
+        byte[] readAsBytes( long index )
+                throws Exception {
+            return longToBytes(array.get((int) index));
         }
 
         @Override
@@ -126,6 +150,12 @@ class DistributedBubbleSortTest {
         }
 
         @Override
+        public
+        byte[] valueToBytesArray( Long value ) {
+            return longToBytes(value);
+        }
+
+        @Override
         public final
         void write(
                 final long index,
@@ -135,6 +165,16 @@ class DistributedBubbleSortTest {
                 throw new IllegalArgumentException("index " + index + " is not index<" + lowerIndex + " || index>" + upperIndex);
             }
             array.set(Long.valueOf(index).intValue(), value);
+        }
+
+        @Override
+        public
+        void writeAsBytes(
+                long index,
+                byte[] valueAsByte
+        )
+                throws Exception {
+            array.set((int) index, bytesToLong(valueAsByte, 0, valueAsByte.length));
         }
     }
 }

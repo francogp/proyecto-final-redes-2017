@@ -1,8 +1,6 @@
-package ar.edu.unrc.pellegrini.franco.pgas.implementations;
+package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
-import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static ar.edu.unrc.pellegrini.franco.net.MessageType.*;
+import static ar.edu.unrc.pellegrini.franco.pgas.Middleware.IGNORED_VALUE_BYTE_SIZE;
 import static java.util.logging.Logger.getLogger;
 
 /**
@@ -19,16 +18,16 @@ import static java.util.logging.Logger.getLogger;
  * @param <I> value type carried by the Message.
  */
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public final
+public abstract
 class DistributedArray< I >
         implements PGAS< I > {
     private final long currentLowerIndex;
     private final long currentUpperIndex;
     private final List< I > distArray = new ArrayList<>();
-    private final List< Index >   indexList;
-    private final Middleware< I > middleware;
-    private final int             name;
-    private final long            pgasSize;
+    private final List< Index > indexList;
+    private final Middleware    middleware;
+    private final int           name;
+    private final long          pgasSize;
 
     /**
      * @param name       PGAS unique name.
@@ -37,7 +36,7 @@ class DistributedArray< I >
     public
     DistributedArray(
             final int name,
-            final Middleware< I > middleware
+            final Middleware middleware
     ) {
         this.middleware = middleware;
         this.name = name;
@@ -49,7 +48,7 @@ class DistributedArray< I >
         long lowerIndex = 0L;
         long upperIndex = -1L;
         for ( int currentPid = 1; currentPid <= processQuantity; currentPid++ ) {
-            final List< I > processValues = middleware.getProcessConfiguration(currentPid).getValues(name);
+            final List< I > processValues = (List< I >) middleware.getProcessConfiguration(currentPid).getValues(name);
             if ( pid == currentPid ) {
                 distArray.addAll(processValues);
             }
@@ -91,13 +90,13 @@ class DistributedArray< I >
     }
 
     @Override
-    public
+    public final
     int getName() {
         return name;
     }
 
     @Override
-    public
+    public final
     int getSize() {
         synchronized ( distArray ) {
             return distArray.size();
@@ -105,27 +104,27 @@ class DistributedArray< I >
     }
 
     @Override
-    public
+    public final
     long lowerIndex( final int pid ) {
         return indexList.get(pid - 1).getLoweIndex();
     }
 
     @Override
-    public
+    public final
     long lowerIndex() {
         return currentLowerIndex;
     }
 
     @Override
-    public
+    public final
     I read( final long index )
             throws Exception {
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= getSize() ) ) {
             final int targetPid = findPidForIndex(index);
-            middleware.sendTo(name, targetPid, READ_MSG, index, null);
-            final Message< I > response = middleware.receiveFrom(name, targetPid, READ_RESPONSE_MSG);
-            return response.getValue();
+            middleware.sendTo(name, targetPid, READ_MSG, index, IGNORED_VALUE_BYTE_SIZE, null);
+            final Message response = middleware.receiveFrom(name, targetPid, READ_RESPONSE_MSG);
+            return parseBytesToData(response.getValueAsBytes(), response.getValueBytesSize());
         } else {
             synchronized ( distArray ) {
                 return distArray.get(i);
@@ -134,13 +133,20 @@ class DistributedArray< I >
     }
 
     @Override
-    public
+    public final
+    byte[] readAsBytes( long index )
+            throws Exception {
+        return valueToBytesArray(read(index));
+    }
+
+    @Override
+    public final
     void setDebugMode( final boolean enable ) {
         middleware.setDebugMode(enable);
     }
 
     @Override
-    public
+    public final
     void swap(
             final long index1,
             final long index2
@@ -153,19 +159,19 @@ class DistributedArray< I >
     }
 
     @Override
-    public
+    public final
     long upperIndex( final int pid ) {
         return indexList.get(pid - 1).getUpperIndex();
     }
 
     @Override
-    public
+    public final
     long upperIndex() {
         return currentUpperIndex;
     }
 
     @Override
-    public synchronized
+    public final synchronized
     void write(
             final long index,
             final I value
@@ -174,12 +180,23 @@ class DistributedArray< I >
         final int i = (int) ( index - currentLowerIndex );
         if ( ( i < 0 ) || ( i >= getSize() ) ) {
             final int targetPid = findPidForIndex(index);
-            middleware.sendTo(name, targetPid, WRITE_MSG, index, value);
+            middleware.sendTo(name, targetPid, WRITE_MSG, index, getDataTypeSize(), valueToBytesArray(value));
         } else {
             synchronized ( distArray ) {
                 distArray.set(i, value);
             }
         }
+    }
+
+    @Override
+    public final
+    void writeAsBytes(
+            long index,
+            byte[] valueAsByte
+    )
+            throws Exception {
+        final I value = parseBytesToData(valueAsByte, getDataTypeSize());
+        write(index, value);
     }
 
     @SuppressWarnings( "ClassWithoutNoArgConstructor" )
@@ -202,11 +219,6 @@ class DistributedArray< I >
         public
         long getLoweIndex() {
             return loweIndex;
-        }
-
-        public
-        int getSize() {
-            return size;
         }
 
         public

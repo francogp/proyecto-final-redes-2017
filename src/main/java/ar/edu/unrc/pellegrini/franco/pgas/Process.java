@@ -6,11 +6,8 @@ import ar.edu.unrc.pellegrini.franco.net.MessageType;
 import java.net.InetAddress;
 import java.util.List;
 
-/**
- * @param <I> value type carried by the Message.
- */
 public
-interface Process< I > {
+interface Process {
 
     /**
      * @return process location.
@@ -32,7 +29,7 @@ interface Process< I > {
      *
      * @return value list to be used to initialize the PGAS named pgasName.
      */
-    List< I > getValues( int pgasName );
+    List< Object > getValues( int pgasName );
 
     /**
      * Register an incoming message from the Listener in a waiting queue, to be processed using waitFor and receiveFrom.
@@ -41,7 +38,7 @@ interface Process< I > {
      *
      * @throws InterruptedException
      */
-    void registerMsg( Message< I > message )
+    void registerMsg( Message message )
             throws InterruptedException;
 
     /**
@@ -54,7 +51,7 @@ interface Process< I > {
      *
      * @throws InterruptedException
      */
-    Message< I > waitFor(
+    Message waitFor(
             int pgasName,
             MessageType messageType
     )

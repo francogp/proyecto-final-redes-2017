@@ -16,6 +16,11 @@ interface PGAS< I > {
     String asString();
 
     /**
+     * @return bytes needed to represent the data type I contained in this PGAS.
+     */
+    int getDataTypeSize();
+
+    /**
      * @return PGAS name.
      */
     int getName();
@@ -37,6 +42,11 @@ interface PGAS< I > {
      */
     long lowerIndex( final int pid );
 
+    I parseBytesToData(
+            byte[] valueAsBytes,
+            int valueBytesSize
+    );
+
     /**
      * @param index of the value type I to read. May be located on other process.
      *
@@ -45,6 +55,16 @@ interface PGAS< I > {
      * @throws Exception
      */
     I read( final long index )
+            throws Exception;
+
+    /**
+     * @param index of the value type I to read. May be located on other process.
+     *
+     * @return value located on the position index, inside the PGAS memory, as a byte[].
+     *
+     * @throws Exception
+     */
+    byte[] readAsBytes( final long index )
             throws Exception;
 
     /**
@@ -78,6 +98,8 @@ interface PGAS< I > {
      */
     long upperIndex( final int pid );
 
+    byte[] valueToBytesArray( I value );
+
     /**
      * Writes a value on the index position inside a PGAS. May not be local process indexes.
      *
@@ -91,4 +113,19 @@ interface PGAS< I > {
             final I value
     )
             throws Exception;
+
+    /**
+     * Writes a value on the index position inside a PGAS. May not be local process indexes.
+     *
+     * @param index       of the value type I to write. May be located on other process.
+     * @param valueAsByte to write.
+     *
+     * @throws Exception
+     */
+    void writeAsBytes(
+            final long index,
+            final byte[] valueAsByte
+    )
+            throws Exception;
+
 }

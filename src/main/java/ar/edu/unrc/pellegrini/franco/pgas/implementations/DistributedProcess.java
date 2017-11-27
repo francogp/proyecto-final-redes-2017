@@ -14,18 +14,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * {@link Process} implementation for a Distributed Architecture.
- *
- * @param <I> value type carried by the Message.
  */
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
-class DistributedProcess< I >
-        implements Process< I > {
-    private final Map< Integer, Map< MessageType, BlockingQueue< Message< I > > > > blockingQueueMapByName;
-    private final InetAddress                                                       inetAddress;
-    private final int                                                               pid;
-    private final Integer                                                           port;
-    private final Map< Integer, List< I > >                                         values;
+class DistributedProcess
+        implements Process {
+    private final Map< Integer, Map< MessageType, BlockingQueue< Message > > > blockingQueueMapByName;
+    private final InetAddress                                                  inetAddress;
+    private final int                                                          pid;
+    private final Integer                                                      port;
+    private final Map< Integer, List< Object > >                               values;
 
     /**
      * @param pid              process identification. Pid = 1 is considered a coordinator.
@@ -38,7 +36,7 @@ class DistributedProcess< I >
             final int pid,
             final InetAddress inetAddress,
             final Integer port,
-            final Map< Integer, List< I > > valuesByPgasName
+            final Map< Integer, List< Object > > valuesByPgasName
     ) {
         this.pid = pid;
         this.inetAddress = inetAddress;
@@ -51,7 +49,7 @@ class DistributedProcess< I >
         blockingQueueMapByName = new ConcurrentHashMap<>(valuesByPgasName.size());
         final Set< Integer > pgasNames = valuesByPgasName.keySet();
         for ( final Integer pgasName : pgasNames ) {
-            final Map< MessageType, BlockingQueue< Message< I > > > blockingQueueMap = new ConcurrentHashMap<>(msgTypeList.size());
+            final Map< MessageType, BlockingQueue< Message > > blockingQueueMap = new ConcurrentHashMap<>(msgTypeList.size());
             for ( final MessageType type : msgTypeList ) {
                 if ( blockingQueueMap.put(type, new LinkedBlockingQueue<>()) != null ) {
                     throw new IllegalStateException("duplicated MessageTypes (" + type + ')');
@@ -83,15 +81,15 @@ class DistributedProcess< I >
 
     @Override
     public
-    List< I > getValues( final int pgasName ) {
+    List< Object > getValues( final int pgasName ) {
         return values.get(pgasName);
     }
 
     @Override
     public
-    void registerMsg( final Message< I > message )
+    void registerMsg( final Message message )
             throws InterruptedException {
-        final Map< MessageType, BlockingQueue< Message< I > > > messageTypeBlockingQueueMap = blockingQueueMapByName.get(message.getPgasName());
+        final Map< MessageType, BlockingQueue< Message > > messageTypeBlockingQueueMap = blockingQueueMapByName.get(message.getPgasName());
         if ( messageTypeBlockingQueueMap == null ) {
             throw new IllegalArgumentException("unknown pgasName: " + message.getPgasName() + " in message: " + message);
         }
@@ -100,14 +98,14 @@ class DistributedProcess< I >
 
     @Override
     public
-    Message< I > waitFor(
+    Message waitFor(
             final int pgasName,
             final MessageType messageType
     )
             throws InterruptedException {
         assert !messageType.isMiddlewareMessageType();
 
-        final Map< MessageType, BlockingQueue< Message< I > > > messageTypeBlockingQueueMap = blockingQueueMapByName.get(pgasName);
+        final Map< MessageType, BlockingQueue< Message > > messageTypeBlockingQueueMap = blockingQueueMapByName.get(pgasName);
         if ( messageTypeBlockingQueueMap == null ) {
             throw new IllegalArgumentException("unknown pgasName: " + pgasName + " msgType: " + messageType);
         }
