@@ -1,5 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.net;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -44,12 +46,12 @@ enum MessageType {
      * All the messages supported and processed by the middleware
      */
     public static final Set< MessageType > MIDDLEWARE_MESSAGES =
-            Set.of(AND_REDUCE_MSG, BARRIER_MSG, CONTINUE_BARRIER_MSG, CONTINUE_AND_REDUCE_MSG, END_MSG);
+            new HashSet<>(Arrays.asList(AND_REDUCE_MSG, BARRIER_MSG, CONTINUE_BARRIER_MSG, CONTINUE_AND_REDUCE_MSG, END_MSG));
 
     /**
      * All the messages supported and processed by a process.
      */
-    public static final Set< MessageType > PROCESS_MESSAGES = Set.of(READ_MSG, READ_RESPONSE_MSG, WRITE_MSG);
+    public static final Set< MessageType > PROCESS_MESSAGES = new HashSet<>(Arrays.asList(READ_MSG, READ_RESPONSE_MSG, WRITE_MSG));
 
     private final char charType;
 

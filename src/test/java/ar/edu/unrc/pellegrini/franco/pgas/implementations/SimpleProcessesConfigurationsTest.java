@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,7 +43,7 @@ class SimpleProcessesConfigurationsTest {
         port = 8002;
         assertThat(process.getInetAddress(), is(inetAddress));
         assertThat(process.getPort(), is(port));
-        assertThat(process.getValues(pgasName), is(List.of(7L, 8L)));
+        assertThat(process.getValues(pgasName), is(Arrays.asList(7L, 8L)));
 
         process = processesConfigurations.getProcessConfig(3);
         port = 8003;

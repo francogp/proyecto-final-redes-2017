@@ -107,7 +107,6 @@ class SimpleProcessesConfigurations< I >
 
             int pid = 1;
             for ( final Object processInJSON : processesInJSON ) {
-                //TODO enviar la configuracion a cada process, y NO TODO el archivo que puede ser muy grande
                 final JSONObject process     = (JSONObject) processInJSON;
                 final String     inetAddress = (String) process.get(JSON_INET_ADDRESS);
                 final Long       port        = (Long) process.get(JSON_PORT);

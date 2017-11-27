@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -44,7 +45,7 @@ class ListenerTest {
             sendMessage(msg3, datagramSocket);
             serverThread.join();
             if ( receivedMessages.isEmpty() ) { throw new AssertionError("server output is empty"); }
-            final List< Message< Long > > expected = List.of(msg1, msg2);
+            final List< Message< Long > > expected = Arrays.asList(msg1, msg2);
             assertThat(receivedMessages.containsAll(expected), is(true));
             assertThat(receivedMessages.size(), is(expected.size()));
         } catch ( final Exception e ) {

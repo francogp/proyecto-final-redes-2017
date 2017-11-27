@@ -116,7 +116,7 @@ El proyecto esta construido utilizando Gradle (incorporado en el
 repositorio). 
 
 ##### Requisitos
-- Java JDK 9 o superior.
+- Java JDK 8 o superior.
 - Tener configurada la variable de entorno ***JAVA_HOME***. 
 
 ##### Dependencias
