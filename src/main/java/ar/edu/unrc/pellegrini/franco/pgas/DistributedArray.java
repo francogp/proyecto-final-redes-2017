@@ -11,6 +11,11 @@ import java.util.stream.LongStream;
 import static ar.edu.unrc.pellegrini.franco.net.MessageType.*;
 import static java.util.logging.Logger.getLogger;
 
+/**
+ * A PGAS implementation using a Distributed Array logic.
+ *
+ * @param <I> value type carried by the Message.
+ */
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class DistributedArray< I >
@@ -23,6 +28,10 @@ class DistributedArray< I >
     private final int             name;
     private final long            pgasSize;
 
+    /**
+     * @param name       PGAS unique name.
+     * @param middleware to register this PGAS.
+     */
     public
     DistributedArray(
             final int name,
@@ -57,14 +66,18 @@ class DistributedArray< I >
     @Override
     public
     String asString() {
-        return LongStream.range(0L, pgasSize).mapToObj(index -> {
-            try {
-                return read(index).toString();
-            } catch ( Exception e ) {
-                getLogger(DistributedArray.class.getName()).log(Level.SEVERE, null, e);
-                return "ERROR";
-            }
-        }).collect(Collectors.joining(", "));
+        if ( middleware.isCoordinator() ) {
+            return LongStream.range(0L, pgasSize).mapToObj(index -> {
+                try {
+                    return read(index).toString();
+                } catch ( Exception e ) {
+                    getLogger(DistributedArray.class.getName()).log(Level.SEVERE, null, e);
+                    return "ERROR";
+                }
+            }).collect(Collectors.joining(", "));
+        } else {
+            return null;
+        }
     }
 
     private
@@ -83,12 +96,6 @@ class DistributedArray< I >
     public
     int getName() {
         return name;
-    }
-
-    @Override
-    public final
-    long getPgasSize() {
-        return pgasSize;
     }
 
     @Override
@@ -116,12 +123,11 @@ class DistributedArray< I >
     I read( final long index )
             throws Exception {
         final int i = (int) ( index - currentLowerIndex );
-        int       arraySize;
         if ( ( i < 0 ) || ( i >= getSize() ) ) {
             final int targetPid = findPidForIndex(index);
             middleware.sendTo(name, targetPid, READ_MSG, index, null);
-            final Message< I > response = middleware.waitFor(name, targetPid, READ_RESPONSE_MSG);
-            return response.getValueParameter();
+            final Message< I > response = middleware.receiveFrom(name, targetPid, READ_RESPONSE_MSG);
+            return response.getValue();
         } else {
             synchronized ( distArray ) {
                 return distArray.get(i);
@@ -131,8 +137,8 @@ class DistributedArray< I >
 
     @Override
     public final
-    void setDebugMode( final boolean mode ) {
-        middleware.setDebugMode(mode);
+    void setDebugMode( final boolean enable ) {
+        middleware.setDebugMode(enable);
     }
 
     @Override
@@ -142,6 +148,7 @@ class DistributedArray< I >
             final long index2
     )
             throws Exception {
+        //FIXME synchronized?
         final I temp = read(index1);
         write(index1, read(index2));
         write(index2, temp);

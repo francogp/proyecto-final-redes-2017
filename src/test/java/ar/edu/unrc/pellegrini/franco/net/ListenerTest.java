@@ -1,5 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.net;
 
+import ar.edu.unrc.pellegrini.franco.net.implementations.Listener;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import org.junit.jupiter.api.Test;
 
@@ -24,18 +25,11 @@ class ListenerTest {
     final
     void runTest() {
         try {
-            final int                      port             = 10001;
-            final DatagramSocket           datagramSocket   = new DatagramSocket(port);
-            final Queue< Message< Long > > receivedMessages = new ConcurrentLinkedQueue<>();
-            final Listener< Long > longMessageServer = new Listener<>(datagramSocket, receivedMessages::add, msg -> {
-                if ( msg.isEndMessage() ) {
-                    receivedMessages.add(msg);
-                    return true;
-                } else {
-                    return false;
-                }
-            }, 8, LongMessage::getInstance);
-            final Thread serverThread = new Thread(longMessageServer);
+            final int                      port              = 10001;
+            final DatagramSocket           datagramSocket    = new DatagramSocket(port);
+            final Queue< Message< Long > > receivedMessages  = new ConcurrentLinkedQueue<>();
+            final Listener< Long >         longMessageServer = new Listener<>(datagramSocket, receivedMessages::add, 8, LongMessage::getInstance);
+            final Thread                   serverThread      = new Thread(longMessageServer);
             serverThread.start();
             Thread.sleep(100L);
             final String          destAddress = "127.0.0.1";
@@ -51,7 +45,7 @@ class ListenerTest {
             sendMessage(msg3, datagramSocket);
             serverThread.join();
             if ( receivedMessages.isEmpty() ) { throw new AssertionError("server output is empty"); }
-            final List< Message< Long > > expected = List.of(msg1, msg2, msg3);
+            final List< Message< Long > > expected = List.of(msg1, msg2);
             assertThat(receivedMessages.containsAll(expected), is(true));
             assertThat(receivedMessages.size(), is(expected.size()));
         } catch ( final Exception e ) {

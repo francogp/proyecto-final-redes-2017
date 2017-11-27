@@ -65,12 +65,6 @@ class DistributedBubbleSortTest {
         }
 
         @Override
-        public
-        long getPgasSize() {
-            return array.size();
-        }
-
-        @Override
         public final
         int getSize() {
             return array.size();
@@ -99,7 +93,7 @@ class DistributedBubbleSortTest {
 
         @Override
         public
-        void setDebugMode( final boolean mode ) {
+        void setDebugMode( final boolean enable ) {
         }
 
         @Override

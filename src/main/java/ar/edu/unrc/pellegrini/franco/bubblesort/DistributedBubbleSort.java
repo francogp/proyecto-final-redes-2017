@@ -14,8 +14,17 @@ import static ar.edu.unrc.pellegrini.franco.net.implementations.DoubleMessage.DO
 import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.LONG_VALUE_PARAMETER_BYTE_SIZE;
 import static java.util.logging.Logger.getLogger;
 
+/**
+ * This program runs the bubble sort algorithm in a distributed array. This program must be executed in different processes/threads configured by a
+ * JSON config file (for more details see {@link SimpleProcessesConfigurations} implementation). The first process listed in the config file will be
+ * considered as the coordinator.
+ * <p>
+ * It can be used as a thread.
+ *
+ * @param <I> value to be sorted.
+ */
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
-public
+public final
 class DistributedBubbleSort< I extends Comparable< I > >
         implements Runnable {
     public static final String ARG_CONFIG_FILE = "configFile";
@@ -26,6 +35,13 @@ class DistributedBubbleSort< I extends Comparable< I > >
     private final Middleware< I > middleware;
     private String result = null;
 
+    /**
+     * @param pid                     of this process.
+     * @param processesConfigurations for all the processes.
+     * @param newMessageSupplier      a supplier of new {@link Message} instances.
+     * @param valueByteBufferSize     byte size of the value type I.
+     * @param debugMode               true to show debug logs.
+     */
     protected
     DistributedBubbleSort(
             final int pid,
@@ -44,13 +60,13 @@ class DistributedBubbleSort< I extends Comparable< I > >
     /**
      * BubbleSort clásico
      *
-     * @param longPGAS   sobre el cual aplicar el algoritmo
-     * @param lowerIndex el índice mas bajo del rango de valores a ordenar
-     * @param upperIndex el índice mas alto del rango de valores a ordenar
+     * @param distributedArray to sort.
+     * @param lowerIndex       in the range to sort.
+     * @param upperIndex       in the range to sort.
      */
     static
     < I extends Comparable< I > > void bubbleSort(
-            final PGAS< I > longPGAS,
+            final PGAS< I > distributedArray,
             final long lowerIndex,
             final long upperIndex
     )
@@ -59,9 +75,9 @@ class DistributedBubbleSort< I extends Comparable< I > >
         for ( long i = upperIndex; swapped && ( i >= lowerIndex ); i-- ) {
             swapped = false;
             for ( long j = lowerIndex; j < i; j++ ) {
-                if ( longPGAS.read(j).compareTo(longPGAS.read(j + 1L)) > 0 ) {
+                if ( distributedArray.read(j).compareTo(distributedArray.read(j + 1L)) > 0 ) {
                     swapped = true;
-                    longPGAS.swap(j, j + 1L);
+                    distributedArray.swap(j, j + 1L);
                 }
             }
         }
@@ -79,28 +95,32 @@ class DistributedBubbleSort< I extends Comparable< I > >
         final Runnable                     bubbleSort;
         final File                         configFile              = new File(arguments.parseString(ARG_CONFIG_FILE));
         final ProcessesConfigurations< ? > processesConfigurations = SimpleProcessesConfigurations.parseFromFile(configFile);
-
+        final boolean                      debugMode               = arguments.existsFlag(ARG_DEBUG_MODE);
         switch ( processesConfigurations.getPgasDataType() ) {
             case "Long":
                 bubbleSort = new DistributedBubbleSort<>(pid,
                         (ProcessesConfigurations< Long >) processesConfigurations,
                         LongMessage::getInstance,
                         LONG_VALUE_PARAMETER_BYTE_SIZE,
-                        arguments.existsFlag(ARG_DEBUG_MODE));
+                        debugMode);
                 break;
             case "Double":
                 bubbleSort = new DistributedBubbleSort<>(pid,
                         (ProcessesConfigurations< Double >) processesConfigurations,
                         DoubleMessage::getInstance,
                         DOUBLE_VALUE_PARAMETER_BYTE_SIZE,
-                        arguments.existsFlag(ARG_DEBUG_MODE));
+                        debugMode);
                 break;
             default:
                 throw new IllegalArgumentException("unknown dataType implementation");
         }
+        //Not as a thread, just as a method.
         bubbleSort.run();
     }
 
+    /**
+     * @return results of the sorting method
+     */
     public final
     String result() {
         return result;
@@ -133,9 +153,7 @@ class DistributedBubbleSort< I extends Comparable< I > >
                 finish = middleware.andReduce(finish);
             }
 
-            if ( middleware.isCoordinator() ) {
-                result = distributedArray.asString();
-            }
+            result = distributedArray.asString();
 
             middleware.closeListener();
         } catch ( final Exception e ) {

@@ -13,6 +13,9 @@ import static ar.edu.unrc.pellegrini.franco.bubblesort.DistributedBubbleSort.ARG
 import static ar.edu.unrc.pellegrini.franco.net.implementations.DoubleMessage.DOUBLE_VALUE_PARAMETER_BYTE_SIZE;
 import static ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage.LONG_VALUE_PARAMETER_BYTE_SIZE;
 
+/**
+ * Runs several processes as threads to solve BubbleSort as a distributed algorithm, for testing purposes.
+ */
 public final
 class NetSimulationUsingConfigFile {
     private

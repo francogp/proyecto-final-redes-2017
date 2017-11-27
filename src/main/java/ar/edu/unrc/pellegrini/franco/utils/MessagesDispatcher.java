@@ -18,6 +18,10 @@ class MessagesDispatcher< M >
     private final BlockingQueue< M >     queue;
     private boolean running = false;
 
+    /**
+     * @param messageConsumer    what to do with a message.
+     * @param isFinalMsgFunction true if the message represent a stop of this dispatcher.
+     */
     public
     MessagesDispatcher(
             final Consumer< M > messageConsumer,
@@ -31,11 +35,6 @@ class MessagesDispatcher< M >
     public
     void enqueue( final M msg ) {
         queue.add(msg);
-    }
-
-    public
-    boolean isRunning() {
-        return running;
     }
 
     @Override

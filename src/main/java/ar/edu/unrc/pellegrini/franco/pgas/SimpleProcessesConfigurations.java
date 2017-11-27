@@ -16,6 +16,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+/**
+ * used to store processes configurations, to distribute between PGAS processes.
+ *
+ * @param <I> value type carried by the Message.
+ */
 public
 class SimpleProcessesConfigurations< I >
         implements ProcessesConfigurations< I > {
@@ -49,7 +54,7 @@ class SimpleProcessesConfigurations< I >
      * JSON file Format:
      * <pre>{@code
      * {
-     *   "dataType":"<data type used in toSort>",
+     *   "dataType":"<data type used in toSort (Long or Double supported in current implementation)>",
      *   "processes": [
      *     {"inetAddress":"<process 1 location>", : "port": <port>,
      *      "distributedArrays": [
@@ -112,9 +117,9 @@ class SimpleProcessesConfigurations< I >
                         throw new IllegalArgumentException("wrong distributed arrays quantity in config file \"" + configFilePath + "\".");
                     }
                     for ( final Object valueInJSON : distributedArraysInJSON ) {
-                        final JSONObject dArrray      = (JSONObject) valueInJSON;
-                        final Long       dArrayName   = (Long) dArrray.get(JSON_NAME);
-                        final JSONArray  toSortInJSON = (JSONArray) dArrray.get(JSON_TO_SORT);
+                        final JSONObject dArray       = (JSONObject) valueInJSON;
+                        final Long       dArrayName   = (Long) dArray.get(JSON_NAME);
+                        final JSONArray  toSortInJSON = (JSONArray) dArray.get(JSON_TO_SORT);
                         final List< I >  toSort       = parseToSort(configFilePath, dataTypeToSort, toSortInJSON);
                         if ( distArraysValues.put(dArrayName.intValue(), toSort) != null ) {
                             throw new IllegalStateException(
@@ -128,8 +133,7 @@ class SimpleProcessesConfigurations< I >
                 processByPid.put(pid, processConfig);
 
                 //mapping from InetAddress+port to Process.
-                final Map< Integer, Process< I > > processByPorts =
-                        processByAddress.computeIfAbsent(processInetAddress, address -> new ConcurrentHashMap<>());
+                final Map< Integer, Process< I > > processByPorts = processByAddress.computeIfAbsent(processInetAddress, address -> new ConcurrentHashMap<>());
                 if ( processByPorts.put(port.intValue(), processConfig) != null ) {
                     throw new IllegalArgumentException(
                             "there's two processes with the same address : InetAddress=" + processInetAddress + " port=" + port);
@@ -213,30 +217,6 @@ class SimpleProcessesConfigurations< I >
 
     @Override
     public
-    Map< InetAddress, Map< Integer, Process< I > > > getProcessByAddress() {
-        return processByAddress;
-    }
-
-    @Override
-    public
-    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process< I > > > processByAddress ) {
-        this.processByAddress = processByAddress;
-    }
-
-    @Override
-    public
-    Map< Integer, Process< I > > getProcessByPid() {
-        return processByPid;
-    }
-
-    @Override
-    public
-    void setProcessByPid( final Map< Integer, Process< I > > processByPid ) {
-        this.processByPid = processByPid;
-    }
-
-    @Override
-    public
     Process< I > getProcessConfig( final int pid ) {
         return processByPid.get(pid);
     }
@@ -260,5 +240,17 @@ class SimpleProcessesConfigurations< I >
     public
     void setProcessQuantity( final int processQuantity ) {
         this.processQuantity = processQuantity;
+    }
+
+    @Override
+    public
+    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process< I > > > processByAddress ) {
+        this.processByAddress = processByAddress;
+    }
+
+    @Override
+    public
+    void setProcessByPid( final Map< Integer, Process< I > > processByPid ) {
+        this.processByPid = processByPid;
     }
 }

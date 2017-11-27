@@ -27,26 +27,26 @@ class LongMessage
 
     @Override
     public
-    void initValueFromBytes( final byte[] bytes )
+    void initBytesFromValue()
             throws InvalidValueParameterException {
-        try {
-            valueParameter = bytesToLong(bytes, VALUE_PARAMETER_BYTE_INDEX, VALUE_PARAMETER_BYTE_INDEX + LONG_VALUE_PARAMETER_BYTE_SIZE);
-        } catch ( final RuntimeException e ) {
-            throw new InvalidValueParameterException("Invalid bytesToLong conversion of " + Arrays.toString(bytes), e);
+        if ( value == null ) {
+            value = 0L;
         }
+        if ( !( value instanceof Long ) ) {
+            throw new InvalidValueParameterException("value must be a Long value");
+        }
+        final byte[] value = longToBytes(this.value);
+        System.arraycopy(value, 0, asBytes, VALUE_PARAMETER_BYTE_INDEX, LONG_VALUE_PARAMETER_BYTE_SIZE);
     }
 
     @Override
     public
-    void initValueInBytes()
+    void initValueFromBytes( final byte[] bytes )
             throws InvalidValueParameterException {
-        if ( valueParameter == null ) {
-            valueParameter = 0L;
+        try {
+            value = bytesToLong(bytes, VALUE_PARAMETER_BYTE_INDEX, VALUE_PARAMETER_BYTE_INDEX + LONG_VALUE_PARAMETER_BYTE_SIZE);
+        } catch ( final RuntimeException e ) {
+            throw new InvalidValueParameterException("Invalid bytesToLong conversion of " + Arrays.toString(bytes), e);
         }
-        if ( !( valueParameter instanceof Long ) ) {
-            throw new InvalidValueParameterException("valueParameter must be a Long value");
-        }
-        final byte[] value = longToBytes(valueParameter);
-        System.arraycopy(value, 0, asBytes, VALUE_PARAMETER_BYTE_INDEX, LONG_VALUE_PARAMETER_BYTE_SIZE);
     }
 }
