@@ -5,11 +5,9 @@ import java.util.Map;
 
 /**
  * Represents a configuration file parsed from JSON or other standard, that initialize the PGAS.
- *
- * @param <I> data type to parse from a configuration file
  */
 public
-interface ProcessesConfigurations< I > {
+interface ProcessesConfigurations {
 
     /**
      * @return data type supported by the PGAS.
@@ -23,7 +21,7 @@ interface ProcessesConfigurations< I > {
      *
      * @return process configuration of a specific pid.
      */
-    Process< I > getProcessConfig( final int pid );
+    Process getProcessConfig( final int pid );
 
     /**
      * @param address of a process.
@@ -31,7 +29,7 @@ interface ProcessesConfigurations< I > {
      *
      * @return process configuration from a process location.
      */
-    Process< I > getProcessConfig(
+    Process getProcessConfig(
             final InetAddress address,
             final int port
     );
@@ -43,7 +41,7 @@ interface ProcessesConfigurations< I > {
 
     void setProcessQuantity( final int processQuantity );
 
-    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process< I > > > processByAddress );
+    void setProcessByAddress( final Map< InetAddress, Map< Integer, Process > > processByAddress );
 
-    void setProcessByPid( final Map< Integer, Process< I > > processByPid );
+    void setProcessByPid( final Map< Integer, Process > processByPid );
 }

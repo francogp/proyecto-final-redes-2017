@@ -18,16 +18,16 @@ class SimpleProcessesConfigurationsTest {
     @Test
     final
     void generalConfig() {
-        final ClassLoader                     classLoader             = getClass().getClassLoader();
-        final File                            file                    =
+        final ClassLoader             classLoader             = getClass().getClassLoader();
+        final File                    file                    =
                 new File(classLoader.getResource("ar/edu/unrc/pellegrini/franco/net/processSpecificLongConfigTest.json").getFile());
-        final ProcessesConfigurations< Long > processesConfigurations = SimpleProcessesConfigurations.parseFromFile(file);
+        final ProcessesConfigurations processesConfigurations = SimpleProcessesConfigurations.parseFromFile(file);
 
         assertThat(processesConfigurations.getProcessQuantity(), is(3));
         assertThat(processesConfigurations.getProcessQuantity(), is(processesConfigurations.getProcessQuantity()));
 
-        Process< Long > process     = processesConfigurations.getProcessConfig(1);
-        InetAddress     inetAddress = null;
+        Process     process     = processesConfigurations.getProcessConfig(1);
+        InetAddress inetAddress = null;
         try {
             inetAddress = InetAddress.getByName("localhost");
         } catch ( final UnknownHostException e ) {

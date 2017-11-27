@@ -62,7 +62,7 @@ enum MessageType {
     /**
      * @param type to be parsed.
      *
-     * @return a {@link MessageType} parsed from a char.
+     * @return a MessageType parsed from a char.
      */
     public static
     MessageType valueOf( final char type ) {
@@ -89,7 +89,7 @@ enum MessageType {
     }
 
     /**
-     * @return byte representation of the {@link MessageType}
+     * @return byte representation of the MessageType
      */
     public
     byte asByte() {
@@ -97,7 +97,7 @@ enum MessageType {
     }
 
     /**
-     * @return char representation of the {@link MessageType}
+     * @return char representation of the MessageType
      */
     public
     char asChar() {
@@ -105,7 +105,7 @@ enum MessageType {
     }
 
     /**
-     * @return true if the {@link MessageType} is for a middleware only.
+     * @return true if the MessageType is for a middleware only.
      */
     public
     boolean isMiddlewareMessageType() {

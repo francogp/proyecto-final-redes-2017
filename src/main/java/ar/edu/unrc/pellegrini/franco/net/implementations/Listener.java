@@ -7,44 +7,38 @@ import ar.edu.unrc.pellegrini.franco.utils.MessagesDispatcher;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 
-import static ar.edu.unrc.pellegrini.franco.net.AbstractMessage.PAYLOAD_PREFIX_LENGTH;
+import static ar.edu.unrc.pellegrini.franco.net.implementations.SimpleMessage.PAYLOAD_PREFIX_LENGTH;
 import static java.util.logging.Logger.getLogger;
 
 /**
  * A listener read UDP packages, parse them into {@link Message} and deliver them to a {@link MessagesDispatcher}.
  *
- * @param <I> value to be carried by the message.
  */
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
-class Listener< I >
+class Listener
         implements Runnable {
 
-    private final MessagesDispatcher< Message< I > > messagesDispatcher;
-    private final Thread                             msgQueueThread;
-    private final Supplier< Message< I > >           newMessageSupplier;
-    private final int                                payloadLength;
-    private final DatagramSocket                     socket;
+    private final MessagesDispatcher< Message > messagesDispatcher;
+    private final Thread                        msgQueueThread;
+    private final int                           payloadLength;
+    private final DatagramSocket                socket;
 
     /**
-     * @param socket              to listen.
-     * @param messageConsumer     implementation of what to do with the message when processed.
-     * @param valueByteBufferSize byte size of the value type I.
-     * @param newMessageSupplier  a supplier of new {@link Message} instances.
+     * @param socket                 to listen.
+     * @param messageConsumer        implementation of what to do with the message when processed.
+     * @param maxValueByteBufferSize maximum byte size of an object value to be transported in a message.
      */
     public
     Listener(
             final DatagramSocket socket,
-            final Consumer< Message< I > > messageConsumer,
-            final int valueByteBufferSize,
-            final Supplier< Message< I > > newMessageSupplier
+            final Consumer< Message > messageConsumer,
+            final int maxValueByteBufferSize
     ) {
         this.socket = socket;
-        payloadLength = PAYLOAD_PREFIX_LENGTH + valueByteBufferSize;
-        this.newMessageSupplier = newMessageSupplier;
+        payloadLength = PAYLOAD_PREFIX_LENGTH + maxValueByteBufferSize;
         messagesDispatcher = new MessagesDispatcher<>(messageConsumer, Message::isEndMessage);
         msgQueueThread = new Thread(messagesDispatcher);
     }
@@ -58,7 +52,7 @@ class Listener< I >
                 final DatagramPacket packet = new DatagramPacket(new byte[payloadLength], payloadLength);
                 socket.receive(packet);
                 try {
-                    final Message< I > received = newMessageSupplier.get();
+                    final Message received = new SimpleMessage();
                     received.initUsing(packet);
                     messagesDispatcher.enqueue(received);
                     if ( received.isEndMessage() ) {

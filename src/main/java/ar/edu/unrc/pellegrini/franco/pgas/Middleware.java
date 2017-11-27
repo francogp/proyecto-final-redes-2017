@@ -2,14 +2,18 @@ package ar.edu.unrc.pellegrini.franco.pgas;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.net.MessageType;
+import ar.edu.unrc.pellegrini.franco.net.implementations.Listener;
 
 /**
  * Abstraction layer that provide communication, synchronization tools, messages dispatching, etc, for the PGAS used.
- *
- * @param <I> value type carried by the Message.
  */
 public
-interface Middleware< I > {
+interface Middleware {
+
+    /**
+     * Value used to ignore the message value content.
+     */
+    int IGNORED_VALUE_BYTE_SIZE = 0;
 
     /**
      * Generates a reduction of the value local copy applying the logic operand AND. It also acts as synchronization point like a barrier.
@@ -44,7 +48,7 @@ interface Middleware< I > {
      *
      * @return the process configurations.
      */
-    Process< I > getProcessConfiguration( final int pid );
+    Process getProcessConfiguration( final int pid );
 
     /**
      * @return process quantity managed by the middleware.
@@ -77,7 +81,7 @@ interface Middleware< I > {
      *
      * @throws InterruptedException
      */
-    Message< I > receiveFrom(
+    Message receiveFrom(
             final int pgasName,
             final int senderPid,
             final MessageType messageType
@@ -87,16 +91,17 @@ interface Middleware< I > {
     /**
      * @param pgas to be registered in the middleware.
      */
-    void registerPGAS( final PGAS< I > pgas );
+    void registerPGAS( final PGAS< ? > pgas );
 
     /**
      * Send a message to a specific distributed PGAS.
      *
-     * @param pgasName    target pgas name.
-     * @param targetPid   target pid.
-     * @param messageType message type.
-     * @param index       of the PGAS to be used.
-     * @param value       to read or write in the target PGAS.
+     * @param pgasName       target pgas name.
+     * @param targetPid      target pid.
+     * @param messageType    message type.
+     * @param index          of the PGAS to be used.
+     * @param valueBytesSize effective size of valueAsByte
+     * @param valueAsBytes   to read or write in the target PGAS.
      *
      * @throws Exception
      */
@@ -105,27 +110,30 @@ interface Middleware< I > {
             final int targetPid,
             final MessageType messageType,
             final long index,
-            final I value
+            final int valueBytesSize,
+            final byte[] valueAsBytes
     )
             throws Exception;
 
     /**
      * Send a message to a specific distributed PGAS.
      *
-     * @param pgasName      target pgas name.
-     * @param targetProcess target process.
-     * @param msgType       message type.
-     * @param index         of the PGAS to be used.
-     * @param value         to read or write in the target PGAS.
+     * @param pgasName       target pgas name.
+     * @param targetProcess  target process.
+     * @param msgType        message type.
+     * @param index          of the PGAS to be used.
+     * @param valueBytesSize effective size of valueAsByte
+     * @param valueAsBytes   to read or write in the target PGAS.
      *
      * @throws Exception
      */
     void sendTo(
             final int pgasName,
-            final Process< I > targetProcess,
+            final Process targetProcess,
             final MessageType msgType,
             final long index,
-            final I value
+            final int valueBytesSize,
+            final byte[] valueAsBytes
     )
             throws Exception;
 
@@ -135,7 +143,7 @@ interface Middleware< I > {
     void setDebugMode( final boolean enabled );
 
     /**
-     * Start a {@link ar.edu.unrc.pellegrini.franco.net.implementations.Listener} to wait for {@link Message}.
+     * Start a {@link Listener} to wait for {@link Message}.
      */
     void startServer();
 }
