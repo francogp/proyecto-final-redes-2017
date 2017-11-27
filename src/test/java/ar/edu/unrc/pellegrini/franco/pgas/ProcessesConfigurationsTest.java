@@ -1,5 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
+import ar.edu.unrc.pellegrini.franco.pgas.implementations.SimpleProcessesConfigurations;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

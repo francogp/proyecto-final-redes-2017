@@ -1,6 +1,8 @@
-package ar.edu.unrc.pellegrini.franco.pgas;
+package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
+import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
+import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
 
 import java.util.ArrayList;
 import java.util.List;

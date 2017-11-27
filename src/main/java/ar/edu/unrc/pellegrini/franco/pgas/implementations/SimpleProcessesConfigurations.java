@@ -1,5 +1,7 @@
-package ar.edu.unrc.pellegrini.franco.pgas;
+package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
+import ar.edu.unrc.pellegrini.franco.pgas.Process;
+import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

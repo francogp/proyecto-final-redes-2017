@@ -1,5 +1,7 @@
 package ar.edu.unrc.pellegrini.franco.net;
 
+import ar.edu.unrc.pellegrini.franco.net.exceptions.InvalidValueParameterException;
+
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Arrays;

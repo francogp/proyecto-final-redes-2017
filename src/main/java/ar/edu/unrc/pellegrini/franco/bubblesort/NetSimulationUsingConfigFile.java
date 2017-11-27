@@ -3,7 +3,7 @@ package ar.edu.unrc.pellegrini.franco.bubblesort;
 import ar.edu.unrc.pellegrini.franco.net.implementations.DoubleMessage;
 import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
 import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
-import ar.edu.unrc.pellegrini.franco.pgas.SimpleProcessesConfigurations;
+import ar.edu.unrc.pellegrini.franco.pgas.implementations.SimpleProcessesConfigurations;
 import ar.edu.unrc.pellegrini.franco.utils.ArgumentLoader;
 
 import java.io.File;

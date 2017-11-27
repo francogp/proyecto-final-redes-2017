@@ -1,8 +1,8 @@
 package ar.edu.unrc.pellegrini.franco.net.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.AbstractMessage;
-import ar.edu.unrc.pellegrini.franco.net.InvalidValueParameterException;
 import ar.edu.unrc.pellegrini.franco.net.Message;
+import ar.edu.unrc.pellegrini.franco.net.exceptions.InvalidValueParameterException;
 
 import java.util.Arrays;
 

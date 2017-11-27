@@ -1,4 +1,4 @@
-package ar.edu.unrc.pellegrini.franco.net;
+package ar.edu.unrc.pellegrini.franco.net.exceptions;
 
 public
 class InvalidValueParameterException

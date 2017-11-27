@@ -1,7 +1,8 @@
-package ar.edu.unrc.pellegrini.franco.pgas;
+package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.net.MessageType;
+import ar.edu.unrc.pellegrini.franco.pgas.Process;
 
 import java.net.InetAddress;
 import java.util.List;

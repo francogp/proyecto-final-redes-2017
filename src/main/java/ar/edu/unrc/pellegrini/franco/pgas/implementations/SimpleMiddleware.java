@@ -1,8 +1,12 @@
-package ar.edu.unrc.pellegrini.franco.pgas;
+package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.net.MessageType;
 import ar.edu.unrc.pellegrini.franco.net.implementations.Listener;
+import ar.edu.unrc.pellegrini.franco.pgas.Middleware;
+import ar.edu.unrc.pellegrini.franco.pgas.PGAS;
+import ar.edu.unrc.pellegrini.franco.pgas.Process;
+import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
