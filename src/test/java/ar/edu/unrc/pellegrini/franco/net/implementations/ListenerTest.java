@@ -1,7 +1,6 @@
-package ar.edu.unrc.pellegrini.franco.net;
+package ar.edu.unrc.pellegrini.franco.net.implementations;
 
-import ar.edu.unrc.pellegrini.franco.net.implementations.Listener;
-import ar.edu.unrc.pellegrini.franco.net.implementations.LongMessage;
+import ar.edu.unrc.pellegrini.franco.net.Message;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

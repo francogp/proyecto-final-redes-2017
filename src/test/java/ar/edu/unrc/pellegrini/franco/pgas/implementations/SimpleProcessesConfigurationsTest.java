@@ -1,6 +1,7 @@
-package ar.edu.unrc.pellegrini.franco.pgas;
+package ar.edu.unrc.pellegrini.franco.pgas.implementations;
 
-import ar.edu.unrc.pellegrini.franco.pgas.implementations.SimpleProcessesConfigurations;
+import ar.edu.unrc.pellegrini.franco.pgas.Process;
+import ar.edu.unrc.pellegrini.franco.pgas.ProcessesConfigurations;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -13,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings( { "ReuseOfLocalVariable", "ClassWithoutConstructor", "ClassIndependentOfModule" } )
-class ProcessesConfigurationsTest {
+class SimpleProcessesConfigurationsTest {
     @Test
     final
     void generalConfig() {
