@@ -13,10 +13,6 @@ public abstract
 class AbstractMessage< I >
         implements Message< I > {
     /**
-     * byte index of the index message parameter.
-     */
-    public static final int         INDEX_PARAMETER_BYTE_INDEX  = 5;
-    /**
      * byte length of the index message parameter.
      */
     public static final int         INDEX_PARAMETER_BYTE_LENGTH = 8;
@@ -31,11 +27,15 @@ class AbstractMessage< I >
     /**
      * byte index of the message type name.
      */
-    public static final int         TYPE_BYTE_INDEX             = 4;
+    public static final int         TYPE_BYTE_INDEX             = PGAS_NAME_BYTE_INDEX + PGAS_NAME_BYTE_LENGTH;//4;
     /**
      * byte length of the message type name.
      */
     public static final int         TYPE_BYTE_LENGTH            = 1;
+    /**
+     * byte index of the index message parameter.
+     */
+    public static final int         INDEX_PARAMETER_BYTE_INDEX  = TYPE_BYTE_INDEX + TYPE_BYTE_LENGTH;//5;
     /**
      * total byte length of the message without the vale.
      */
@@ -43,7 +43,7 @@ class AbstractMessage< I >
     /**
      * byte index of the value message parameter.
      */
-    public static final int         VALUE_PARAMETER_BYTE_INDEX  = 13;
+    public static final int         VALUE_PARAMETER_BYTE_INDEX  = INDEX_PARAMETER_BYTE_INDEX + INDEX_PARAMETER_BYTE_LENGTH; //13
     protected           InetAddress address                     = null;
     protected           byte[]      asBytes                     = null;
     protected           long        index                       = 0L;
