@@ -245,7 +245,7 @@ en que aparecen descritos sera el PID que tendrá cada proceso, comenzando desde
 * `port`: Puerto que utiliza el proceso.
 * `distributedArrays`: Lista de todos los arreglos distribuidos que se utilizaran en el bubble sort 
 (solo uno es usado en estos ejemplos, pero soporta multiples).
-* `name`: Nombre identificador de un PGAS, por si se necesita usar de varios a la vez.
+* `name`: Nombre identificador de un PGAS, por si se necesita usar varios a la vez.
 * `toSort` (opcional): Lista de elementos que el PGAS tiene para trabajar en el proceso actual. Si `toSort`
 no esta presente, significa que el parser de configuraciones ignorará los valores de dicho proceso. Esto
 nos permite crear archivos de configuración específicos para cada proceso ahorrando memoria en caso de 
