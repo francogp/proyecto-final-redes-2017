@@ -97,7 +97,7 @@ Algorithms and Systems. Cambridge University Press. ISBN-13:
 
 [2] [Partitioned Global Address Space.](https://en.wikipedia.org/wiki/Partitioned_global_address_space)
 
-## 3. Diseño
+## 3. Implementación
 Para forzar un arreglo mas grande de lo que normalmente soportaría un arreglo de java 
 (el cual soporta Integer.MAX_VALUE en su capacidad), se decidió utilizar un arreglos 
 distribuidos con capacidad Long.MAX_VALUE. Cada PGAS soportara por proceso un espacio de
@@ -108,12 +108,17 @@ La organización general de las clases importantes son:
 ![Figura 2: Diseño](https://i.imgur.com/DGVs8dN.png)
 
 ### 3.1. PGAS
-Se soportan valores genéricos parametrizado por `PGAS<I>`. Se provee una implementación 
+Se soportan valores genéricos de `PGAS<I>`. Se provee una implementación 
 genérica sobre `DistributedArray<I>` (arreglos distribuidos), y 2 implementaciones para 
-soportar los tipos de datos Long y Double.
+soportar los tipos de datos Long y Double. Pueden utilizarse varios PGAS diferentes en un mismo
+programa siempre y cuando se les asignen nombres diferentes entre ellos (únicos).
 
 ### 3.2. Middleware
 Provee una implementación independiente del tipos de datos transportados por los mensajes.
+Este utiliza un Listener el cual se encarga de escuchar mensajes en un thread diferente, 
+y entrega rápidamente los mensajes a un MessageDispatcher para volver a escuchar nuevos mensajes.
+También hace uso de `ProcessesConfigurations` para configurar y administrar los 
+procesos y PGAS utilizados.
 
 ### 3.3. Message
 Los mensajes codifican su contenido en bytes[]. Tienen una cabecera común a todos ellos, 
@@ -200,9 +205,9 @@ parámetros son los recomendados para trabajar con el proyecto:
 - `gradlew junitPlatformTest`:  ejecuta los test de JUnit.
 - `gradlew javadoc`:  compila javadoc.
 
-## 5. Uso del Arreglo Distribuido
+## 5. Uso del Arreglo Distribuido para el programa Bubble Sort
 
-##### 5.1. Crear un archivo de configuración en formato JSON.
+##### 5.1. Crear un archivo de configuración en formato JSON
  Utilizando UTF-8, utilizar el el formato que se describe a continuación mediante un ejemplo de uso:
 ```json
 {
@@ -245,10 +250,14 @@ nos permite crear archivos de configuración específicos para cada proceso ahor
 existir MUCHOS valores. Solo es necesario colocar valores en el `toSort` correspondiente al proceso que se 
 va a ejecutar. 
 
-##### 5.2. Para ejecutar solo un proceso:
- Cada proceso debe ser ejecutado de manera independiente. La ejecución de un proceso consta de tres parámetros:
+**Nota**: En el repositorio ya se encuentra un archivo .json de ejemplo para pruebas, llamado `exampleConfig.json`.
+
+##### 5.2. Ejecutar procesos involucrados
+ Cada proceso debe ser ejecutado de manera independiente. Se debería ejecutar un proceso
+ por cada "processes" listado en el archivo de configuración. 
  
- * `pid`: Identificador del proceso a ejecutar, correspondiente al establecido en el archivo de configuraciones.
+ La ejecución de un proceso consta de tres parámetros:
+  * `pid`: Identificador del proceso a ejecutar, correspondiente al establecido en el archivo de configuraciones.
  * `configFile`: Dirección del archivo de configuración. Si el path tiene espacios, encerrar todo el parámetro
  entre comillas, por ejemplo `"configFile=/home/carpeta de ejemplo/exampleConfig.json"`.
  * `-debug` (opcional): Si esta presente, se mostrará los mensajes enviados y recibidos por el proceso.
@@ -260,14 +269,18 @@ java -cp build/libs/proyecto-final-redes-2017-1.0.0.jar ar.edu.unrc.pellegrini.f
 ```
  ejecuta el proceso con los datos correspondiente al PID 2 (el segundo de la lista de configuraciones).
  
-## 6. Uso de las simulaciones de prueba con Arreglo Distribuido
-Para ejecutar una simulación de varios procesos (utilizando threads) configurados mediante el archivo 
-"exampleConfig.json" ubicado en el directorio raíz del repositorio, ejecutar:
+## 6. Uso de la simulación de prueba utilizando varios procesos distribuidos
+Para ejecutar una simulación de varios procesos (utilizando threads) configurados 
+mediante un archivo de configuración json (como se definió en 5.1), ejecutar:
 ```
 cd "cloned project directory"
 java -cp build/libs/proyecto-final-redes-2017-1.0.0.jar ar.edu.unrc.pellegrini.franco.bubblesort.NetSimulationUsingConfigFile "configFile=exampleConfig.json" -debug 
 ``` 
-El parámetro `debug`, si está presente, nos deja ver los mensajes enviados y recibidos en el calculo del Bubble Sort.
+* El parámetro `debug`, si está presente, nos deja ver los mensajes enviados y 
+recibidos en el calculo del Bubble Sort.
+* El parámetro `configFile` utilizara el archivo de configuración "exampleConfig.json"
+ ubicado en el directorio raíz del repositorio, para inicializar todos los procesos/hilos
+ necesarios para solucionar el problema mediante Bubble Sort Distribuido.
 
 ## Licencia
 [![GNU GPL v3.0](http://www.gnu.org/graphics/gplv3-127x51.png)](http://www.gnu.org/licenses/gpl.html)
