@@ -2,7 +2,6 @@ package ar.edu.unrc.pellegrini.franco.net.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
 import ar.edu.unrc.pellegrini.franco.net.MessageType;
-import ar.edu.unrc.pellegrini.franco.net.exceptions.InvalidValueParameterException;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -148,8 +147,7 @@ class SimpleMessage
             final long index,
             final int valueBytesSize,
             final byte[] valueAsBytes
-    )
-            throws InvalidValueParameterException {
+    ) {
         this.pgasName = pgasName;
         this.address = address;
         this.port = port;
@@ -176,8 +174,7 @@ class SimpleMessage
 
     @Override
     public
-    void initUsing( final DatagramPacket packet )
-            throws InvalidValueParameterException {
+    void initUsing( final DatagramPacket packet ) {
         address = packet.getAddress();
         port = packet.getPort();
         asBytes = packet.getData();

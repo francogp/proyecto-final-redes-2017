@@ -90,11 +90,10 @@ class DistributedBubbleSort< I extends Comparable< I > >
                 bubbleSort = new DistributedBubbleSort<>(distributedArray, middleware, debugMode);
                 break;
             }
-            case "Double": {
+            case "Double":
                 final DistributedArray< Double > distributedArray = new DoubleDistributedArray(PGAS_NAME, middleware);
                 bubbleSort = new DistributedBubbleSort<>(distributedArray, middleware, debugMode);
                 break;
-            }
             default:
                 throw new IllegalArgumentException("unknown dataType implementation");
         }

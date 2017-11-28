@@ -1,7 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.net.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.net.exceptions.InvalidValueParameterException;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
@@ -18,7 +17,7 @@ class SimpleMessageTest {
     private final Message msg;
 
     SimpleMessageTest()
-            throws UnknownHostException, InvalidValueParameterException {
+            throws UnknownHostException {
         msg = new SimpleMessage();
         msg.initUsing(11, InetAddress.getLocalHost(), 0, READ_MSG, 15L, 8, longToBytes(value));
     }

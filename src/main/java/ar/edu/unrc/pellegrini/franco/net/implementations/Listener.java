@@ -1,7 +1,6 @@
 package ar.edu.unrc.pellegrini.franco.net.implementations;
 
 import ar.edu.unrc.pellegrini.franco.net.Message;
-import ar.edu.unrc.pellegrini.franco.net.exceptions.InvalidValueParameterException;
 import ar.edu.unrc.pellegrini.franco.utils.MessagesDispatcher;
 
 import java.net.DatagramPacket;
@@ -14,7 +13,6 @@ import static java.util.logging.Logger.getLogger;
 
 /**
  * A listener read UDP packages, parse them into {@link Message} and deliver them to a {@link MessagesDispatcher}.
- *
  */
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
@@ -51,15 +49,11 @@ class Listener
             while ( running ) {
                 final DatagramPacket packet = new DatagramPacket(new byte[payloadLength], payloadLength);
                 socket.receive(packet);
-                try {
-                    final Message received = new SimpleMessage();
-                    received.initUsing(packet);
-                    messagesDispatcher.enqueue(received);
-                    if ( received.isEndMessage() ) {
-                        running = false;
-                    }
-                } catch ( final InvalidValueParameterException e ) {
-                    getLogger(Listener.class.getName()).log(Level.SEVERE, "Cannot parse DatagramPacket: " + packet, e);
+                final Message received = new SimpleMessage();
+                received.initUsing(packet);
+                messagesDispatcher.enqueue(received);
+                if ( received.isEndMessage() ) {
+                    running = false;
                 }
             }
             socket.close();

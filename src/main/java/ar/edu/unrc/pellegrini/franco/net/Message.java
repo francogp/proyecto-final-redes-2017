@@ -1,6 +1,5 @@
 package ar.edu.unrc.pellegrini.franco.net;
 
-import ar.edu.unrc.pellegrini.franco.net.exceptions.InvalidValueParameterException;
 import ar.edu.unrc.pellegrini.franco.net.implementations.Listener;
 
 import java.net.DatagramPacket;
@@ -54,11 +53,8 @@ interface Message {
 
     /**
      * @param packet initialize a message using a {@link DatagramPacket} data.
-     *
-     * @throws InvalidValueParameterException an error trying to parse the data bytes into a message.
      */
-    void initUsing( final DatagramPacket packet )
-            throws InvalidValueParameterException;
+    void initUsing( final DatagramPacket packet );
 
     /**
      * Initialize a message using custom values.
@@ -69,8 +65,6 @@ interface Message {
      * @param type         message type.
      * @param index        a PGAS index value (not always used).
      * @param valueAsBytes a message value to transport (not always used).
-     *
-     * @throws InvalidValueParameterException an error trying to parse the data bytes into a message.
      */
     void initUsing(
             final int pgasName,
@@ -80,8 +74,7 @@ interface Message {
             final long index,
             final int valueBytesSize,
             final byte[] valueAsBytes
-    )
-            throws InvalidValueParameterException;
+    );
 
     /**
      * @return true if this message must end the middleware listener.
