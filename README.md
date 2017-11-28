@@ -116,8 +116,8 @@ programa siempre y cuando se les asignen nombres diferentes entre ellos (únicos
 ### 3.2. Middleware
 Provee una implementación independiente del tipos de datos transportados por los mensajes.
 Este utiliza un Listener el cual se encarga de escuchar mensajes en un thread diferente, 
-y entrega rápidamente los mensajes a un MessageDispatcher para volver a escuchar nuevos mensajes.
-También hace uso de `ProcessesConfigurations` para configurar y administrar los 
+y entrega rápidamente los mensajes a un MessageDispatcher para asi volver a escuchar 
+nuevos mensajes. También hace uso de `ProcessesConfigurations` para configurar y administrar los 
 procesos y PGAS utilizados.
 
 ### 3.3. Message
@@ -190,7 +190,8 @@ herramientas y scripts se encuentran en el.
 
 ### 4.1. Requisitos
 - Java JDK 8 o superior.
-- Tener configurada la variable de entorno ***JAVA_HOME***. 
+- Tener configurada la variable de entorno ***JAVA_HOME*** o en caso contrario GRADLE se 
+negará a compilar. 
 
 ### 4.2. Dependencias
 - Se resolverán automáticamente al utilizar alguna actividad de Gradle. 
@@ -207,8 +208,9 @@ parámetros son los recomendados para trabajar con el proyecto:
 
 ## 5. Uso del Arreglo Distribuido para el programa Bubble Sort
 
-##### 5.1. Crear un archivo de configuración en formato JSON
- Utilizando UTF-8, utilizar el el formato que se describe a continuación mediante un ejemplo de uso:
+### 5.1. Crear un archivo de configuración en formato JSON
+ Utilizando UTF-8, utilizar el formato que se describe a continuación mediante un 
+ ejemplo de uso:
 ```json
 {
     "dataType":"Long",
@@ -252,24 +254,26 @@ va a ejecutar.
 
 **Nota**: En el repositorio ya se encuentra un archivo .json de ejemplo para pruebas, llamado `exampleConfig.json`.
 
-##### 5.2. Ejecutar procesos involucrados
+### 5.2. Ejecutar procesos involucrados
  Cada proceso debe ser ejecutado de manera independiente. Se debería ejecutar un proceso
  por cada "processes" listado en el archivo de configuración. 
  
  La ejecución de un proceso consta de tres parámetros:
-  * `pid`: Identificador del proceso a ejecutar, correspondiente al establecido en el archivo de configuraciones.
+ * `pid`: Identificador del proceso a ejecutar, correspondiente al establecido en el archivo de configuraciones.
  * `configFile`: Dirección del archivo de configuración. Si el path tiene espacios, encerrar todo el parámetro
  entre comillas, por ejemplo `"configFile=/home/carpeta de ejemplo/exampleConfig.json"`.
  * `-debug` (opcional): Si esta presente, se mostrará los mensajes enviados y recibidos por el proceso.
  
- Por ejemplo:
+ **Nota**: Se recomienda ejecutar el proceso con `pid=1` primero, ya que este es considerado el coordinador.
+   
+### 5.3. Ejemplo:
+ Para ejecuta rel proceso con los datos correspondiente al PID 2 (el segundo de la lista de configuraciones):
 ```
 cd "cloned project directory"
 java -cp build/libs/proyecto-final-redes-2017-1.0.0.jar ar.edu.unrc.pellegrini.franco.bubblesort.DistributedBubbleSort pid=2 "configFile=exampleConfig.json" 
 ```
- ejecuta el proceso con los datos correspondiente al PID 2 (el segundo de la lista de configuraciones).
  
-## 6. Uso de la simulación de prueba utilizando varios procesos distribuidos
+## 6. Uso de simulación de prueba utilizando varios procesos distribuidos (hilos)
 Para ejecutar una simulación de varios procesos (utilizando threads) configurados 
 mediante un archivo de configuración json (como se definió en 5.1), ejecutar:
 ```
