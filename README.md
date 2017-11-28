@@ -121,8 +121,11 @@ pero pueden transportar un valor arbitrario al final de los mismos, cuya interpr
 deja para el usuario.
  
 ### 3.3.1 SimpleMessage
+
 Un mensaje esta compuesto por:
+
 ![Figura 3: Mensaje](https://i.imgur.com/Himjraz.png)
+
 Donde:
 * `PGAS name`: Son 4 bytes que se interpretan como un entero. Este numero es el 
 identificador (nombre) del PGAS al cual se dirige el mensaje.
@@ -264,7 +267,7 @@ Para ejecutar una simulación de varios procesos (utilizando threads) configurad
 cd "cloned project directory"
 java -cp build/libs/proyecto-final-redes-2017-1.0.0.jar ar.edu.unrc.pellegrini.franco.bubblesort.NetSimulationUsingConfigFile "configFile=exampleConfig.json" -debug 
 ``` 
-El parámetro `debug` nos deja ver los mensajes enviados y recibidos en el calculo del Bubble Sort.
+El parámetro `debug`, si está presente, nos deja ver los mensajes enviados y recibidos en el calculo del Bubble Sort.
 
 ## Licencia
 [![GNU GPL v3.0](http://www.gnu.org/graphics/gplv3-127x51.png)](http://www.gnu.org/licenses/gpl.html)
