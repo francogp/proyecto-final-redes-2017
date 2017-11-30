@@ -16,7 +16,8 @@ interface Middleware {
     int IGNORED_VALUE_BYTE_SIZE = 0;
 
     /**
-     * Generates a reduction of the value local copy applying the logic operand AND. It also acts as synchronization point like a barrier.
+     * Generates a reduction of the value local copy applying the logic operand AND. It also acts as synchronization point like
+     * a barrier.
      *
      * @param value to apply the AND reduction.
      *

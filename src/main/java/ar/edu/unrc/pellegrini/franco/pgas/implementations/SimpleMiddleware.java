@@ -115,10 +115,20 @@ class SimpleMiddleware
             }
             for ( int targetPid = 2; targetPid <= processQuantity; targetPid++ ) {
                 assert targetPid != COORDINATOR_PID;
-                sendTo(IGNORED_PGAS_NAME, targetPid, CONTINUE_AND_REDUCE_MSG, parseBooleanAsResponse(andReduce), IGNORED_VALUE_BYTE_SIZE, null);
+                sendTo(IGNORED_PGAS_NAME,
+                        targetPid,
+                        CONTINUE_AND_REDUCE_MSG,
+                        parseBooleanAsResponse(andReduce),
+                        IGNORED_VALUE_BYTE_SIZE,
+                        null);
             }
         } else {
-            sendTo(IGNORED_PGAS_NAME, COORDINATOR_PID, AND_REDUCE_MSG, parseBooleanAsResponse(value), IGNORED_VALUE_BYTE_SIZE, null);
+            sendTo(IGNORED_PGAS_NAME,
+                    COORDINATOR_PID,
+                    AND_REDUCE_MSG,
+                    parseBooleanAsResponse(value),
+                    IGNORED_VALUE_BYTE_SIZE,
+                    null);
             final Message msg = receiveFrom(IGNORED_PGAS_NAME, COORDINATOR_PID, CONTINUE_AND_REDUCE_MSG);
             andReduce = parseResponseAsBoolean(msg);
         }
@@ -194,7 +204,8 @@ class SimpleMiddleware
     private
     void processIncomingMessage( final Message incomingMessage ) {
         try {
-            final Process   targetProcess = processesConfigurations.getProcessConfig(incomingMessage.getAddress(), incomingMessage.getPort());
+            final Process targetProcess =
+                    processesConfigurations.getProcessConfig(incomingMessage.getAddress(), incomingMessage.getPort());
             final int       pgasName      = incomingMessage.getPgasName();
             final PGAS< ? > pgas          = pgasRegistryNameToPGAS.get(pgasName);
             switch ( incomingMessage.getType() ) {
@@ -213,7 +224,10 @@ class SimpleMiddleware
                 case READ_MSG:
                     sendTo(pgasName,
                             targetProcess,
-                            READ_RESPONSE_MSG, incomingMessage.getIndex(), pgas.getDataTypeSize(), pgas.readAsBytes(incomingMessage.getIndex()));
+                            READ_RESPONSE_MSG,
+                            incomingMessage.getIndex(),
+                            pgas.getDataTypeSize(),
+                            pgas.readAsBytes(incomingMessage.getIndex()));
                     break;
                 case READ_RESPONSE_MSG:
                     targetProcess.registerMsg(incomingMessage);
@@ -251,7 +265,9 @@ class SimpleMiddleware
                     .append("] ")
                     .append(messageType));
         }
-        return messageType.isMiddlewareMessageType() ? blockingQueueMap.get(messageType).take() : hostsConfig.waitFor(pgasName, messageType);
+        return messageType.isMiddlewareMessageType()
+               ? blockingQueueMap.get(messageType).take()
+               : hostsConfig.waitFor(pgasName, messageType);
     }
 
     private
@@ -294,7 +310,13 @@ class SimpleMiddleware
             throw new IllegalStateException("Listener not started. Use startServer()");
         }
         final Message msg = new SimpleMessage();
-        msg.initUsing(pgasName, targetProcess.getInetAddress(), targetProcess.getPort(), msgType, index, valueBytesSize, valueAsBytes);
+        msg.initUsing(pgasName,
+                targetProcess.getInetAddress(),
+                targetProcess.getPort(),
+                msgType,
+                index,
+                valueBytesSize,
+                valueAsBytes);
         if ( debugMode ) {
             System.out.println(new StringBuilder().append("Time ")
                     .append(System.nanoTime())
@@ -303,10 +325,14 @@ class SimpleMiddleware
                     .append("] name(")
                     .append(pgasName)
                     .append(") -> sendTo pid[")
-                    .append(processesConfigurations.getProcessConfig(targetProcess.getInetAddress(), targetProcess.getPort()).getPid())
+                    .append(processesConfigurations.getProcessConfig(targetProcess.getInetAddress(), targetProcess.getPort())
+                            .getPid())
                     .append("] ")
                     .append(msgType)
-                    .append(" { index=").append(index).append(", valueAsBytes=").append(Arrays.toString(valueAsBytes))
+                    .append(" { index=")
+                    .append(index)
+                    .append(", valueAsBytes=")
+                    .append(Arrays.toString(valueAsBytes))
                     .append(" }"));
         }
         sendMessage(msg);

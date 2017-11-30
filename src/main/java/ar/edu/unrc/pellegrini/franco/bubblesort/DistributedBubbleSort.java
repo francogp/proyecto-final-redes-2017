@@ -16,8 +16,10 @@ import java.util.logging.Level;
 import static java.util.logging.Logger.getLogger;
 
 /**
- * This program runs the bubble sort algorithm in a distributed array. This program must be executed in different processes/threads configured by a
- * JSON config file (for more details see {@link SimpleProcessesConfigurations} implementation). The first process listed in the config file will be
+ * This program runs the bubble sort algorithm in a distributed array. This program must be executed in different
+ * processes/threads configured by a
+ * JSON config file (for more details see {@link SimpleProcessesConfigurations} implementation). The first process listed in
+ * the config file will be
  * considered as the coordinator.
  * <p>
  * It can be used as a thread.

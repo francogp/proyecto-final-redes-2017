@@ -89,7 +89,8 @@ class SimpleProcessesConfigurations
             final ProcessesConfigurations parsedResults = new SimpleProcessesConfigurations();
             parsedResults.setPgasDataType(dataTypeToSort);
             parsedResults.setProcessQuantity(processesInJSON.size());
-            final Map< InetAddress, Map< Integer, Process > > processByAddress = new HashMap<>(parsedResults.getProcessQuantity());
+            final Map< InetAddress, Map< Integer, Process > > processByAddress =
+                    new HashMap<>(parsedResults.getProcessQuantity());
             parsedResults.setProcessByAddress(processByAddress);
             final Map< Integer, Process > processByPid = new HashMap<>(parsedResults.getProcessQuantity());
             parsedResults.setProcessByPid(processByPid);
@@ -104,7 +105,8 @@ class SimpleProcessesConfigurations
                 final JSONArray                      distributedArraysInJSON = (JSONArray) process.get(JSON_DISTRIBUTED_ARRAYS);
                 if ( distributedArraysInJSON != null ) {
                     if ( distributedArraysInJSON.isEmpty() ) {
-                        throw new IllegalArgumentException("wrong distributed arrays quantity in config file \"" + configFilePath + "\".");
+                        throw new IllegalArgumentException(
+                                "wrong distributed arrays quantity in config file \"" + configFilePath + "\".");
                     }
                     for ( final Object valueInJSON : distributedArraysInJSON ) {
                         final JSONObject     dArray       = (JSONObject) valueInJSON;
@@ -113,12 +115,14 @@ class SimpleProcessesConfigurations
                         final List< Object > toSort       = parseToSort(configFilePath, dataTypeToSort, toSortInJSON);
                         if ( distArraysValues.put(dArrayName.intValue(), toSort) != null ) {
                             throw new IllegalStateException(
-                                    "duplicated distributed array name: " + dArrayName + " in config file \"" + configFilePath + "\".");
+                                    "duplicated distributed array name: " + dArrayName + " in config file \"" + configFilePath +
+                                    "\".");
                         }
                     }
                 }
                 final InetAddress processInetAddress = InetAddress.getByName(inetAddress);
-                final Process     processConfig      = new DistributedProcess(pid, processInetAddress, port.intValue(), distArraysValues);
+                final Process     processConfig      =
+                        new DistributedProcess(pid, processInetAddress, port.intValue(), distArraysValues);
                 //mapping from pid to Process.
                 processByPid.put(pid, processConfig);
 
@@ -189,8 +193,8 @@ class SimpleProcessesConfigurations
 
         if ( !VALID_DATA_TYPE_PATTERN.matcher(dataTypeToSort).matches() ) {
             throw new IllegalArgumentException(
-                    "the only data type supported in this example implementation are Long and Double, and can be set in the config file \"" +
-                    configFilePath + "\".");
+                    "the only data type supported in this example implementation are Long and Double, and can be set in the " +
+                    "config file \"" + configFilePath + "\".");
         }
     }
 

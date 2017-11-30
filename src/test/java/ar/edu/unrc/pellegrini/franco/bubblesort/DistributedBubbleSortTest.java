@@ -110,8 +110,7 @@ class DistributedBubbleSortTest {
 
         @Override
         public final
-        byte[] readAsBytes( final long index )
-                throws Exception {
+        byte[] readAsBytes( final long index ) {
             return longToBytes(array.get((int) index));
         }
 
@@ -172,8 +171,7 @@ class DistributedBubbleSortTest {
         void writeAsBytes(
                 final long index,
                 final byte[] valueAsByte
-        )
-                throws Exception {
+        ) {
             array.set((int) index, bytesToLong(valueAsByte, 0, valueAsByte.length));
         }
     }

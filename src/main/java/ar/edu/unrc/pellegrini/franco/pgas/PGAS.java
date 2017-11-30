@@ -1,8 +1,10 @@
 package ar.edu.unrc.pellegrini.franco.pgas;
 
 /**
- * In computer science, a partitioned global address space (PGAS) is a parallel programming model. It assumes a global memory address space that is
- * logically partitioned and a portion of it is local to each process, thread, or processing element. The novelty of PGAS is that the portions of the
+ * In computer science, a partitioned global address space (PGAS) is a parallel programming model. It assumes a global memory
+ * address space that is
+ * logically partitioned and a portion of it is local to each process, thread, or processing element. The novelty of PGAS is
+ * that the portions of the
  * shared memory space may have an affinity for a particular process, thereby exploiting locality of reference.
  *
  * @param <I> value type to be stored in the PGAS.
@@ -11,7 +13,8 @@ public
 interface PGAS< I > {
 
     /**
-     * @return String representation of the complete PGAS (including all processes). null if the current process is not the coordinator.
+     * @return String representation of the complete PGAS (including all processes). null if the current process is not the
+     * coordinator.
      */
     String asString();
 

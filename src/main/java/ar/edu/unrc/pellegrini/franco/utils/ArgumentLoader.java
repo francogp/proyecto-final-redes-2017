@@ -61,7 +61,8 @@ class ArgumentLoader {
                         printUsage();
                         System.exit(1);
                     }
-                    throw new IllegalArgumentException("Flag \"" + arg + "\" is not present as a valid flag set. Args = " + Arrays.toString(args));
+                    throw new IllegalArgumentException(
+                            "Flag \"" + arg + "\" is not present as a valid flag set. Args = " + Arrays.toString(args));
                 }
                 activeFlags.add(flag);
             } else {
@@ -83,7 +84,8 @@ class ArgumentLoader {
                         System.exit(1);
                     }
                     throw new IllegalArgumentException(
-                            "Argument \"" + arg + "\" is not present as a valid argument set" + ". Args = " + Arrays.toString(args));
+                            "Argument \"" + arg + "\" is not present as a valid argument set" + ". Args = " +
+                            Arrays.toString(args));
                 }
                 final String value = arg.substring(index + 1).trim();
                 argMap.put(id, value);

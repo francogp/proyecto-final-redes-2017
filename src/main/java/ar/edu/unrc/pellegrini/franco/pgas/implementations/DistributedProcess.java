@@ -89,7 +89,8 @@ class DistributedProcess
     public
     void registerMsg( final Message message )
             throws InterruptedException {
-        final Map< MessageType, BlockingQueue< Message > > messageTypeBlockingQueueMap = blockingQueueMapByName.get(message.getPgasName());
+        final Map< MessageType, BlockingQueue< Message > > messageTypeBlockingQueueMap =
+                blockingQueueMapByName.get(message.getPgasName());
         if ( messageTypeBlockingQueueMap == null ) {
             throw new IllegalArgumentException("unknown pgasName: " + message.getPgasName() + " in message: " + message);
         }

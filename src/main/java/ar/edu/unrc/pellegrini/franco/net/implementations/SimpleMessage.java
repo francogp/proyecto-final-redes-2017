@@ -48,7 +48,8 @@ class SimpleMessage
     /**
      * total byte length of the message without the vale.
      */
-    public static final int         PAYLOAD_PREFIX_LENGTH  = PGAS_NAME_BYTE_LENGTH + TYPE_BYTE_LENGTH + INDEX_BYTE_LENGTH + VALUE_DATA_SIZE_LENGTH;
+    public static final int         PAYLOAD_PREFIX_LENGTH  =
+            PGAS_NAME_BYTE_LENGTH + TYPE_BYTE_LENGTH + INDEX_BYTE_LENGTH + VALUE_DATA_SIZE_LENGTH;
     /**
      * byte index of the value message parameter.
      */
@@ -179,7 +180,8 @@ class SimpleMessage
         port = packet.getPort();
         asBytes = packet.getData();
         if ( asBytes.length <= PAYLOAD_PREFIX_LENGTH ) {
-            throw new IllegalArgumentException("Wrong asBytes.length=" + asBytes.length + ", must be at least " + PAYLOAD_PREFIX_LENGTH);
+            throw new IllegalArgumentException(
+                    "Wrong asBytes.length=" + asBytes.length + ", must be at least " + PAYLOAD_PREFIX_LENGTH);
         }
         pgasName = bytesToInteger(asBytes, PGAS_NAME_BYTE_INDEX, PGAS_NAME_BYTE_INDEX + PGAS_NAME_BYTE_LENGTH);
         type = MessageType.valueOf((char) asBytes[TYPE_BYTE_INDEX]);
@@ -202,9 +204,9 @@ class SimpleMessage
     @Override
     public
     String toString() {
-        return "SimpleMessage{" + "address=" + address + ", index=" + index + ", pgasName=" + pgasName + ", port=" + port + ", type=" + type +
-               ", valueAsBytes=" + Arrays.toString(valueAsBytes) + ", valueBytesSize=" + valueBytesSize + ", asBytes=" + Arrays.toString(asBytes) +
-               '}';
+        return "SimpleMessage{" + "address=" + address + ", index=" + index + ", pgasName=" + pgasName + ", port=" + port +
+               ", type=" + type + ", valueAsBytes=" + Arrays.toString(valueAsBytes) + ", valueBytesSize=" + valueBytesSize +
+               ", asBytes=" + Arrays.toString(asBytes) + '}';
     }
 
 }
