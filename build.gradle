@@ -61,9 +61,9 @@ allprojects {
 task finalFatJar(type: Jar) {
     manifest {
         attributes('Implementation-Title': rootProject.name,
-                'Application-Name': 'Coeus',
+                'Application-Name': 'Proyecto Final Redes 2017',
                 'Implementation-Version': version,
-                'Built-By': 'Lucia Bressan, Renzo Bianchini, Franco Gastón Pellegrini',
+                'Built-By': 'Franco Gastón Pellegrini',
                 'Built-Date': new Date(),
                 'Built-Java': System.getProperty('java.version'),
                 'Sealed': 'true')
