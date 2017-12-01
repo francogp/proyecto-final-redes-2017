@@ -206,8 +206,8 @@ class SimpleMiddleware
         try {
             final Process targetProcess =
                     processesConfigurations.getProcessConfig(incomingMessage.getAddress(), incomingMessage.getPort());
-            final int       pgasName      = incomingMessage.getPgasName();
-            final PGAS< ? > pgas          = pgasRegistryNameToPGAS.get(pgasName);
+            final int       pgasName = incomingMessage.getPgasName();
+            final PGAS< ? > pgas     = pgasRegistryNameToPGAS.get(pgasName);
             switch ( incomingMessage.getType() ) {
                 case AND_REDUCE_MSG:
                 case BARRIER_MSG:
@@ -258,8 +258,7 @@ class SimpleMiddleware
                     .append(System.nanoTime())
                     .append(": pid[")
                     .append(pid)
-                    .append("] name(")
-                    .append(pgasName)
+                    .append("] name(").append(( pgasName == IGNORED_PGAS_NAME ) ? "ignored" : pgasName)
                     .append(") -> receiveFrom pid[")
                     .append(senderPid)
                     .append("] ")
@@ -322,15 +321,13 @@ class SimpleMiddleware
                     .append(System.nanoTime())
                     .append(": pid[")
                     .append(pid)
-                    .append("] name(")
-                    .append(pgasName)
+                    .append("] name(").append(( pgasName == IGNORED_PGAS_NAME ) ? "ignored" : pgasName)
                     .append(") -> sendTo pid[")
                     .append(processesConfigurations.getProcessConfig(targetProcess.getInetAddress(), targetProcess.getPort())
                             .getPid())
                     .append("] ")
                     .append(msgType)
-                    .append(" { index=")
-                    .append(index)
+                    .append(" { index=").append(( index == IGNORED_INDEX ) ? "ignored" : index)
                     .append(", valueAsBytes=")
                     .append(Arrays.toString(valueAsBytes))
                     .append(" }"));
