@@ -12,9 +12,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-/**
- * {@link Process} implementation for a Distributed Architecture.
- */
 @SuppressWarnings( "ClassWithoutNoArgConstructor" )
 public final
 class DistributedProcess

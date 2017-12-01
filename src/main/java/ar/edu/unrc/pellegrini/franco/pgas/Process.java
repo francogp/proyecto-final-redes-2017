@@ -6,6 +6,10 @@ import ar.edu.unrc.pellegrini.franco.net.MessageType;
 import java.net.InetAddress;
 import java.util.List;
 
+/**
+ * {@link Process} implementation for a Distributed Architecture. It common data knowledge to be shared between processes, like
+ * addresses, locations, ports, etc.
+ */
 public
 interface Process {
 
