@@ -80,18 +80,6 @@ class DistributedBubbleSortTest {
 
         @Override
         public final
-        long lowerIndex( final int pid ) {
-            throw new IllegalStateException("Not used");
-        }
-
-        @Override
-        public final
-        long lowerIndex() {
-            return lowerIndex;
-        }
-
-        @Override
-        public final
         Long parseBytesToData(
                 final byte[] valueAsBytes,
                 final int valueBytesSize
@@ -134,18 +122,6 @@ class DistributedBubbleSortTest {
             final Long temp = array.get((int) index1);
             array.set((int) index1, array.get((int) index2));
             array.set((int) index2, temp);
-        }
-
-        @Override
-        public final
-        long upperIndex( final int pid ) {
-            throw new IllegalStateException("Not used");
-        }
-
-        @Override
-        public final
-        long upperIndex() {
-            return upperIndex;
         }
 
         @Override

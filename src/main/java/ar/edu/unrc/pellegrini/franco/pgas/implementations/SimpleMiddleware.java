@@ -236,7 +236,7 @@ class SimpleMiddleware
                     pgas.writeAsBytes(incomingMessage.getIndex(), incomingMessage.getValueAsBytes());
                     break;
                 default:
-                    throw new IllegalArgumentException("Unknown Message<I> type = " + incomingMessage.getType());
+                    throw new IllegalArgumentException("Unknown Message type = " + incomingMessage.getType());
                     //TODO add a panic!
             }
         } catch ( final Exception e ) {

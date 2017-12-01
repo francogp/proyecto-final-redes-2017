@@ -103,13 +103,20 @@ class DistributedArray< I >
         }
     }
 
-    @Override
+
+    /**
+     * @param pid process id.
+     *
+     * @return lower PGAS index supported by the process id pid.
+     */
     public final
     long lowerIndex( final int pid ) {
         return indexList.get(pid - 1).getLoweIndex();
     }
 
-    @Override
+    /**
+     * @return lower PGAS index supported by this process.
+     */
     public final
     long lowerIndex() {
         return currentLowerIndex;
@@ -157,13 +164,19 @@ class DistributedArray< I >
         write(index2, temp);
     }
 
-    @Override
+    /**
+     * @param pid process id.
+     *
+     * @return upper PGAS index supported by the process id pid.
+     */
     public final
     long upperIndex( final int pid ) {
         return indexList.get(pid - 1).getUpperIndex();
     }
 
-    @Override
+    /**
+     * @return upper PGAS index supported by this process.
+     */
     public final
     long upperIndex() {
         return currentUpperIndex;

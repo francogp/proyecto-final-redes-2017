@@ -33,18 +33,6 @@ interface PGAS< I > {
      */
     int getSize();
 
-    /**
-     * @return lower PGAS index supported by this process.
-     */
-    long lowerIndex();
-
-    /**
-     * @param pid process id.
-     *
-     * @return lower PGAS index supported by the process id pid.
-     */
-    long lowerIndex( final int pid );
-
     I parseBytesToData(
             byte[] valueAsBytes,
             int valueBytesSize
@@ -88,18 +76,6 @@ interface PGAS< I > {
             final long index2
     )
             throws Exception;
-
-    /**
-     * @return upper PGAS index supported by this process.
-     */
-    long upperIndex();
-
-    /**
-     * @param pid process id.
-     *
-     * @return upper PGAS index supported by the process id pid.
-     */
-    long upperIndex( final int pid );
 
     byte[] valueToBytesArray( I value );
 
