@@ -132,13 +132,12 @@ class DistributedBubbleSort< I extends Comparable< I > >
     public
     void run() {
         try {
-            boolean finish = false;
+            boolean    finish     = false;
+            final long upperIndex = distributedArray.upperIndex();
+            final long lowerIndex = distributedArray.lowerIndex();
 
             while ( !finish ) {
                 finish = true;
-                final long upperIndex = distributedArray.upperIndex();
-                final long lowerIndex = distributedArray.lowerIndex();
-
                 // sort local block
                 bubbleSort(distributedArray, lowerIndex, upperIndex);
 
