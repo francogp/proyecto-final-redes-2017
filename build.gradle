@@ -13,7 +13,7 @@ buildscript {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.9'
+    gradleVersion = '4.10'
 }
 
 //https://docs.gradle.org/current/userguide/standard_plugins.html
