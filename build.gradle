@@ -34,8 +34,8 @@ javadoc {
 }
 
 compileJava {
-    sourceCompatibility = '11'
-    targetCompatibility = '11'
+    sourceCompatibility = '10'
+    targetCompatibility = '10'
     options.encoding = 'UTF-8'
 }
 
