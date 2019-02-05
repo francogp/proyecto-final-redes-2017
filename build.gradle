@@ -13,7 +13,7 @@ buildscript {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '5.2.0'
+    gradleVersion = '5.2'
 distributionUrl = distributionUrl.replace("bin", "all")
 
 }
